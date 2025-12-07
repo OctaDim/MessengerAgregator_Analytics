@@ -22,6 +22,12 @@ async def receive_pact_webhooks(
     print(f"{'>' * 75}")
     await log_all_request_data(request=request)
 
+    request_json = await request.json()
+    print(f"request_json: {request_json}")
+    validate_log_pydantic_errors(
+        PydanticBaseModel=PactWebhookData,
+        request_json=request_json)
+
     event_name = webhook_data.event
     event_type = webhook_data.type
     event_object = webhook_data.object
@@ -62,13 +68,6 @@ async def receive_pact_webhooks(
                   f"type(event_object): {type(event_object)}"
                   f"\tobject: {event_object}\n"
                   f"event_object")
-
-    request_json = await request.json()
-    print(f"request_json: {request_json}")
-
-    validate_log_pydantic_errors(
-        PydanticBaseModel=PactWebhookData,
-        request_json=request_json)
 
     json_content = {"Message": "Webhook [OK]"}
     json_response = JSONResponse(

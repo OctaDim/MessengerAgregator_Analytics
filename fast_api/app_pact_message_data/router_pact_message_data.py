@@ -64,4 +64,6 @@ async def get_pact_message_data(
         except Exception as error:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Request failed: {error}")
+                detail=f"Message Data By Message ID Router [ERROR]:\n"
+                       f"error: {error}\n"
+                       f"pact_api_data: {pact_api_data}\n")

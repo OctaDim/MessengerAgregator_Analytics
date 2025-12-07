@@ -5,9 +5,10 @@ if __name__ == "__main__":
     from fast_api.app_pact_message_data.scheme_pact_message_data import (
         InMessageDataByMessageId)
     import asyncio
+    from configs.settings import API_TEST_USERNAME, API_TEST_PASSWORD
 
-    auth_data = AuthDataDiarize(username="temp_username",
-                                password="temp_password")
+    auth_data = AuthDataDiarize(username=API_TEST_USERNAME,
+                                password=API_TEST_PASSWORD)
 
     company_id = "100179"
     chat_id = "219052460"  # Dima
