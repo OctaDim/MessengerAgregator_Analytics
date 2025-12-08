@@ -1,11 +1,14 @@
 from datetime import datetime
-from typing import Optional, List, Union, Dict, Literal, Self
+from typing import Optional, Union, Literal, Self, Any
 
 from pydantic import (
     BaseModel, Field, model_validator)
 
+from utils_common.validate_log_pydantic_errors import (
+    validate_log_pydantic_obj_errors)
 
-class MessageObj(BaseModel):
+
+class MessageObject(BaseModel):
     id: int
     external_id: Optional[str]
     company_id: int
@@ -17,12 +20,12 @@ class MessageObj(BaseModel):
     income: Optional[bool]
     status: Optional[str]
     message: Optional[str]
-    reactions: List = Field(default_factory=list)
-    details: Dict = Field(default_factory=dict)
-    attachments: List = Field(default_factory=list)
+    reactions: Optional[list] = Field(default_factory=list)
+    details: Optional[dict] = Field(default_factory=dict)
+    attachments: Optional[list] = Field(default_factory=list)
 
 
-class AuthObj(BaseModel):
+class AuthObject(BaseModel):
     id: int
     company_id: int
     provider: str
@@ -33,7 +36,7 @@ class AuthObj(BaseModel):
     sync_messages_at: Optional[datetime]
 
 
-class ConversationObj(BaseModel):
+class ConversationObject(BaseModel):
     id: int
     company_id: int
     sender_name: str
@@ -53,25 +56,38 @@ class ConversationObj(BaseModel):
 class PactWebhookData(BaseModel):
     event: str = None
     type: str = None
-    object: Union[MessageObj, AuthObj, ConversationObj] = None
+    object: Union[MessageObject, AuthObject, ConversationObject] = None
     source: Union[Literal["pact.im"], str] = None
     operation: Union[Literal["test"], str] = None
 
+    # def __init__(self, **data: Any) -> None:
+    #     validate_log_pydantic_obj_errors(
+    #         PydanticBaseModel=self.__class__, request_json=data)
+    #     super().__init__(**data)
+
     @model_validator(mode="after")
     def validate_basemodel_obj(self) -> Self:
-        has_group_1_flag = all([self.event, self.type, self.object])
-        has_group_2_flag = all([self.source, self.operation])
+        # validate_log_pydantic_obj_errors(PydanticBaseModel=self.__class__,
+        #                                  request_json=self.model_dump())
 
-        if not (has_group_1_flag or has_group_2_flag):
-            error_log = (f"PYDANTIC COMBINATIONS [ERROR]: "
-                         f"(event, type, object) OR (source, operation) needed\n"
-                         f"has_group_1_flag: {has_group_1_flag}\n"
-                         f"\tevent: {self.event}\n"
-                         f"\ttype: {self.type}\n"
-                         f"\tobject: {self.object}\n"
-                         f"has_group_2_flag: {has_group_1_flag}\n"
-                         f"\ttype: {self.type}\n"
-                         f"\tobject: {self.object}\n")
+        has_group_1_flag = all([self.event, self.type, self.object])
+        has_group_2_flag = all([self.event, self.type])
+        has_group_3_flag = all([self.source, self.operation])
+
+        if not (has_group_1_flag or has_group_2_flag or has_group_3_flag):
+            error_log = (
+                f"PYDANTIC COMBINATIONS [ERROR]: "
+                f"group 1 (event, type, object) OR "
+                f"group 2 (event, type) OR "
+                f"group 3 (source, operation) needed\n"
+                f"has_group_1_flag: {has_group_1_flag}\n"
+                f"has_group_2_flag: {has_group_1_flag}\n"
+                f"has_group_3_flag: {has_group_3_flag}\n"
+                f"\tevent: {self.event}\n"
+                f"\ttype: {self.type}\n"
+                f"\tobject: {self.object}\n"
+                f"\tsource: {self.source}\n"
+                f"\toperation: {self.operation}\n")
             print(error_log)
             raise ValueError(error_log)
         else:  # has_group_1_flag or has_group_2_flag

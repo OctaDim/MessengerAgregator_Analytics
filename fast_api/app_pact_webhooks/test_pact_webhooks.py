@@ -1,9 +1,8 @@
 if __name__ == "__main__":
-    import asyncio
     from fastapi import FastAPI
     from fastapi.testclient import TestClient
-    from fast_api.app_pact_webhooks.func_validate_webhook import (
-        validate_log_pydantic_errors)
+    from utils_common.validate_log_pydantic_errors import (
+        validate_log_pydantic_obj_errors)
     from fast_api.app_pact_webhooks.router_pact_webhooks import (
         router_pact_receive_webhooks)
     from fast_api.app_pact_webhooks.scheme_pact_webhooks import (
@@ -23,7 +22,7 @@ if __name__ == "__main__":
         model_validate_result = PactWebhookData.model_validate(test_webhook_data)
         print("model_validate_result: ", model_validate_result)
 
-        validate_log_pydantic_errors(
+        validate_log_pydantic_obj_errors(
             PydanticBaseModel=PactWebhookData,
             request_json=test_webhook_data)
 
