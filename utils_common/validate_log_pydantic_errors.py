@@ -1,4 +1,4 @@
-from typing import Any, Dict, Type
+from typing import Type
 
 from pydantic import ValidationError, BaseModel
 
@@ -6,7 +6,7 @@ from pydantic import ValidationError, BaseModel
 def validate_log_pydantic_obj_errors(
         PydanticBaseModel: Type[BaseModel],
         request_json: dict
-) -> Dict[str, str | Any] | False:
+) -> BaseModel | None:
     try:
         validated_obj = PydanticBaseModel(**request_json)
         validated_dict = validated_obj.model_dump()
@@ -35,4 +35,3 @@ def validate_log_pydantic_obj_errors(
                          f"error_message: {error_message}, "
                          f"input_value: {input_value}\n")
             print(error_log)
-            return False
