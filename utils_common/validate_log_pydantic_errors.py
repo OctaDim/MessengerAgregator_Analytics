@@ -3,7 +3,7 @@ from typing import Any, Dict, Type
 from pydantic import ValidationError, BaseModel
 
 
-def validate_log_pydantic_errors(
+def validate_log_pydantic_obj_errors(
         PydanticBaseModel: Type[BaseModel],
         request_json: dict
 ) -> Dict[str, str | Any] | False:
@@ -14,7 +14,7 @@ def validate_log_pydantic_errors(
                    f"validated_obj: '{validated_obj}', "
                    f"validated_dict: {validated_dict}\n")
         print(log_txt)
-        return validated_dict
+        return validated_obj
     except ValidationError as error:
         errors_list = []
         for error in error.errors():
