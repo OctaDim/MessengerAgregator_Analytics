@@ -185,6 +185,9 @@ class WEBHOOKS_OPTIONS:
     # PYANNOTE_API_IMMEDIATE_RESPONSE: bool = True
     # LOCAL_MODEL_ROUTERS_TAG: str = "MODEL_API"
     WEBHOOKS_API_URL_BASE_NAME: str = "agregator_api"
+    LOG_WEBHOOK_INCOMING_REQ_DATA: bool = False
+    LOG_WEBHOOK_INCOMING_OBJ_DATA: bool = True
+    LOG_WEBHOOK_INCOMING_EXTRA_DATA: bool = True
     # TEMPORARY_AUDIO_FILE_PREFIX: str = "temp"
     # TEMPORARY_AUDIO_FILES_DIR: str = "audio_files/temporary_audio"
     # CONVERTED_AUDIO_FILES_DIR: str = "audio_files/temporary_audio"

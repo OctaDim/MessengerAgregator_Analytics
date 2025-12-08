@@ -7,10 +7,11 @@ async def log_all_request_data(request: Request) -> None:
     body_str = body_str.decode('utf-8')
     request_json = await request.json()
 
-    print(f"REQUEST DATA: "
-          f"method: {request.method}, url: {request.url}\n"
-          f"headers: {headers}\n"
-          f"query params: {request.query_params or "None"}\n"
-          f"raw body: {body}\n"
-          f"body string: {body_str}\n"
-          f"request json: {request_json}\n")
+    print(f"REQUEST INCOMING DATA:\n"
+          f"\tmethod: {request.method}\n"
+          f"\turl: {request.url}\n"
+          f"\theaders: {headers}\n"
+          f"\tquery params: {request.query_params or "None"}\n"
+          f"\traw body: {body}\n"
+          f"\tbody string: {body_str}\n"
+          f"\trequest json: {request_json}\n")
