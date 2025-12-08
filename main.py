@@ -8,6 +8,8 @@ from fastapi import FastAPI
 from starlette.middleware.sessions import SessionMiddleware
 
 from configs.settings import API_HOST, API_PORT, FASTAPI_OPTIONS, FASTAPI_SESSION_KEY
+from db_postgres.postgres_conn.pgs_connection import close_all_async_pgs_connections, close_all_sync_pgs_connections
+from db_postgres.postgres_init.db_tables_initialization import sync_initialize_db_tables
 from fast_api.app_pact_all_conversations.router_pact_all_conversations import router_pact_get_all_conversations
 from fast_api.app_pact_webhooks.router_pact_webhooks import router_pact_receive_webhooks
 from fast_api.app_pact_message_data.router_pact_message_data import router_pact_get_message_data
@@ -34,7 +36,7 @@ admin_panel_views = [
 
 
 def initialize_postgres_db_tables():
-    # sync_initialize_db_tables()
+    sync_initialize_db_tables()
     pass
 
 
@@ -53,14 +55,14 @@ def run_postgres():
 async def lifespan_on_startup():
     print(">>>>>>> FastAPI Lifespan (startup):")
     # run_redis()
-    # run_postgres()
+    run_postgres()
     # await init_and_start_bert_model()  # Initializing Bert model
 
 
 async def lifespan_on_shutdown():
     print(">>>>>>> FastAPI Lifespan (shutdown):")
-    # await close_all_async_pgs_connections()
-    # close_all_sync_pgs_connections()
+    await close_all_async_pgs_connections()
+    close_all_sync_pgs_connections()
 
 
 @asynccontextmanager
