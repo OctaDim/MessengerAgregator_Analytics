@@ -11,8 +11,8 @@ class ActiveMix:
 
 class CreateUpdateMix:
     __abstract__ = True
-    created_at: Mapped[Optional[datetime]] = mapped_column(default=datetime.now)
-    updated_at: Mapped[Optional[datetime]] = mapped_column(onupdate=datetime.now)
+    local_created_at: Mapped[Optional[datetime]] = mapped_column(default=datetime.now)
+    local_updated_at: Mapped[Optional[datetime]] = mapped_column(onupdate=datetime.now)
 
 
 class StatusMix:
