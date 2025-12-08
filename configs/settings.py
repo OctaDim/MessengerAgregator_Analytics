@@ -8,12 +8,14 @@ from dotenv import load_dotenv
 
 from utils_common.get_cur_ip_address import (
     get_cur_external_ip_via_google_dns, get_cur_internal_ip)
+from utils_common.normalized_path import get_full_file_normal_path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # GETTING TEST ENV CONFIGS #############################################
-test_env_full_path = os.path.join(BASE_DIR, ".env")
-test_env_normal_path = os.path.normpath(test_env_full_path)
+test_env_normal_path = get_full_file_normal_path(
+    all_dir_str_parts=[BASE_DIR],
+    file_name_with_ext=".env")
 env = load_dotenv(test_env_normal_path)  # for future
 API_TEST_USERNAME = os.getenv("API_TEST_USERNAME")
 API_TEST_PASSWORD = os.getenv("API_TEST_PASSWORD")
@@ -37,8 +39,9 @@ class API_CONFIG_NAMES:
     API_TEST_DEXP_2_IP = "API_dexp_ip_192_168_0_106_8000"
 
 
-api_ini_full_path = os.path.join(BASE_DIR, ".configs_api.ini")
-api_ini_normal_path = os.path.normpath(api_ini_full_path)
+api_ini_normal_path = get_full_file_normal_path(
+    all_dir_str_parts=[BASE_DIR],
+    file_name_with_ext=".configs_api.ini")
 api_conf_parser = ConfigParser()
 api_conf_parser.read(filenames=api_ini_normal_path)
 
@@ -75,8 +78,9 @@ class PACT_API_CONFIG_NAMES:
     PACT_API_ANY_PRODUCT_IP = "PACT_API_any_ip_prod"
 
 
-pact_api_ini_full_path = os.path.join(BASE_DIR, ".configs_pact_ext_api.ini")
-pact_api_ini_normal_path = os.path.normpath(pact_api_ini_full_path)
+pact_api_ini_normal_path = get_full_file_normal_path(
+    all_dir_str_parts=[BASE_DIR],
+    file_name_with_ext=".configs_pact_ext_api.ini")
 pact_api_conf_parser = ConfigParser()
 pact_api_conf_parser.read(filenames=pact_api_ini_normal_path)
 
@@ -95,8 +99,9 @@ class FASTAPI_CONFIG_NAMES:
     FASTAPI_PRODUCT_ANY_IP = "FastAPI_any_ip_prod_configs"
 
 
-fastapi_ini_full_path = os.path.join(BASE_DIR, ".configs_fastapi.ini")
-fastapi_ini_normal_path = os.path.normpath(fastapi_ini_full_path)
+fastapi_ini_normal_path = get_full_file_normal_path(
+    all_dir_str_parts=[BASE_DIR],
+    file_name_with_ext=".configs_fastapi.ini")
 fastapi_conf_parser = ConfigParser()
 fastapi_conf_parser.read(filenames=fastapi_ini_normal_path)
 
@@ -109,10 +114,66 @@ FASTAPI_SESSION_KEY = fastapi_conf_parser.get(
     section=fastapi_conf_name, option="FASTAPI_SESSION_KEY")
 
 
+# GETTING POSTGRES INI CONFIGS #########################################
+@dataclass(frozen=True)
+class POSTGRES_CONFIG_NAMES:
+    POSTGRES_PRODUCT_SERVER_IP = "Postgres_production"
+    POSTGRES_HAKASIA_PROD_SERVER_IP = "Postgres_Hakasia_product_server"
+    POSTGRES_TEST_176_124_136_22_IP = "Postgres_prod_server_176_124_136_22"
+    POSTGRES_TEST_PORT_ANY_IP = "Postgres_port_all_ips_0_0_0_0_8000"
+    POSTGRES_TEST_WIN_LOCALHOST = "Postgres_win_localhost_127_0_0_1_8000"
+    POSTGRES_TEST_UNIX_LOCALHOST = "Postgres_unix_localhost_127_0_1_1_8000"
+    POSTGRES_TEST_DEXP_IP = "Postgres_dexp_ip_192_168_0_117_8000"
+
+
+postgres_ini_normal_path = get_full_file_normal_path(
+    all_dir_str_parts=[BASE_DIR],
+    file_name_with_ext=".configs_postgres.ini")
+postgres_conf_parser = ConfigParser()
+postgres_conf_parser.read(filenames=postgres_ini_normal_path)
+
+if cur_external_ip == "___.___.___.___":  # Just example
+    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST_PORT_ANY_IP
+elif cur_external_ip == "172.19.201.24":
+    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_PRODUCT_SERVER_IP
+elif cur_external_ip == "172.19.201.24":
+    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_HAKASIA_PROD_SERVER_IP
+elif cur_external_ip == "176.124.136.22":
+    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST_176_124_136_22_IP
+elif cur_external_ip == "192.168.0.117":
+    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST_DEXP_IP
+elif sys.platform == "linux":
+    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST_UNIX_LOCALHOST
+elif sys.platform == "win32":
+    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST_WIN_LOCALHOST
+else:
+    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST_PORT_ANY_IP
+
+POSTGRES_USER = postgres_conf_parser.get(section=postgres_conf_name, option="POSTGRES_USER")
+POSTGRES_PASSWORD = postgres_conf_parser.get(section=postgres_conf_name, option="POSTGRES_PASSWORD")
+POSTGRES_HOST = postgres_conf_parser.get(section=postgres_conf_name, option="POSTGRES_HOST")
+POSTGRES_PORT = postgres_conf_parser.get(section=postgres_conf_name, option="POSTGRES_PORT") or None
+POSTGRES_DB_NAME = postgres_conf_parser.get(section=postgres_conf_name, option="POSTGRES_DB_NAME")
+
+
 @dataclass(frozen=True)
 class FASTAPI_OPTIONS:
     LOG_LEVEL = "debug"
     USE_COLORS = True
+
+
+@dataclass(frozen=True)
+class ALCHEMY_OPTIONS:
+    USE_POSTGRES_DATABASE: bool = True
+    ALCHEMY_ORM_RAW_SQL_LOGS: bool = False
+    ALCHEMY_QUERY_EXEC_TIME_LOGS: bool = False
+    ALCHEMY_SESSION_OK_ACTIONS_LOGS: bool = False
+    ALCHEMY_USE_FUTURE_ALCHEMY: bool = True
+    ALCHEMY_POOL_PRE_PING: bool = True
+    ALCHEMY_CONST_CONN_POOL_SIZE: int = 20
+    ALCHEMY_TEMP_CONN_MAX_OVERFLOW: int = 30
+    ALCHEMY_POOL_RECYCLE: int = 600  # seconds
+    ALCHEMY_POOL_TIMEOUT: int = 30  # seconds
 
 
 @dataclass(frozen=True)
