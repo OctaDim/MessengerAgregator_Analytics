@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import String, DateTime, BigInteger
+from sqlalchemy import String, BigInteger, TIMESTAMP
 from sqlalchemy.orm import Mapped, mapped_column
 
 from db_postgres.postgres_init.declarative_base_model import Base
@@ -12,7 +12,7 @@ from db_postgres.postgres_models.orm_models_fields_mixins import (
 class WebhookConversationModel(Base, ActiveMix, CreateUpdateMix):
     __tablename__ = "webhook_conversation"
 
-    prim_id: Mapped[int] = mapped_column(primary_key=True)
+    local_id: Mapped[int] = mapped_column(primary_key=True)
 
     event: Mapped[Optional[str]] = mapped_column(String(15))
     type: Mapped[Optional[str]] = mapped_column(String(15))
@@ -30,6 +30,6 @@ class WebhookConversationModel(Base, ActiveMix, CreateUpdateMix):
     group: Mapped[Optional[bool]]
 
     created_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True))
+        TIMESTAMP(timezone=True))
     last_updated_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True))
+        TIMESTAMP(timezone=True))

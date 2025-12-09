@@ -12,7 +12,7 @@ class MessageDetailsModel(Base, ActiveMix, CreateUpdateMix):
     __tablename__ = "message_details"
 
     prim_id: Mapped[int] = mapped_column(primary_key=True)
-    message_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("webhook_message.prim_id"))
+    message_local_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("webhook_message.local_id"))
 
     detail: Mapped[Optional[str]]

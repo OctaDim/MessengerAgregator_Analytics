@@ -11,8 +11,8 @@ from db_postgres.postgres_models.orm_models_fields_mixins import (
 class MessageAttachmentsModel(Base, ActiveMix, CreateUpdateMix):
     __tablename__ = "message_attachments"
 
-    prim_id: Mapped[int] = mapped_column(primary_key=True)
-    message_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("webhook_message.prim_id"))
+    local_id: Mapped[int] = mapped_column(primary_key=True)
+    message_local_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("webhook_message.local_id"))
 
     attachment: Mapped[Optional[str]]
