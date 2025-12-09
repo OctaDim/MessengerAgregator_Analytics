@@ -1,8 +1,8 @@
 if __name__ == "__main__":
     from fast_api.app_auth.scheme_auth import AuthDataDiarize
-    from fast_api.app_pact_messages_by_convers.router_messages_by_conversation import (
+    from fast_api.app_pact_messages_by_conversation.router_messages_by_conversation import (
         get_pact_messages_by_conversation)
-    from fast_api.app_pact_messages_by_convers.scheme_messages_by_conversation import (
+    from fast_api.app_pact_messages_by_conversation.scheme_messages_by_conversation import (
         InAllMessagesByConversation)
     import asyncio
     from configs.settings import API_TEST_USERNAME, API_TEST_PASSWORD

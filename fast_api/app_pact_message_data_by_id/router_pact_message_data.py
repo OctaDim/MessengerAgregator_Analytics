@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from configs.settings import WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY
 from fast_api.app_auth.funcs_auth import verify_test_username_password
 from fast_api.app_auth.scheme_auth import AuthDataDiarize
-from fast_api.app_pact_message_data.scheme_pact_message_data import (
+from fast_api.app_pact_message_data_by_id.scheme_pact_message_data import (
     InMessageDataByMessageId)
 
 base_url_name = WEBHOOKS_OPTIONS.WEBHOOKS_API_URL_BASE_NAME
@@ -13,7 +13,7 @@ router_pact_get_message_data = APIRouter(prefix=f"/{base_url_name}",
                                          tags=["PACT API ENDPOINTS"])
 
 
-@router_pact_get_message_data.post(path="/message_data_by_message/",
+@router_pact_get_message_data.post(path="/message_data_by_id/",
                                    response_model=None)
 async def get_pact_message_data(
         auth_data: AuthDataDiarize,
@@ -55,7 +55,9 @@ async def get_pact_message_data(
 
             message_data = response_json["message"]
             for cur_param, cur_value in message_data.items():
-                print(f"cur_param: {cur_param}, cur_value: {cur_value}")
+                print(f"\tcur_param: {cur_param}, "
+                      f"type: {type(cur_value)}, "
+                      f"cur_value: {cur_value}")
             return response.json()
         except httpx.HTTPStatusError as ext_api_error:
             raise HTTPException(

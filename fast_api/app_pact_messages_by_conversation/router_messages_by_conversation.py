@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from configs.settings import WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY
 from fast_api.app_auth.funcs_auth import verify_test_username_password
 from fast_api.app_auth.scheme_auth import AuthDataDiarize
-from fast_api.app_pact_messages_by_convers.scheme_messages_by_conversation import (
+from fast_api.app_pact_messages_by_conversation.scheme_messages_by_conversation import (
     InAllMessagesByConversation)
 
 base_url_name = WEBHOOKS_OPTIONS.WEBHOOKS_API_URL_BASE_NAME
@@ -13,7 +13,7 @@ router_pact_get_messages_by_convers = APIRouter(prefix=f"/{base_url_name}",
                                                 tags=["PCT ENDPOINTS"])
 
 
-@router_pact_get_messages_by_convers.post(path="/msgs_by_conversation/",
+@router_pact_get_messages_by_convers.post(path="/conversation_messages/",
                                           response_model=None)
 async def get_pact_messages_by_conversation(
         auth_data: AuthDataDiarize,
