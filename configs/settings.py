@@ -158,8 +158,8 @@ POSTGRES_DB_NAME = postgres_conf_parser.get(section=postgres_conf_name, option="
 
 @dataclass(frozen=True)
 class FASTAPI_OPTIONS:
-    LOG_LEVEL = "debug"
-    USE_COLORS = True
+    LOG_LEVEL = "debug"  # used in main.py when starting uvicorn
+    USE_COLORS = True  # used in main.py when starting uvicorn
 
 
 @dataclass(frozen=True)
@@ -178,26 +178,8 @@ class ALCHEMY_OPTIONS:
 
 @dataclass(frozen=True)
 class WEBHOOKS_OPTIONS:
-    pass
-    # # API
-    # PYANNOTE_API_ROUTERS_TAG: str = "PYANNOTE_API"
-    # PYANNOTE_API_REQUEST_PAUSE: int = 2
-    # PYANNOTE_API_IMMEDIATE_RESPONSE: bool = True
-    # LOCAL_MODEL_ROUTERS_TAG: str = "MODEL_API"
     WEBHOOKS_API_URL_BASE_NAME: str = "agregator_api"
-    LOG_WEBHOOK_INCOMING_REQ_DATA: bool = False
+    OUTGOING_EXT_API_REQUEST_TIMEOUT: float = 120
+    LOG_WEBHOOK_INCOMING_REQ_DATA: bool = True
     LOG_WEBHOOK_INCOMING_OBJ_DATA: bool = True
     LOG_WEBHOOK_INCOMING_EXTRA_DATA: bool = True
-    # TEMPORARY_AUDIO_FILE_PREFIX: str = "temp"
-    # TEMPORARY_AUDIO_FILES_DIR: str = "audio_files/temporary_audio"
-    # CONVERTED_AUDIO_FILES_DIR: str = "audio_files/temporary_audio"
-    # CONVERTED_AUDIO_TYPE_FOR_API: str = "ogg"
-    # OPERATOR_TMP_AUDIO_START_SEC: int | None = 7_000  # 7 seconds
-    # OPERATOR_TMP_AUDIO_END_SEC: int | None = 60_000  # 60 seconds
-    # OPERATOR_CHANNEL_SPEAKERS_NUM: int = 1
-    # CALLER_TMP_AUDIO_START_SEC: int | None = 7_000  # 7 seconds
-    # CALLER_TMP_AUDIO_END_SEC: int | None = 60_000  # 60 seconds
-    # CALLER_CHANNEL_SPEAKERS_NUM: int = 1
-    # ALL_SPEAKERS_TMP_AUDIO_START_SEC: int | None = 7_000  # 7 seconds
-    # ALL_SPEAKERS_TMP_AUDIO_END_SEC: int | None = None  # 60 seconds
-    # ALL_SPEAKERS_CHANNEL_SPEAKERS_NUM: int = 2
