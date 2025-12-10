@@ -2,7 +2,7 @@ import httpx
 from fastapi import APIRouter, HTTPException, status
 
 from configs.settings import (
-    WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY)
+    WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY, API_OPTIONS)
 from fast_api.app_auth.funcs_auth import verify_prod_username_password
 from fast_api.app_auth.scheme_auth import AuthDataAggregator
 from fast_api.app_pact_all_companies.scheme_pact_all_companies import (
@@ -49,7 +49,8 @@ async def get_pact_all_companies(
                                         timeout=pact_api_resp_timeout, )
             response.raise_for_status()
             response_json = response.json()
-            print(f"response_json: {response_json}")
+            if API_OPTIONS.LOG_ALL_COMPANIES_REQ_RESPONSE:
+                print(f"response_json: {response_json}")
 
             all_companies = response_json["data"]["companies"]
             next_page_token = response_json["data"].get("next_page", "N/A")

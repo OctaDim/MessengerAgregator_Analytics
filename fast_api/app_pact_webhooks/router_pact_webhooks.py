@@ -60,7 +60,7 @@ async def receive_pact_webhooks(
         log_success_validation=API_OPTIONS.LOG_PYDANTIC_OK_VALIDATION)
 
     if WEBHOOKS_OPTIONS.LOG_WEBHOOK_INCOMING_OBJ_DATA:
-        print(f"WEBHOOK INCOMING DATA:\n"
+        print(f"\nWEBHOOK INCOMING DATA:\n"
               f"\tevent_name: {webhook_data.event}\n"
               f"\tevent_type: {webhook_data.type}\n"
               f"\tevent_object: {webhook_data.object}\n"
@@ -78,34 +78,39 @@ async def receive_pact_webhooks(
                                     log_good_ops=log_pgs_good_ops
                                     ) as pgs_session):
             if isinstance(event_object, AuthObject):
-                print("####### EVENT: AUTH OBJECT")
+                print("\n####### EVENT: AUTH OBJECT")
                 await save_new_model_data_qry(
                     ModelClassORM=WebhookAuthModel,
                     ongoing_session=pgs_session,
                     new_data=new_pgs_data)
             elif isinstance(event_object, ConversationObject):
-                print("####### EVENT: CONVERSATION OBJECT")
-                company_id = event_object.company_id
+                print("\n####### EVENT: CONVERSATION OBJECT")
                 event_convers_id = event_object.id
-                existing_convers_obj = await find_convers_obj_by_id_qry(
-                    ongoing_session=pgs_session,
-                    company_id=company_id,
-                    conversation_id=event_convers_id)
-                if existing_convers_obj:
-                    convers_local_id = existing_convers_obj.local_id
-                else:
-                    convers_local_id = None
 
-                new_pgs_data.update(
-                    {"local_id": convers_local_id})  # If pk is None => creating new object, otherwise updating
+                # ##### Option 1. Update only last by id conversation object
+                # company_id = event_object.company_id
+                # existing_convers_obj = await find_convers_obj_by_id_qry(
+                #     ongoing_session=pgs_session,
+                #     company_id=company_id,
+                #     conversation_id=event_convers_id)
+                # if existing_convers_obj:
+                #     convers_local_id = existing_convers_obj.local_id
+                # else:
+                #     convers_local_id = None
+                # new_pgs_data.update(
+                #     {"local_id": convers_local_id})  # If pk is None => creating new object, otherwise updating
+
+                # ##### Option 2. Update all conversations with id = event_convers_id
                 await update_existing_model_objs_qry(
                     ModelClassORM=WebhookConversationModel,
                     ongoing_session=pgs_session,
                     fields_values_filter={
-                        "local_id": convers_local_id},
+                        # "local_id": convers_local_id,  # Option 1. To update only last conversation object
+                        "id": event_convers_id,          # Option 2. Update all conversations with id = event_convers_id
+                    },
                     update_data=new_pgs_data)
             elif isinstance(event_object, MessageObject):
-                print("####### EVENT: MESSAGE OBJECT")
+                print("\n####### EVENT: MESSAGE OBJECT")
                 company_id = event_object.company_id
                 event_convers_id = event_object.conversation_id
                 existing_convers_obj = await find_convers_obj_by_id_qry(

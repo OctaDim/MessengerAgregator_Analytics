@@ -179,6 +179,11 @@ class ALCHEMY_OPTIONS:
 @dataclass(frozen=True)
 class API_OPTIONS:
     LOG_PYDANTIC_OK_VALIDATION: bool = False
+    LOG_CONVERSATION_DATA_REQ_RESPONSE: bool = False
+    LOG_MESSAGE_DATA_REQ_RESPONSE: bool = False
+    LOG_ALL_CONVERSATIONS_REQ_RESPONSE: bool = False
+    LOG_ALL_MSGS_BY_CONVERS_REQ_RESPONSE: bool = False
+    LOG_ALL_COMPANIES_REQ_RESPONSE: bool = False
 
 
 @dataclass(frozen=True)

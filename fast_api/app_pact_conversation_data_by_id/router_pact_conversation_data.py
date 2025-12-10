@@ -2,7 +2,7 @@ import httpx
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 
-from configs.settings import WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY
+from configs.settings import WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY, API_OPTIONS
 from fast_api.app_auth.funcs_auth import verify_prod_username_password
 from fast_api.app_auth.scheme_auth import AuthDataAggregator
 from fast_api.app_pact_conversation_data_by_id.scheme_pact_conversation_data import (
@@ -17,7 +17,7 @@ router_pact_get_conversation_data = APIRouter(prefix=f"/{base_url_name}",
                                         response_model=None)
 async def get_pact_conversation_data(
         auth_data: AuthDataAggregator,
-        pact_api_data: InConversDataByConversID
+        pact_api_data: InConversDataByConversID,
 ) -> dict | None:
     verify_prod_username_password(username=auth_data.username,
                                   password=auth_data.password)
@@ -45,7 +45,8 @@ async def get_pact_conversation_data(
                                         timeout=pact_api_resp_timeout, )
             response.raise_for_status()
             response_json = response.json()
-            print(f"response_json: {response_json}")
+            if API_OPTIONS.LOG_CONVERSATION_DATA_REQ_RESPONSE:
+                print(f"response_json: {response_json}")
 
             message_data = response_json["conversation"]
             for cur_param, cur_value in message_data.items():

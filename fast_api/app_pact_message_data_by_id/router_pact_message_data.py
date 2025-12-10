@@ -2,7 +2,7 @@ import httpx
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 
-from configs.settings import WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY
+from configs.settings import WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY, API_OPTIONS
 from fast_api.app_auth.funcs_auth import verify_prod_username_password
 from fast_api.app_auth.scheme_auth import AuthDataAggregator
 from fast_api.app_pact_message_data_by_id.scheme_pact_message_data import (
@@ -51,7 +51,8 @@ async def get_pact_message_data(
                                         timeout=pact_api_resp_timeout, )
             response.raise_for_status()
             response_json = response.json()
-            print(f"response_json: {response_json}")
+            if API_OPTIONS.LOG_MESSAGE_DATA_REQ_RESPONSE:
+                print(f"response_json: {response_json}")
 
             message_data = response_json["message"]
             for cur_param, cur_value in message_data.items():

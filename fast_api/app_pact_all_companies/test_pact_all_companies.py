@@ -10,8 +10,6 @@ if __name__ == "__main__":
     auth_data = AuthDataAggregator(username=API_USERNAME,
                                    password=API_PASSWORD)
 
-    company_id = "100179"
-
     pact_api_data = InPactAllCompanies(
         pact_api_token=None,
         last_req_next_page_token=None,
