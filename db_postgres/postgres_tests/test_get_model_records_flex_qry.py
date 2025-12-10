@@ -8,8 +8,7 @@ if __name__ == "__main__":
         get_model_rows_flex_query)
 
     ModelClassORM = WebhookConversationModel
-    conversation_id = 219052713
-    filter_fields = {"local_id": [361]}
+    filter_fields = {"local_id": [361, 360]}
 
 
     async def test_get_model_rows_flex_qry():
@@ -29,4 +28,3 @@ if __name__ == "__main__":
 
     query_result = asyncio.run(test_get_model_rows_flex_qry(), debug=True)
     print("query_result: ", query_result)
-    print(query_result[0].local_id)
