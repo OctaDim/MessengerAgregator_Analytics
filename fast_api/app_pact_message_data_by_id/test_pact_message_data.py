@@ -1,21 +1,21 @@
 if __name__ == "__main__":
-    from fast_api.app_auth.scheme_auth import AuthDataDiarize
+    from fast_api.app_auth.scheme_auth import AuthDataAggregator
     from fast_api.app_pact_message_data_by_id.router_pact_message_data import (
         get_pact_message_data)
     from fast_api.app_pact_message_data_by_id.scheme_pact_message_data import (
-        InMessageDataByMessageId)
+        InMessageDataByMessageID)
     import asyncio
-    from configs.settings import API_TEST_USERNAME, API_TEST_PASSWORD
+    from configs.settings import API_USERNAME, API_PASSWORD
 
-    auth_data = AuthDataDiarize(username=API_TEST_USERNAME,
-                                password=API_TEST_PASSWORD)
+    auth_data = AuthDataAggregator(username=API_USERNAME,
+                                   password=API_PASSWORD)
 
-    company_id = "100179"
-    chat_id = "219052460"  # Dima
-    # chat_id = "219052465"  # Thomas
-    message_id = "1410098920"  # Dima
+    company_id = 100179
+    chat_id = 219052460  # Dima
+    # chat_id = 219052465  # Thomas
+    message_id = 1410098920  # Dima
 
-    pact_api_data = InMessageDataByMessageId(
+    pact_api_data = InMessageDataByMessageID(
         pact_api_token=None,
         company_id=company_id,
         conversation_id=chat_id,
