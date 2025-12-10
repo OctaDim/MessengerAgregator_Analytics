@@ -1,5 +1,6 @@
 from typing import Type, Dict, List, Tuple
 
+from fastapi import Query
 from sqlalchemy import Select
 
 from db_postgres.postgres_init.declarative_base_model import Base
@@ -8,7 +9,8 @@ from db_postgres.postgres_init.declarative_base_model import Base
 def create_where_for_partial_query(
         orm_model_class: Type[Base],
         prior_orm_query: Select,
-        fields_values_filter: Dict[str, any | List[any] | Tuple[any]]):
+        fields_values_filter: Dict[str, any | List[any] | Tuple[any]]
+) -> Query:
     if prior_orm_query is None:
         log_error = (f"DB creating WHERE for partition query [ERROR]:\n"
                      f"orm_query: {prior_orm_query}\n"

@@ -1,4 +1,4 @@
-from typing import Tuple, Type, Union
+from typing import Tuple, Type
 
 from sqlalchemy import UnaryExpression
 from sqlalchemy.orm import Query
@@ -9,9 +9,9 @@ from db_postgres.postgres_init.declarative_base_model import Base
 def create_order_for_partial_query(
         orm_model_class: Type[Base],
         prior_orm_query: Query,
-        order_by_fields: Union[
-            str, Tuple[str, ...], UnaryExpression, Tuple[UnaryExpression, ...],
-            None] = ("id",)):
+        order_by_fields: str | Tuple[str, ...] | UnaryExpression |
+                         Tuple[UnaryExpression, ...] | None = ("id",)
+) -> Query:
     """
     Create partial ordering query expression for ordering sql alchemy models.
     :param orm_model_class: Model class object <Model>
