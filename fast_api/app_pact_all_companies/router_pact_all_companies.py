@@ -1,10 +1,10 @@
 import httpx
 from fastapi import APIRouter, HTTPException, status
-from fastapi.responses import JSONResponse
 
-from configs.settings import WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY
-from fast_api.app_auth.funcs_auth import verify_test_username_password
-from fast_api.app_auth.scheme_auth import AuthDataDiarize
+from configs.settings import (
+    WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY)
+from fast_api.app_auth.funcs_auth import verify_prod_username_password
+from fast_api.app_auth.scheme_auth import AuthDataAggregator
 from fast_api.app_pact_all_companies.scheme_pact_all_companies import (
     InPactAllCompanies)
 
@@ -16,10 +16,10 @@ router_pact_get_all_companies = APIRouter(prefix=f"/{base_url_name}",
 @router_pact_get_all_companies.post(path="/pct_all_companies/",
                                     response_model=None)
 async def get_pact_all_companies(
-        auth_data: AuthDataDiarize,
+        auth_data: AuthDataAggregator,
         pact_api_data: InPactAllCompanies,
-) -> JSONResponse | None:
-    verify_test_username_password(username=auth_data.username,
+) -> dict | None:
+    verify_prod_username_password(username=auth_data.username,
                                   password=auth_data.password)
     print(f"{'>' * 75}")
     pact_api_token = pact_api_data.pact_api_token
@@ -56,7 +56,9 @@ async def get_pact_all_companies(
             print(f"next_page_token: {next_page_token}")
             for cur_company in all_companies:
                 print(f"cur_company: {cur_company}")
-            return response.json()
+
+            response_dict = dict(response_json)  # To fix annotation warning
+            return response_dict
         except httpx.HTTPStatusError as ext_api_error:
             raise HTTPException(
                 status_code=ext_api_error.response.status_code,

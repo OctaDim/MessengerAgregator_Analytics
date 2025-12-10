@@ -3,8 +3,8 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 
 from configs.settings import WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY
-from fast_api.app_auth.funcs_auth import verify_test_username_password
-from fast_api.app_auth.scheme_auth import AuthDataDiarize
+from fast_api.app_auth.funcs_auth import verify_prod_username_password
+from fast_api.app_auth.scheme_auth import AuthDataAggregator
 from fast_api.app_pact_all_conversations.scheme_pact_all_conversations import (
     InPactAllConversations)
 
@@ -16,10 +16,10 @@ router_pact_get_all_conversations = APIRouter(prefix=f"/{base_url_name}",
 @router_pact_get_all_conversations.post(path="/pct_all_conversations/",
                                         response_model=None)
 async def get_pact_all_conversations(
-        auth_data: AuthDataDiarize,
+        auth_data: AuthDataAggregator,
         pact_api_data: InPactAllConversations,
-) -> JSONResponse | None:
-    verify_test_username_password(username=auth_data.username,
+) -> dict | None:
+    verify_prod_username_password(username=auth_data.username,
                                   password=auth_data.password)
     print(f"{'>' * 75}")
     pact_api_token = pact_api_data.pact_api_token
@@ -54,7 +54,7 @@ async def get_pact_all_conversations(
             all_conversations = response_json["conversations"]
             for cur_conversation in all_conversations:
                 print(f"cur_conversation: {cur_conversation}")
-            return response.json()
+            return dict(response_json)
         except httpx.HTTPStatusError as ext_api_error:
             raise HTTPException(
                 status_code=ext_api_error.response.status_code,

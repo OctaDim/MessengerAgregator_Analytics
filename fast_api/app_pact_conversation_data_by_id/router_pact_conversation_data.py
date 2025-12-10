@@ -3,10 +3,10 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 
 from configs.settings import WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY
-from fast_api.app_auth.funcs_auth import verify_test_username_password
-from fast_api.app_auth.scheme_auth import AuthDataDiarize
-from fast_api.app_pact_conversation_data_by_id.scheme_pact_message_data import (
-    InConversDataByConverseId)
+from fast_api.app_auth.funcs_auth import verify_prod_username_password
+from fast_api.app_auth.scheme_auth import AuthDataAggregator
+from fast_api.app_pact_conversation_data_by_id.scheme_pact_conversation_data import (
+    InConversDataByConversID)
 
 base_url_name = WEBHOOKS_OPTIONS.WEBHOOKS_API_URL_BASE_NAME
 router_pact_get_conversation_data = APIRouter(prefix=f"/{base_url_name}",
@@ -16,10 +16,10 @@ router_pact_get_conversation_data = APIRouter(prefix=f"/{base_url_name}",
 @router_pact_get_conversation_data.post(path="/conversation_data_by_id/",
                                         response_model=None)
 async def get_pact_conversation_data(
-        auth_data: AuthDataDiarize,
-        pact_api_data: InConversDataByConverseId
-) -> JSONResponse | None:
-    verify_test_username_password(username=auth_data.username,
+        auth_data: AuthDataAggregator,
+        pact_api_data: InConversDataByConversID
+) -> dict | None:
+    verify_prod_username_password(username=auth_data.username,
                                   password=auth_data.password)
     print(f"{'>' * 75}")
     pact_api_token = pact_api_data.pact_api_token
@@ -49,10 +49,9 @@ async def get_pact_conversation_data(
 
             message_data = response_json["conversation"]
             for cur_param, cur_value in message_data.items():
-                print(f"\tcur_param: {cur_param}, "
-                      f"type: {type(cur_value)}, "
+                print(f"\tcur_param {type(cur_value)}: {cur_param}, "
                       f"cur_value: {cur_value}")
-            return response.json()
+            return dict(response_json)
         except httpx.HTTPStatusError as ext_api_error:
             raise HTTPException(
                 status_code=ext_api_error.response.status_code,
