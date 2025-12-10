@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 
 from configs.settings import (
     WEBHOOKS_OPTIONS, ALCHEMY_OPTIONS, API_USERNAME, API_PASSWORD,
-    PACT_API_TOKEN_KEY)
+    PACT_API_TOKEN_KEY, API_OPTIONS)
 from db_postgres.postgres_conn.pgs_connection import (
     PgsAsyncConnection)
 from db_postgres.postgres_conn.postgres_session import (
@@ -56,7 +56,8 @@ async def receive_pact_webhooks(
     request_dict = await request.json()
     webhook_data = validate_log_pydantic_obj_errors(
         PydanticBaseModel=PactWebhookData,
-        request_json=request_dict)
+        request_json=request_dict,
+        log_success_validation=API_OPTIONS.LOG_PYDANTIC_OK_VALIDATION)
 
     if WEBHOOKS_OPTIONS.LOG_WEBHOOK_INCOMING_OBJ_DATA:
         print(f"WEBHOOK INCOMING DATA:\n"

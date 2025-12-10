@@ -177,9 +177,14 @@ class ALCHEMY_OPTIONS:
 
 
 @dataclass(frozen=True)
+class API_OPTIONS:
+    LOG_PYDANTIC_OK_VALIDATION: bool = False
+
+
+@dataclass(frozen=True)
 class WEBHOOKS_OPTIONS:
-    WEBHOOKS_API_URL_BASE_NAME: str = "agregator_api"
+    WEBHOOKS_API_URL_BASE_NAME: str = "aggregator_api"
     OUTGOING_EXT_API_REQUEST_TIMEOUT: float = 120
-    LOG_WEBHOOK_INCOMING_REQ_DATA: bool = True
-    LOG_WEBHOOK_INCOMING_OBJ_DATA: bool = True
-    LOG_WEBHOOK_INCOMING_EXTRA_DATA: bool = True
+    LOG_WEBHOOK_INCOMING_REQ_DATA: bool = False
+    LOG_WEBHOOK_INCOMING_OBJ_DATA: bool = False
+    LOG_WEBHOOK_INCOMING_EXTRA_DATA: bool = False

@@ -5,15 +5,16 @@ from pydantic import ValidationError, BaseModel
 
 def validate_log_pydantic_obj_errors(
         PydanticBaseModel: Type[BaseModel],
-        request_json: dict
+        request_json: dict,
+        log_success_validation: bool = False
 ) -> BaseModel | None:
     try:
         validated_obj = PydanticBaseModel(**request_json)
         validated_dict = validated_obj.model_dump()
-        log_txt = (f"PYDANTIC VALIDATION [OK]: "
-                   f"validated_obj: '{validated_obj}', "
-                   f"validated_dict: {validated_dict}\n")
-        print(log_txt)
+        if log_success_validation:
+            print(f"PYDANTIC VALIDATION [OK]: "
+                  f"validated_obj: '{validated_obj}', "
+                  f"validated_dict: {validated_dict}\n")
         return validated_obj
     except ValidationError as error:
         errors_list = []
