@@ -56,9 +56,7 @@ async def get_pact_all_companies(
             print(f"next_page_token: {next_page_token}")
             for cur_company in all_companies:
                 print(f"cur_company: {cur_company}")
-
-            response_dict = dict(response_json)  # To fix annotation warning
-            return response_dict
+            return dict(response_json)
         except httpx.HTTPStatusError as ext_api_error:
             raise HTTPException(
                 status_code=ext_api_error.response.status_code,
