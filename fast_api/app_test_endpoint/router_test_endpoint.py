@@ -16,7 +16,7 @@ router_develop_test_endpoint = APIRouter(prefix=f"/{base_url_name}",
 @router_develop_test_endpoint.post(path="/develop_test_endpoint/",
                                    response_model=None)
 async def develop_test_endpoint(
-        # auth_data: AuthDataDiarize,
+        # auth_data: AuthDataAggregator,
         # bert_model_inst: Annotated[
         #     ClassifierBERT, Depends(get_bert_model_instance_dep)]
 ) -> JSONResponse | None:
