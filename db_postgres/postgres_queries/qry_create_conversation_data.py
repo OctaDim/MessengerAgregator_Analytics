@@ -8,10 +8,10 @@ from db_postgres.postgres_queries_utils.model_object_attrs_update import (
     update_model_obj_no_commit)
 
 
-async def create_conversation_data_qry(
+async def create_conversation_object_qry(
         ongoing_session: AsyncSession,
         conversation_data: dict,
-) -> int | None:
+) -> WebhookConversationModel | None:
     if not conversation_data:
         return None
 
@@ -21,8 +21,7 @@ async def create_conversation_data_qry(
                                    new_update_data=conversation_data)
         ongoing_session.add(new_conversation_obj)
         await ongoing_session.flush()
-        new_conversation_local_id = new_conversation_obj.local_id
-        return new_conversation_local_id
+        return new_conversation_obj
     except Exception as error:
         log_text = (f"Creating new conversation data [ERROR]:\n"
                     f"error: {error}\n"

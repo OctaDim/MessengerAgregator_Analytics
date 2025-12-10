@@ -11,7 +11,7 @@ from db_postgres.postgres_queries_utils.get_model_records_flex_query import (
     get_model_rows_flex_query)
 
 
-async def find_conversation_obj_by_id(
+async def find_convers_obj_by_id_qry(
         ongoing_session: AsyncSession,
         company_id: int,
         conversation_id: int
