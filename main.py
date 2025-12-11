@@ -1,14 +1,22 @@
 # from sqladmin import Admin
 # from starlette.applications import Starlette
+import asyncio
 from contextlib import asynccontextmanager
+from doctest import debug
 from typing import AsyncGenerator
 
 import uvicorn
 from fastapi import FastAPI
+from sqladmin import Admin
+from starlette.applications import Starlette
 from starlette.middleware.sessions import SessionMiddleware
 
+from admin_panel.model_views.__temp.admin_auth_role_backend import AdminAuthRoleAuthBackend
+from configs.labels_messages import LABELS
 from configs.settings import API_HOST, API_PORT, FASTAPI_OPTIONS, FASTAPI_SESSION_KEY
-from db_postgres.postgres_conn.pgs_connection import close_all_async_pgs_connections, close_all_sync_pgs_connections
+from db_postgres.postgres_conn.pgs_connection import close_all_async_pgs_connections, close_all_sync_pgs_connections, \
+    PgsAsyncConnection
+from db_postgres.postgres_init.db_create_sqladmin_users import create_default_sqladmin_users
 from db_postgres.postgres_init.db_tables_initialization import sync_initialize_db_tables
 from fast_api.app_pact_all_conversations.router_pact_all_conversations import router_pact_get_all_conversations
 from fast_api.app_pact_webhooks.router_pact_webhooks import router_pact_receive_webhooks
@@ -56,6 +64,7 @@ async def lifespan_on_startup():
     print(">>>>>>> FastAPI Lifespan (startup):")
     # run_redis()
     run_postgres()
+    await create_default_sqladmin_users()  # Creating default sqladmin users
     # await init_and_start_bert_model()  # Initializing Bert model
 
 
@@ -72,27 +81,27 @@ async def fast_api_lifespan(app: FastAPI) -> AsyncGenerator:
     await lifespan_on_shutdown()
 
 
-# def setup_admin_panel(
-#         application: FastAPI | Starlette,
-#         fastapi_session_key: str
-# ) -> Admin:
-#     authentication_backend = AdminAuthRoleAuthBackend(
-#         secret_key=fastapi_session_key)
-#     admin = Admin(
-#         app=application,
-#         engine=PgsAsyncConnection().engine,
-#         authentication_backend=authentication_backend,
-#         session_maker=None,
-#         base_url="/admin",
-#         title=LABELS.ADMIN_PANEL,
-#         logo_url=None,
-#         favicon_url=None,
-#         middlewares=None,
-#         debug=False,
-#         templates_dir="admin_panel/custom_templates", )  # Custom templates, origin SQLAdmin value = "templates"
-#     for cur_admin_view in admin_panel_views:
-#         admin.add_view(cur_admin_view)
-#     return admin
+def setup_admin_panel(
+        application: FastAPI | Starlette,
+        fastapi_session_key: str
+) -> Admin:
+    authentication_backend = AdminAuthRoleAuthBackend(
+        secret_key=fastapi_session_key)
+    admin = Admin(
+        app=application,
+        engine=PgsAsyncConnection().engine,
+        authentication_backend=authentication_backend,
+        session_maker=None,
+        base_url="/admin_panel",
+        title=LABELS.ADMIN_PANEL,
+        logo_url=None,
+        favicon_url=None,
+        middlewares=None,
+        debug=False,
+        templates_dir="admin_panel/custom_templates", )  # Custom templates, origin SQLAdmin value = "templates"
+    for cur_admin_view in admin_panel_views:
+        admin.add_view(cur_admin_view)
+    return admin
 
 
 def create_fastapi_application() -> SessionMiddleware:
@@ -100,8 +109,8 @@ def create_fastapi_application() -> SessionMiddleware:
     for cur_router in routers_list:
         fastapi_app.include_router(router=cur_router, )
 
-    # setup_admin_panel(application=fastapi_app,
-    #                   fastapi_session_key=FASTAPI_SESSION_KEY)
+    setup_admin_panel(application=fastapi_app,
+                      fastapi_session_key=FASTAPI_SESSION_KEY)
 
     fastapi_app_with_middleware = SessionMiddleware(
         app=fastapi_app,
