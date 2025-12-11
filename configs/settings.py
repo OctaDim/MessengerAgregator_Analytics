@@ -72,6 +72,33 @@ API_USERNAME: str = api_conf_parser.get(section=api_conf_name, option="API_USERN
 API_PASSWORD: str = api_conf_parser.get(section=api_conf_name, option="API_PASSWORD")
 
 
+# GETTING SQLADMIN INI CONFIGS #########################################
+@dataclass(frozen=True)
+class SQLADMIN_CONFIG_NAMES:
+    SQLADMIN_PRODUCT_ANY_IP = "SQLADMIN_any_ip_prod"
+
+
+sqladmin_ini_normal_path = get_full_file_normal_path(
+    all_dir_str_parts=[BASE_DIR],
+    file_name_with_ext=".configs_sqladmin.ini")
+sqladmin_conf_parser = ConfigParser()
+sqladmin_conf_parser.read(filenames=sqladmin_ini_normal_path)
+
+if cur_external_ip == "___.___.___.___":
+    sqladmin_conf_name = SQLADMIN_CONFIG_NAMES.SQLADMIN_PRODUCT_ANY_IP  # Certain configs can be defined
+else:
+    sqladmin_conf_name = SQLADMIN_CONFIG_NAMES.SQLADMIN_PRODUCT_ANY_IP
+
+SQLADMIN_SUPERADMIN_USERNAME = sqladmin_conf_parser.get(
+    section=sqladmin_conf_name, option="SQLADMIN_SUPERADMIN_USERNAME")
+SQLADMIN_ADMIN_PASSWORD = sqladmin_conf_parser.get(
+    section=sqladmin_conf_name, option="SQLADMIN_ADMIN_PASSWORD")
+SQLADMIN_ADMIN_USERNAME = sqladmin_conf_parser.get(
+    section=sqladmin_conf_name, option="SQLADMIN_ADMIN_USERNAME")
+SQLADMIN_SUPERADMIN_PASSWORD = sqladmin_conf_parser.get(
+    section=sqladmin_conf_name, option="SQLADMIN_SUPERADMIN_PASSWORD")
+
+
 # GETTING PACT API INI CONFIGS ##############################################
 @dataclass(frozen=True)
 class PACT_API_CONFIG_NAMES:
@@ -193,3 +220,9 @@ class WEBHOOKS_OPTIONS:
     LOG_WEBHOOK_INCOMING_REQ_DATA: bool = False
     LOG_WEBHOOK_INCOMING_OBJ_DATA: bool = True
     LOG_WEBHOOK_INCOMING_EXTRA_DATA: bool = False
+
+
+@dataclass(frozen=True)
+class SQLADMIN_OPTIONS:
+    CREATE_DEFAULT_ADMIN_SUPERADMIN: bool = True
+    CREATE_DEBUG_ADMIN_SUPERADMIN: bool = True

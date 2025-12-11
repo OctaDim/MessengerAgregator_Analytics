@@ -22,7 +22,7 @@ from db_postgres.postgres_queries.qry_find_conversation_obj_by_id import (
     find_convers_obj_by_id_qry)
 from db_postgres.postgres_queries_utils.save_new_model_object import (
     save_new_model_data_qry)
-from db_postgres.postgres_queries_utils.update_existing_model_object import (
+from db_postgres.postgres_queries_utils.update_existing_model_objects import (
     update_existing_model_objs_qry)
 from fast_api.app_auth.scheme_auth import AuthDataAggregator
 from fast_api.app_pact_conversation_data_by_id.router_pact_conversation_data import (
