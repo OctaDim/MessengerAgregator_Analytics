@@ -1,21 +1,24 @@
 from datetime import datetime
 
-from sqladmin import ModelView, action
+from sqladmin import ModelView
 from sqlalchemy import select
 from starlette.requests import Request
-from starlette.responses import RedirectResponse, Response
 
-from admin_panel.custom_actions_mixins.mix_cancel_all_filters import CanceAllFiltersSortsMixin
+from admin_panel.custom_actions_mixins.mix_cancel_all_filters import (
+    CanceAllFiltersSortsMixin)
 from admin_panel.custom_classes.custom_filter_classes import (
     CustomBooleanFilter, CustomRepliedStateFilter,
     CustomStaticValuesFilter)
 from configs.labels_messages import LABELS
 from configs.settings import ALCHEMY_OPTIONS
-from db_postgres.postgres_conn.pgs_connection import PgsSyncConnection, PgsAsyncConnection
-from db_postgres.postgres_conn.postgres_session import PgsSyncSession, PgsAsyncSession
+from db_postgres.postgres_conn.pgs_connection import (
+    PgsSyncConnection, PgsAsyncConnection)
+from db_postgres.postgres_conn.postgres_session import (
+    PgsSyncSession, PgsAsyncSession)
 from db_postgres.postgres_models.webhook_conversation_model import (
     WebhookConversationModel)
-from db_postgres.postgres_queries.qry_get_conversations_filter_values import get_sync_convers_filters_values_qry
+from db_postgres.postgres_queries.qry_get_conversations_filter_values import (
+    get_sync_convers_filters_values_qry)
 
 
 class ConversationsAdmin(ModelView,
@@ -40,22 +43,22 @@ class ConversationsAdmin(ModelView,
         # WebhookConversationModel.event,
         # WebhookConversationModel.type,
         # WebhookConversationModel.id,
-        # WebhookConversationModel.company_id,  # T
-        # WebhookConversationModel.sender_name,  # T
-        # WebhookConversationModel.sender_phone,  # T
+        WebhookConversationModel.company_id,  #
+        WebhookConversationModel.sender_name,  #
+        WebhookConversationModel.sender_phone,  #
         # WebhookConversationModel.sender_external_id,
-        # WebhookConversationModel.sender_external_public_id,  # T
+        WebhookConversationModel.sender_external_public_id,  #
         WebhookConversationModel.provider,
         # WebhookConversationModel.avatar_url,
         # WebhookConversationModel.last_message_id,
         # WebhookConversationModel.operational_state,
-        # WebhookConversationModel.replied_state,  # T
-        # WebhookConversationModel.group,  # T
-        WebhookConversationModel.created_at,
+        WebhookConversationModel.replied_state,  #
+        WebhookConversationModel.group,  #
+        # WebhookConversationModel.created_at,
         WebhookConversationModel.last_updated_at,
         # WebhookConversationModel.active,
-        WebhookConversationModel.local_created_at,
-        WebhookConversationModel.local_updated_at,
+        # WebhookConversationModel.local_created_at,
+        # WebhookConversationModel.local_updated_at,
     ]
 
     column_labels = {  # Human labels instead of table fields names
@@ -290,7 +293,6 @@ class ConversationsAdmin(ModelView,
         else:
             return field_value
 
-
     # @staticmethod
     # def format_created_at(model_obj, attribute):  # as example
     #     # used by column_formatters/column_formatters_detail bellow
@@ -312,6 +314,7 @@ class ConversationsAdmin(ModelView,
         WebhookConversationModel.last_updated_at: format_datetime_fields,
         WebhookConversationModel.local_created_at: format_datetime_fields,
         WebhookConversationModel.local_updated_at: format_datetime_fields,
+        WebhookConversationModel.replied_state: format_replied_state_field,
         # WebhookConversationModel.current_status: format_created_at,  # as example for single field
         # WebhookConversationModel.current_status: format_current_status,  # as example for enum field
     }

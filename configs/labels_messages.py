@@ -38,7 +38,11 @@ class LABELS:
     NO_FILTER_LABEL = "Нет"
     ALL_RECS_FILTER_LABEL = "Все"
     REPLIED_FILTER_LABEL = "Отвеченный"
+    REPLIED_FILTER_LABEL = "✅"
     UNREPLIED_FILTER_LABEL = "Неотвеченный"
+    UNREPLIED_FILTER_LABEL = "❌"
+
+
 
 
 @dataclass(frozen=True)
