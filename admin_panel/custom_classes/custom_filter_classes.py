@@ -49,8 +49,8 @@ class CustomForeignKeyFilter(ForeignKeyFilter):
     async def lookups(self, request: Request, model: Any,
                       run_query: Callable[[Select], Any]
                       ) -> List[Tuple[str, str]]:
-        parent_class_lookup = await super().lookups(request, model, run_query)
-        substituted_lookup = copy(parent_class_lookup)
+        parent_model_lookup = await super().lookups(request, model, run_query)
+        substituted_lookup = copy(parent_model_lookup)
         substituted_lookup[0] = ("", LABELS.ALL_RECS_FILTER_LABEL)
         return substituted_lookup
 
