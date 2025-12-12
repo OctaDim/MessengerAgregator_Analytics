@@ -12,7 +12,7 @@ from db_postgres.postgres_models.orm_models_fields_mixins import (
 class WebhookConversationModel(Base, ActiveMix, CreateUpdateMix):
     __tablename__ = "webhook_conversation"
 
-    local_id: Mapped[int] = mapped_column(primary_key=True)
+    local_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
 
     event: Mapped[Optional[str]] = mapped_column(String(15))
     type: Mapped[Optional[str]] = mapped_column(String(15))
