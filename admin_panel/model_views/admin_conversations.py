@@ -24,14 +24,14 @@ from db_postgres.postgres_queries.qry_get_conversations_filter_values import (
 class ConversationsAdmin(ModelView,
                          CanceAllFiltersSortsMixin,
                          model=WebhookConversationModel):
-    name = LABELS.CONVERSATION
-    name_plural = LABELS.CONVERSATIONS
+    name = LABELS.CONVERSATION_PANEL_TITLE
+    name_plural = LABELS.CONVERSATIONS_PANEL_TITLE
     icon = LABELS.ICON
-    # category = "SOME CATEGORY"
-    # category_icon = "CATEGORY ICON"
+    category = LABELS.CONVERSATIONS_CATEGORY_TITLE
+    category_icon = LABELS.CONVERSATIONS_CATEGORY_ICON
     is_async = True  # Default False
     page_size = 200
-    page_size_options = [25, 50, 100, 200]
+    page_size_options = [25, 50, 100, 200, 500, 1000]
     can_create = False  # Some bug: if not displayed or hidden, change can_export to False, restart, then True, restart
     can_delete = False
     can_edit = False
@@ -110,10 +110,9 @@ class ConversationsAdmin(ModelView,
     @property
     def column_filters(self):  # Standard and custom filters to filter column list
         pgs_sync_conn = PgsSyncConnection()
-        with PgsSyncSession(
-                engine=pgs_sync_conn.engine,
-                log_good_ops=ALCHEMY_OPTIONS.ALCHEMY_ORM_RAW_SQL_LOGS
-        ) as pgs_sync_session:
+        with PgsSyncSession(engine=pgs_sync_conn.engine,
+                            log_good_ops=ALCHEMY_OPTIONS.ALCHEMY_ORM_RAW_SQL_LOGS
+                            ) as pgs_sync_session:
             # Getting all possible unique and sorted values for filters
             filters_values = get_sync_convers_filters_values_qry(
                 ongoing_sync_session=pgs_sync_session)
@@ -184,8 +183,8 @@ class ConversationsAdmin(ModelView,
         return column_filters_list
 
     column_default_sort = [
-        (WebhookConversationModel.active, True),  # True - ascending, False - descending
-        (WebhookConversationModel.created_at, True),  # True - ascending, False - descending
+        (WebhookConversationModel.local_id, True),  # True - descending, False - ascending
+        (WebhookConversationModel.active, False),  # True - descending, False - ascending
     ]
 
     column_sortable_list = [  # Column list (main table) sortable fields
@@ -285,10 +284,10 @@ class ConversationsAdmin(ModelView,
             "replied": LABELS.REPLIED_FILTER_LABEL,
             "unreplied": LABELS.UNREPLIED_FILTER_LABEL}
         field_value = getattr(model_obj, attribute)
-        field_value_label = replied_states_labels.get(field_value)
-        if field_value_label:
-            return field_value_label
-        elif not field_value_label:
+        display_value = replied_states_labels.get(field_value)
+        if display_value:
+            return display_value
+        elif not display_value:
             return ""
         else:
             return field_value
@@ -322,7 +321,6 @@ class ConversationsAdmin(ModelView,
     # def can_view_details(self, request: Request) -> bool:
     #     return False
     #
-
     # def can_create(self, request: Request) -> bool:
     #     return False
     #
