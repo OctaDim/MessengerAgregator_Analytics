@@ -16,9 +16,10 @@ async def create_default_sqladmin_users() -> bool | None:
         return None
 
     pgs_async_conn = PgsAsyncConnection()
-    async with PgsAsyncSession(engine=pgs_async_conn.engine,
-                               log_good_ops=ALCHEMY_OPTIONS.ALCHEMY_SESSION_OK_ACTIONS_LOGS
-                               ) as pgs_async_session:
+    async with PgsAsyncSession(
+            engine=pgs_async_conn.engine,
+            log_good_ops=ALCHEMY_OPTIONS.ALCHEMY_SESSION_OK_ACTIONS_LOGS
+    ) as pgs_async_session:
         sqladmin_users_objs = await get_model_rows_flex_query(
             orm_model_class=AuthRoleModel,
             ongoing_session=pgs_async_session,
