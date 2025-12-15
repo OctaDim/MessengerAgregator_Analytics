@@ -23,7 +23,7 @@ class WebhookMessageModel(Base, ActiveMix, CreateUpdateMix):
     id: Mapped[Optional[int]] = mapped_column(BigInteger)
     external_id: Mapped[Optional[str]]
     company_id: Mapped[Optional[int]]
-    conversation_id: Mapped[Optional[int]]
+    conversation_id: Mapped[Optional[int]] = mapped_column(BigInteger)
     contact_id: Mapped[Optional[int]] = mapped_column(BigInteger)
     replied_to_id: Mapped[Optional[int]]
     income: Mapped[Optional[bool]]
