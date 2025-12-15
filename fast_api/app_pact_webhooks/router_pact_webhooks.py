@@ -10,18 +10,18 @@ from db_postgres.postgres_conn.pgs_connection import (
     PgsAsyncConnection)
 from db_postgres.postgres_conn.postgres_session import (
     PgsAsyncSession)
+from db_postgres.postgres_models.message_attachments_model import MessageAttachmentsModel
 from db_postgres.postgres_models.webhook_auth_model import (
     WebhookAuthModel)
 from db_postgres.postgres_models.webhook_conversation_model import (
     WebhookConversationModel)
 from db_postgres.postgres_models.webhook_message_model import (
     WebhookMessageModel)
-from db_postgres.postgres_queries.qry_create_conversation_data import (
-    create_conversation_object_qry)
 from db_postgres.postgres_queries.qry_find_conversation_obj_by_id import (
     find_convers_obj_by_id_qry)
-from db_postgres.postgres_queries_utils.save_new_model_object import (
-    save_new_model_data_qry)
+from db_postgres.postgres_queries_utils.create_cache_new_model_object import (
+    create_cache_new_model_obj_qry)
+from db_postgres.postgres_queries_utils.save_new_model_object import save_new_model_data_qry
 from db_postgres.postgres_queries_utils.update_existing_model_objects import (
     update_existing_model_objs_qry)
 from fast_api.app_auth.scheme_auth import AuthDataAggregator
@@ -53,10 +53,10 @@ async def receive_pact_webhooks(
     if WEBHOOKS_OPTIONS.LOG_WEBHOOK_INCOMING_REQ_DATA:
         await log_all_request_data(request=request)
 
-    request_dict = await request.json()
+    pact_response_json = await request.json()
     webhook_data = validate_log_pydantic_obj_errors(
         PydanticBaseModel=PactWebhookData,
-        request_json=request_dict,
+        request_json=pact_response_json,
         log_success_validation=API_OPTIONS.LOG_PYDANTIC_OK_VALIDATION)
 
     if WEBHOOKS_OPTIONS.LOG_WEBHOOK_INCOMING_OBJ_DATA:
@@ -79,7 +79,7 @@ async def receive_pact_webhooks(
                                     ) as pgs_session):
             if isinstance(event_object, AuthObject):
                 print("\n####### EVENT: AUTH OBJECT")
-                await save_new_model_data_qry(
+                new_auth_obj = await create_cache_new_model_obj_qry(
                     ModelClassORM=WebhookAuthModel,
                     ongoing_session=pgs_session,
                     new_data=new_pgs_data)
@@ -119,19 +119,19 @@ async def receive_pact_webhooks(
                     conversation_id=event_convers_id)
 
                 if not existing_convers_obj:  # Conversation was created earlier (before message event) and not webhooked
-                    auth_data = AuthDataAggregator(username=API_USERNAME,
-                                                   password=API_PASSWORD)
-                    pact_api_data = InConversDataByConversID(
+                    req_auth_data = AuthDataAggregator(username=API_USERNAME,
+                                                       password=API_PASSWORD)
+                    req_pact_api_data = InConversDataByConversID(
                         pact_api_token=PACT_API_TOKEN_KEY,
                         company_id=company_id,
                         conversation_id=event_convers_id,
                         pact_api_timeout=WEBHOOKS_OPTIONS.OUTGOING_EXT_API_REQUEST_TIMEOUT)
 
-                    request_dict = await get_pact_conversation_data(
-                        auth_data=auth_data,
-                        pact_api_data=pact_api_data)
+                    pact_response_json = await get_pact_conversation_data(
+                        auth_data=req_auth_data,
+                        pact_api_data=req_pact_api_data)
 
-                    conver_req_data = request_dict["conversation"]
+                    conver_req_data = pact_response_json["conversation"]
                     conver_req_created_at = conver_req_data["created_at"]
                     dtz_conver_created_at = datetime.fromisoformat(
                         conver_req_created_at.replace('Z', '+00:00'))
@@ -145,18 +145,20 @@ async def receive_pact_webhooks(
                         "created_at": dtz_conver_created_at,  # from conversation data request
                         "last_updated_at": dtz_conver_last_updated_at})  # from conversation data request
 
-                    new_convers_obj = await create_conversation_object_qry(
+                    new_convers_obj = await create_cache_new_model_obj_qry(
+                        ModelClassORM=WebhookConversationModel,
                         ongoing_session=pgs_session,
-                        conversation_data=conver_req_data)
+                        new_data=conver_req_data)
                     convers_local_id = new_convers_obj.local_id
                 else:
                     convers_local_id = existing_convers_obj.local_id
 
                 new_pgs_data.update({"conversation_local_id": convers_local_id})
-                await save_new_model_data_qry(
+                new_message_obj = await create_cache_new_model_obj_qry(
                     ModelClassORM=WebhookMessageModel,
                     ongoing_session=pgs_session,
                     new_data=new_pgs_data)
+                message_local_id = new_message_obj.local_id
 
                 reactions = event_object.reactions
                 details = event_object.details
@@ -167,6 +169,19 @@ async def receive_pact_webhooks(
                           f"reactions: {type(reactions)}, {reactions}\n"
                           f"details: {type(details)}, {details}\n"
                           f"attachments: {type(attachments)}, {attachments}\n")
+
+                if attachments:
+                    new_attachment_data = {
+                        "event": webhook_data.event,  # from conversation event
+                        "type": webhook_data.type,  # from conversation type
+                        "message_local_id": message_local_id}
+
+                    new_attachment_data.update(attachments[0])  # PACT Support: one message per attachment
+                    await create_cache_new_model_obj_qry(
+                        ModelClassORM=MessageAttachmentsModel,
+                        ongoing_session=pgs_session,
+                        new_data=new_attachment_data)
+
             else:
                 print(f"Webhook event object unknown [ERROR]:\n"
                       f"type(event_object): {type(event_object)}\n"
