@@ -27,3 +27,4 @@ class MessageAttachmentsModel(Base, ActiveMix, CreateUpdateMix):
     preview_url: Mapped[Optional[str]]
     aspect_ratio: Mapped[Optional[float]]
     data: Mapped[Optional[dict]] = mapped_column(JSON, default=dict)
+    push_to_talk: Mapped[Optional[bool]] = mapped_column(default=False)
