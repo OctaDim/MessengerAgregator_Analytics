@@ -10,7 +10,8 @@ from db_postgres.postgres_conn.pgs_connection import (
     PgsAsyncConnection)
 from db_postgres.postgres_conn.postgres_session import (
     PgsAsyncSession)
-from db_postgres.postgres_models.message_attachments_model import MessageAttachmentsModel
+from db_postgres.postgres_models.message_attachments_model import (
+    MessageAttachmentsModel)
 from db_postgres.postgres_models.webhook_auth_model import (
     WebhookAuthModel)
 from db_postgres.postgres_models.webhook_conversation_model import (
@@ -21,7 +22,6 @@ from db_postgres.postgres_queries.qry_find_conversation_obj_by_id import (
     find_convers_obj_by_id_qry)
 from db_postgres.postgres_queries_utils.create_cache_new_model_object import (
     create_cache_new_model_obj_qry)
-from db_postgres.postgres_queries_utils.save_new_model_object import save_new_model_data_qry
 from db_postgres.postgres_queries_utils.update_existing_model_objects import (
     update_existing_model_objs_qry)
 from fast_api.app_auth.scheme_auth import AuthDataAggregator
@@ -69,9 +69,9 @@ async def receive_pact_webhooks(
 
     if webhook_data.object:
         event_object = webhook_data.object
-        new_pgs_data = {"event": webhook_data.event,
-                        "type": webhook_data.type}
-        new_pgs_data.update(webhook_data.object)
+        new_event_data = {"event": webhook_data.event,
+                          "type": webhook_data.type}
+        new_event_data.update(webhook_data.object)
 
         pgs_conn = PgsAsyncConnection()
         async with (PgsAsyncSession(engine=pgs_conn.engine,
@@ -82,7 +82,7 @@ async def receive_pact_webhooks(
                 new_auth_obj = await create_cache_new_model_obj_qry(
                     ModelClassORM=WebhookAuthModel,
                     ongoing_session=pgs_session,
-                    new_data=new_pgs_data)
+                    new_data=new_event_data)
             elif isinstance(event_object, ConversationObject):
                 print("\n####### EVENT: CONVERSATION OBJECT")
                 event_convers_id = event_object.id
@@ -97,7 +97,7 @@ async def receive_pact_webhooks(
                 #     convers_local_id = existing_convers_obj.local_id
                 # else:
                 #     convers_local_id = None
-                # new_pgs_data.update(
+                # new_event_data.update(
                 #     {"local_id": convers_local_id})  # If pk is None => creating new object, otherwise updating
 
                 # ##### Option 2. Update all conversations with id = event_convers_id
@@ -106,9 +106,9 @@ async def receive_pact_webhooks(
                     ongoing_session=pgs_session,
                     fields_values_filter={
                         # "local_id": convers_local_id,  # Option 1. To update only last conversation object
-                        "id": event_convers_id,          # Option 2. Update all conversations with id = event_convers_id
+                        "id": event_convers_id,  # Option 2. Update all conversations with id = event_convers_id
                     },
-                    update_data=new_pgs_data)
+                    update_data=new_event_data)
             elif isinstance(event_object, MessageObject):
                 print("\n####### EVENT: MESSAGE OBJECT")
                 company_id = event_object.company_id
@@ -153,13 +153,6 @@ async def receive_pact_webhooks(
                 else:
                     convers_local_id = existing_convers_obj.local_id
 
-                new_pgs_data.update({"conversation_local_id": convers_local_id})
-                new_message_obj = await create_cache_new_model_obj_qry(
-                    ModelClassORM=WebhookMessageModel,
-                    ongoing_session=pgs_session,
-                    new_data=new_pgs_data)
-                message_local_id = new_message_obj.local_id
-
                 reactions = event_object.reactions
                 details = event_object.details
                 attachments = event_object.attachments
@@ -169,6 +162,20 @@ async def receive_pact_webhooks(
                           f"reactions: {type(reactions)}, {reactions}\n"
                           f"details: {type(details)}, {details}\n"
                           f"attachments: {type(attachments)}, {attachments}\n")
+
+                if attachments:
+                    attached_file_data = {
+                        "file_name": attachments[0].get("file_name"),
+                        "mime_type": attachments[0].get("mime_type"),
+                        "push_to_talk": attachments[0].get("push_to_talk")}
+                    new_event_data.update(attached_file_data)
+
+                new_event_data.update({"conversation_local_id": convers_local_id})
+                new_message_obj = await create_cache_new_model_obj_qry(
+                    ModelClassORM=WebhookMessageModel,
+                    ongoing_session=pgs_session,
+                    new_data=new_event_data)
+                message_local_id = new_message_obj.local_id
 
                 if attachments:
                     new_attachment_data = {
@@ -181,7 +188,6 @@ async def receive_pact_webhooks(
                         ModelClassORM=MessageAttachmentsModel,
                         ongoing_session=pgs_session,
                         new_data=new_attachment_data)
-
             else:
                 print(f"Webhook event object unknown [ERROR]:\n"
                       f"type(event_object): {type(event_object)}\n"
