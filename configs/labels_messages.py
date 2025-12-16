@@ -32,6 +32,9 @@ class LABELS:
     REACTIONS = "РЕАКЦИИ"
     DETAILS = "ДЕТАЛИ"
     ATTACHMENTS = "ВЛОЖЕНИЯ"
+    FILE_NAME = "ИМЯ ФАЙЛА"
+    MIME_TYPE = "ТИП ФАЙЛА"
+    PUSH_TO_TALK = "ГОЛОСОВОЕ"
     SENDER_NAME = "ОТПРАВИТЕЛЬ"
     SENDER_PHONE = "НОМЕР"
     SENDER_EXTERNAL_ID = "ВНЕШНИЙ НОМЕР"
@@ -54,14 +57,17 @@ class LABELS:
     COMPANY_ID_FILTER_TITLE = "ID КОМПАНИИ"
     INCOME_FILTER_TITLE = "ВХОДЯЩЕЕ"
     CONVERS_LOCAL_ID_FILTER_TITLE = "ID РАЗГОВОРА"
-
+    FILE_TYPE_FILTER_TITLE = "ПРИКРЕПЛЕНИЕ"
+    VOICE_MESSAGE_FILTER_TITLE = "ГОЛОСОВОЕ"
 
     YES_FILTER_LABEL = "Да"
     NO_FILTER_LABEL = "Нет"
     ALL_RECS_FILTER_LABEL = "Все"
     REPLIED_FILTER_LABEL = "☑️"  # "Отвеченный"
     UNREPLIED_FILTER_LABEL = "❌"  # "Неотвеченный"
-
+    AUDIO_FILE_FILTER_LABEL = "Аудио"
+    VIDEO_FILE_FILTER_LABEL = "Видео"
+    IMAGE_FILE_FILTER_LABEL = "Графика"
 
 @dataclass(frozen=True)
 class MESSAGES:
