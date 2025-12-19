@@ -1,26 +1,24 @@
 from datetime import datetime
 
 from sqladmin import ModelView
-from sqladmin.filters import ForeignKeyFilter
 from sqlalchemy import select
 from starlette.requests import Request
 
 from admin_panel.custom_actions_mixins.mix_cancel_all_filters import (
     CanceAllFiltersSortsMixin)
 from admin_panel.custom_classes.custom_filter_classes import (
-    CustomBooleanFilter, CustomStaticValuesFilter,
-    CustomForeignKeyFilter)
+    CustomBooleanFilter, CustomAttachedMediaTypeFilter,
+    CustomStaticNumbersFilter)
 from configs.labels_messages import LABELS
 from configs.settings import ALCHEMY_OPTIONS, SQLADMIN_OPTIONS
 from db_postgres.postgres_conn.pgs_connection import (
     PgsSyncConnection, PgsAsyncConnection)
 from db_postgres.postgres_conn.postgres_session import (
     PgsSyncSession, PgsAsyncSession)
-from db_postgres.postgres_models.webhook_conversation_model import WebhookConversationModel
 from db_postgres.postgres_models.webhook_message_model import (
     WebhookMessageModel)
 from db_postgres.postgres_queries.qry_get_messages_filter_values import (
-    get_sync_msgs_filters_values_qry)
+    get_sync_filters_keys_labels_qry)
 
 
 class MessagesAdmin(ModelView,
@@ -44,19 +42,31 @@ class MessagesAdmin(ModelView,
         WebhookMessageModel.local_id,
         WebhookMessageModel.conversation_local_id,
         WebhookMessageModel.event,
-        # WebhookMessageModel.type,
-        # WebhookMessageModel.id,
-        # WebhookMessageModel.external_id,
+        WebhookMessageModel.type,  ##
+        WebhookMessageModel.id,  ##
+        WebhookMessageModel.provider,
+        WebhookMessageModel.sender_name,
+        WebhookMessageModel.emoji_count,
+        WebhookMessageModel.webp_count,
+        WebhookMessageModel.external_id,  ##
         WebhookMessageModel.company_id,
-        # WebhookMessageModel.conversation_id,
+        WebhookMessageModel.conversation_id,  ##
         WebhookMessageModel.contact_id,
-        # WebhookMessageModel.replied_to_id,
+        WebhookMessageModel.replied_to_id,  ##
         WebhookMessageModel.income,
-        # WebhookMessageModel.status,
-        # WebhookMessageModel.reactions,
-        # WebhookMessageModel.details,
-        # WebhookMessageModel.attachments,
+        WebhookMessageModel.status,  ##
+        WebhookMessageModel.reactions,  ##
+        WebhookMessageModel.details,  ##
+        WebhookMessageModel.file_name,
+        # WebhookMessageModel.pty_file_name,  # property
+        WebhookMessageModel.mime_type,
+        # WebhookMessageModel.pty_mime_type,  # property
+        WebhookMessageModel.push_to_talk,
+        # WebhookMessageModel.pty_push_to_talk,  # property
         WebhookMessageModel.message,
+        WebhookMessageModel.attachment_url,
+        # WebhookMessageModel.pty_attachment_url,  # property
+        WebhookMessageModel.attachments,  ##
         WebhookMessageModel.created_at,
         # WebhookMessageModel.external_created_at,
         # WebhookMessageModel.local_created_at,
@@ -64,26 +74,34 @@ class MessagesAdmin(ModelView,
     ]
 
     column_labels = {  # Human labels instead of table fields names
-        WebhookMessageModel.local_id: LABELS.LOCAL_ID,
-        WebhookMessageModel.conversation_local_id: LABELS.CONVERSATION_LOCAL_ID,
-        WebhookMessageModel.event: LABELS.EVENT,
-        WebhookMessageModel.type: LABELS.TYPE,
-        WebhookMessageModel.id: LABELS.ID,
-        WebhookMessageModel.external_id: LABELS.EXTERNAL_ID,
-        WebhookMessageModel.company_id: LABELS.COMPANY_ID,
-        WebhookMessageModel.conversation_id: LABELS.CONVERSATION_ID,
-        WebhookMessageModel.contact_id: LABELS.CONTACT_ID,
-        WebhookMessageModel.replied_to_id: LABELS.REPLIED_TO_ID,
-        WebhookMessageModel.income: LABELS.INCOME,
-        WebhookMessageModel.status: LABELS.STATUS,
-        WebhookMessageModel.message: LABELS.MESSAGE,
-        WebhookMessageModel.reactions: LABELS.REACTIONS,
-        WebhookMessageModel.details: LABELS.DETAILS,
-        WebhookMessageModel.attachments: LABELS.ATTACHMENTS,
-        WebhookMessageModel.created_at: LABELS.CREATED_AT,
-        WebhookMessageModel.external_created_at: LABELS.UPDATED_AT,
-        WebhookMessageModel.local_created_at: LABELS.LOCAL_CREATED,
-        WebhookMessageModel.local_updated_at: LABELS.LOCAL_UPDATED,
+        # WebhookMessageModel.local_id: LABELS.LOCAL_ID,
+        # WebhookMessageModel.conversation_local_id: LABELS.CONVERSATION_LOCAL_ID,
+        # WebhookMessageModel.event: LABELS.EVENT,
+        # WebhookMessageModel.type: LABELS.TYPE,
+        # WebhookMessageModel.id: LABELS.ID,
+        # WebhookMessageModel.provider: LABELS.PROVIDER,
+        # WebhookMessageModel.sender_name: LABELS.SENDER_NAME,
+        # WebhookMessageModel.emoji_count: LABELS.EMOJI_COUNT,
+        # WebhookMessageModel.webp_count: LABELS.WEBP_COUNT,
+        # WebhookMessageModel.external_id: LABELS.EXTERNAL_ID,
+        # WebhookMessageModel.company_id: LABELS.COMPANY_ID,
+        # WebhookMessageModel.conversation_id: LABELS.CONVERSATION_ID,
+        # WebhookMessageModel.contact_id: LABELS.CONTACT_ID,
+        # WebhookMessageModel.replied_to_id: LABELS.REPLIED_TO_ID,
+        # WebhookMessageModel.income: LABELS.INCOME,
+        # WebhookMessageModel.status: LABELS.STATUS,
+        # WebhookMessageModel.message: LABELS.MESSAGE,
+        # WebhookMessageModel.reactions: LABELS.REACTIONS,
+        # WebhookMessageModel.details: LABELS.DETAILS,
+        # WebhookMessageModel.attachments: LABELS.ATTACHMENTS,
+        # WebhookMessageModel.attachment_url: LABELS.ATTACHMENT_URL,
+        # WebhookMessageModel.file_name: LABELS.FILE_NAME,
+        # WebhookMessageModel.mime_type: LABELS.MIME_TYPE,
+        # WebhookMessageModel.push_to_talk: LABELS.PUSH_TO_TALK,
+        # WebhookMessageModel.created_at: LABELS.CREATED_AT,
+        # WebhookMessageModel.external_created_at: LABELS.UPDATED_AT,
+        # WebhookMessageModel.local_created_at: LABELS.LOCAL_CREATED,
+        # WebhookMessageModel.local_updated_at: LABELS.LOCAL_UPDATED,
     }
 
     column_searchable_list = [  # Search included fields
@@ -92,6 +110,10 @@ class MessagesAdmin(ModelView,
         WebhookMessageModel.event,
         WebhookMessageModel.type,
         WebhookMessageModel.id,
+        WebhookMessageModel.provider,
+        WebhookMessageModel.sender_name,
+        # WebhookMessageModel.emoji_count,
+        # WebhookMessageModel.webp_count,
         WebhookMessageModel.external_id,
         WebhookMessageModel.company_id,
         WebhookMessageModel.conversation_id,
@@ -103,6 +125,12 @@ class MessagesAdmin(ModelView,
         WebhookMessageModel.reactions,
         WebhookMessageModel.details,
         WebhookMessageModel.attachments,
+        WebhookMessageModel.attachment_url,
+        WebhookMessageModel.file_name,
+        WebhookMessageModel.mime_type,
+        WebhookMessageModel.push_to_talk,
+        # WebhookMessageModel.pty_file_name,
+        # WebhookMessageModel.pty_mime_type,
         WebhookMessageModel.created_at,
         WebhookMessageModel.external_created_at,
         WebhookMessageModel.local_created_at,
@@ -116,10 +144,12 @@ class MessagesAdmin(ModelView,
                             log_good_ops=ALCHEMY_OPTIONS.ALCHEMY_ORM_RAW_SQL_LOGS
                             ) as pgs_sync_session:
             # Getting all possible unique and sorted values for filters
-            filters_values = get_sync_msgs_filters_values_qry(
+            filters_keys = get_sync_filters_keys_labels_qry(
                 ongoing_sync_session=pgs_sync_session)
-            convers_local_id_values = filters_values["convers_local_id_values"]
-            company_id_values = filters_values["company_id_values"]
+            convers_local_id_keys = filters_keys["convers_local_id_keys"]
+            company_id_keys = filters_keys["company_id_keys"]
+            provider_keys = filters_keys["provider_keys"]
+            sender_name_keys = filters_keys["sender_name_keys"]
 
             column_filters_list = [
                 # Filter using custom overridden filter class for boolean field
@@ -127,17 +157,47 @@ class MessagesAdmin(ModelView,
                     column=WebhookMessageModel.income,
                     title=LABELS.INCOME_FILTER_TITLE),
 
-                # Filter using custom overridden filter class for string field
-                CustomStaticValuesFilter(  # field: draft_category
+                CustomStaticNumbersFilter(  # field: WebhookMessageModel.company_id
+                    # Filter using custom overridden filter class for int(number) field
                     column=WebhookMessageModel.company_id,
-                    values=company_id_values,
+                    values=company_id_keys,
                     title=LABELS.COMPANY_ID_FILTER_TITLE),
 
-                # Filter using custom overridden filter class for string field
-                CustomStaticValuesFilter(  # field: WebhookMessageModel.provider
-                    column=WebhookMessageModel.conversation_local_id,
-                    values=convers_local_id_values,
-                    title=LABELS.CONVERS_LOCAL_ID_FILTER_TITLE),
+                CustomAttachedMediaTypeFilter(  # combined fields: WebhookMessageModel.file_name and mime_type
+                    # Filter using custom overridden filter class for string field
+                    column=WebhookMessageModel.mime_type,  # Used by parent to define Model class, but not in overridden
+                    values=[],  # Defined in overridden CustomRepliedStateFilter (def lookups), but can be defined here
+                    title=LABELS.FILE_TYPE_FILTER_TITLE),
+
+                CustomBooleanFilter(  # field: WebhookMessageModel.push_to_talk
+                    # Filter using custom overridden filter class for boolean field
+                    column=WebhookMessageModel.push_to_talk,
+                    title=LABELS.VOICE_MESSAGE_FILTER_TITLE),
+
+                # TODO: Settle a question of not displaying provider
+                # CustomUniqueProviderForeignKeyFilter(  # foreign key field: customer_id (display field: account_id)
+                #     foreign_key=WebhookMessageModel.conversation_local_id,
+                #     foreign_display_field=WebhookConversationModel.provider,
+                #     foreign_model=WebhookConversationModel,
+                #     title=LABELS.PROVIDER),
+
+                CustomStaticNumbersFilter(  # field: WebhookMessageModel.conversation_local_id
+                    # Filter using custom overridden filter class for int(number) field
+                    column=WebhookMessageModel.provider,
+                    values=provider_keys,
+                    title=LABELS.PROVIDER_FILTER_TITLE),
+
+                CustomStaticNumbersFilter(  # field: WebhookMessageModel.conversation_local_id
+                    # Filter using custom overridden filter class for int(number) field
+                    column=WebhookMessageModel.sender_name,
+                    values=sender_name_keys,
+                    title=LABELS.SENDER_NAME_FILTER_TITLE),
+
+                # CustomStaticNumbersFilter(  # field: WebhookMessageModel.conversation_local_id
+                #     # Filter using custom overridden filter class for int(number) field
+                #     column=WebhookMessageModel.conversation_local_id,
+                #     values=convers_local_id_keys,
+                #     title=LABELS.CONVERS_LOCAL_ID_FILTER_TITLE),
 
                 # CustomRepliedStateFilter(  # field: WebhookMessageModel.replied_state
                 # # Filter using custom overridden filter class for string field
@@ -175,12 +235,6 @@ class MessagesAdmin(ModelView,
                 #     foreign_model=WebhookConversationModel,
                 #     title=LABELS.PROVIDER),
 
-                # ForeignKeyFilter(  # foreign key field: customer_id (display field: account_id)
-                #      foreign_key=WebhookMessageModel.conversation_local_id,
-                #      foreign_display_field=WebhookConversationModel.provider,
-                #      foreign_model=WebhookConversationModel,
-                #      title=LABELS.PROVIDER),
-
                 # CustomForeignKeyFilter(  # foreign key field: customer_id (display field: account_id)
                 #     foreign_key=WebhookMessageModel.customer_id,
                 #     foreign_display_field=CustomerModel.account_id,
@@ -201,6 +255,10 @@ class MessagesAdmin(ModelView,
         WebhookMessageModel.event,
         WebhookMessageModel.type,
         WebhookMessageModel.id,
+        WebhookMessageModel.provider,
+        WebhookMessageModel.sender_name,
+        WebhookMessageModel.emoji_count,
+        WebhookMessageModel.webp_count,
         WebhookMessageModel.external_id,
         WebhookMessageModel.company_id,
         WebhookMessageModel.conversation_id,
@@ -212,6 +270,12 @@ class MessagesAdmin(ModelView,
         WebhookMessageModel.reactions,
         WebhookMessageModel.details,
         WebhookMessageModel.attachments,
+        WebhookMessageModel.attachment_url,
+        WebhookMessageModel.file_name,
+        WebhookMessageModel.mime_type,
+        WebhookMessageModel.push_to_talk,
+        # WebhookMessageModel.pty_file_name,
+        # WebhookMessageModel.pty_mime_type,
         WebhookMessageModel.created_at,
         WebhookMessageModel.external_created_at,
         WebhookMessageModel.local_created_at,
@@ -287,14 +351,44 @@ class MessagesAdmin(ModelView,
     @staticmethod
     # used by column_formatters/column_formatters_detail bellow, single field operation
     # model_obj = cur record, attribute = field string name
+    def format_sender_name_field(model_obj, attribute):
+        field_value = getattr(model_obj, attribute)
+        if field_value and isinstance(field_value, str):
+            truncation_limit = SQLADMIN_OPTIONS.SENDER_NAME_FILTER_TRUNC_LIMIT
+            if len(field_value) > truncation_limit:
+                display_value = f"{field_value[:truncation_limit]}..."
+            else:
+                display_value = field_value
+            return display_value
+        elif not field_value:
+            return ""
+        else:
+            return field_value
+
+    @staticmethod
+    # used by column_formatters/column_formatters_detail bellow, single field operation
+    # model_obj = cur record, attribute = field string name
     def format_message_field(model_obj, attribute):
         field_value = getattr(model_obj, attribute)
         if field_value and isinstance(field_value, str):
             truncation_limit = SQLADMIN_OPTIONS.MESSAGE_SYMBOLS_TRUNCATE_LIMIT
             if len(field_value) > truncation_limit:
-                display_value = f"{field_value[:truncation_limit]} ....."
+                display_value = f"{field_value[:truncation_limit]}..."
             else:
                 display_value = field_value
+            return display_value
+        elif not field_value:
+            return ""
+        else:
+            return field_value
+
+    @staticmethod
+    # used by column_formatters/column_formatters_detail bellow, single field operation
+    # model_obj = cur record, attribute = field string name
+    def format_reactions_field(model_obj, attribute):
+        field_value = getattr(model_obj, attribute)
+        if field_value and isinstance(field_value, list):
+            display_value = "+".join(field_value)
             return display_value
         elif not field_value:
             return ""
@@ -323,6 +417,8 @@ class MessagesAdmin(ModelView,
         WebhookMessageModel.local_created_at: format_datetime_fields,
         WebhookMessageModel.local_updated_at: format_datetime_fields,
         WebhookMessageModel.message: format_message_field,
+        WebhookMessageModel.sender_name: format_sender_name_field,
+        WebhookMessageModel.reactions: format_reactions_field,
         # WebhookMessageModel.current_status: format_created_at,  # as example for single field
         # WebhookMessageModel.current_status: format_current_status,  # as example for enum field
     }

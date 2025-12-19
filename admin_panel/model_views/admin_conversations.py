@@ -40,18 +40,18 @@ class ConversationsAdmin(ModelView,
 
     column_list = [  # Main table columns
         WebhookConversationModel.local_id,
-        # WebhookConversationModel.event,
-        # WebhookConversationModel.type,
-        # WebhookConversationModel.id,
+        WebhookConversationModel.event,  ##
+        WebhookConversationModel.type,  ##
+        WebhookConversationModel.id,  ##
         WebhookConversationModel.company_id,  #
         WebhookConversationModel.sender_name,  #
         WebhookConversationModel.sender_phone,  #
-        # WebhookConversationModel.sender_external_id,
+        WebhookConversationModel.sender_external_id,  ##
         WebhookConversationModel.sender_external_public_id,  #
         WebhookConversationModel.provider,
-        # WebhookConversationModel.avatar_url,
-        # WebhookConversationModel.last_message_id,
-        # WebhookConversationModel.operational_state,
+        WebhookConversationModel.avatar_url,  ##
+        WebhookConversationModel.last_message_id,  ##
+        WebhookConversationModel.operational_state,  ##
         WebhookConversationModel.replied_state,  #
         WebhookConversationModel.group,  #
         # WebhookConversationModel.created_at,
@@ -62,26 +62,26 @@ class ConversationsAdmin(ModelView,
     ]
 
     column_labels = {  # Human labels instead of table fields names
-        WebhookConversationModel.local_id: LABELS.LOCAL_ID,
-        WebhookConversationModel.event: LABELS.EVENT,
-        WebhookConversationModel.type: LABELS.TYPE,
-        WebhookConversationModel.id: LABELS.ID,
-        WebhookConversationModel.company_id: LABELS.COMPANY_ID,
-        WebhookConversationModel.sender_name: LABELS.SENDER_NAME,
-        WebhookConversationModel.sender_phone: LABELS.SENDER_PHONE,
-        WebhookConversationModel.sender_external_id: LABELS.SENDER_EXTERNAL_ID,
-        WebhookConversationModel.sender_external_public_id: LABELS.SENDER_EXTERNAL_PUBLIC_ID,
-        WebhookConversationModel.provider: LABELS.PROVIDER,
-        WebhookConversationModel.avatar_url: LABELS.AVATAR_URL,
-        WebhookConversationModel.last_message_id: LABELS.LAST_MESSAGE_ID,
-        WebhookConversationModel.operational_state: LABELS.OPERATIONAL_STATE,
-        WebhookConversationModel.replied_state: LABELS.REPLIED_STATE,
-        WebhookConversationModel.group: LABELS.GROUP,
-        WebhookConversationModel.created_at: LABELS.CREATED_AT,
-        WebhookConversationModel.last_updated_at: LABELS.UPDATED_AT,
-        WebhookConversationModel.active: LABELS.ACTIVE,
-        WebhookConversationModel.local_created_at: LABELS.LOCAL_CREATED,
-        WebhookConversationModel.local_updated_at: LABELS.LOCAL_UPDATED,
+        # WebhookConversationModel.local_id: LABELS.LOCAL_ID,
+        # WebhookConversationModel.event: LABELS.EVENT,
+        # WebhookConversationModel.type: LABELS.TYPE,
+        # WebhookConversationModel.id: LABELS.ID,
+        # WebhookConversationModel.company_id: LABELS.COMPANY_ID,
+        # WebhookConversationModel.sender_name: LABELS.SENDER_NAME,
+        # WebhookConversationModel.sender_phone: LABELS.SENDER_PHONE,
+        # WebhookConversationModel.sender_external_id: LABELS.SENDER_EXTERNAL_ID,
+        # WebhookConversationModel.sender_external_public_id: LABELS.SENDER_EXTERNAL_PUBLIC_ID,
+        # WebhookConversationModel.provider: LABELS.PROVIDER,
+        # WebhookConversationModel.avatar_url: LABELS.AVATAR_URL,
+        # WebhookConversationModel.last_message_id: LABELS.LAST_MESSAGE_ID,
+        # WebhookConversationModel.operational_state: LABELS.OPERATIONAL_STATE,
+        # WebhookConversationModel.replied_state: LABELS.REPLIED_STATE,
+        # WebhookConversationModel.group: LABELS.GROUP,
+        # WebhookConversationModel.created_at: LABELS.CREATED_AT,
+        # WebhookConversationModel.last_updated_at: LABELS.UPDATED_AT,
+        # WebhookConversationModel.active: LABELS.ACTIVE,
+        # WebhookConversationModel.local_created_at: LABELS.LOCAL_CREATED,
+        # WebhookConversationModel.local_updated_at: LABELS.LOCAL_UPDATED,
     }
 
     column_searchable_list = [  # Search included fields
