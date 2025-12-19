@@ -1,6 +1,5 @@
 import httpx
 from fastapi import APIRouter, HTTPException, status
-from fastapi.responses import JSONResponse
 
 from configs.settings import WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY, API_OPTIONS
 from fast_api.app_auth.funcs_auth import verify_prod_username_password
