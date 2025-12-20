@@ -8,7 +8,7 @@ from admin_panel.custom_actions_mixins.mix_cancel_all_filters import (
     CanceAllFiltersSortsMixin)
 from admin_panel.custom_classes.custom_filter_classes import (
     CustomBooleanFilter, CustomAttachedMediaTypeFilter,
-    CustomStaticNumbersFilter)
+    CustomStaticNumbersFilter, CustomInviteUrlsFilter)
 from configs.labels_messages import LABELS
 from configs.settings import ALCHEMY_OPTIONS, SQLADMIN_OPTIONS
 from db_postgres.postgres_conn.pgs_connection import (
@@ -46,12 +46,12 @@ class MessagesAdmin(ModelView,
         WebhookMessageModel.id,  ##
         WebhookMessageModel.provider,
         WebhookMessageModel.sender_name,
-        WebhookMessageModel.emoji_count,
-        WebhookMessageModel.webp_count,
-        WebhookMessageModel.external_id,  ##
+        # WebhookMessageModel.emoji_count,
+        # WebhookMessageModel.webp_count,
+        # WebhookMessageModel.external_id,  ##
         WebhookMessageModel.company_id,
         WebhookMessageModel.conversation_id,  ##
-        WebhookMessageModel.contact_id,
+        # WebhookMessageModel.contact_id,
         WebhookMessageModel.replied_to_id,  ##
         WebhookMessageModel.income,
         WebhookMessageModel.status,  ##
@@ -59,14 +59,14 @@ class MessagesAdmin(ModelView,
         WebhookMessageModel.details,  ##
         WebhookMessageModel.file_name,
         # WebhookMessageModel.pty_file_name,  # property
-        WebhookMessageModel.mime_type,
+        # WebhookMessageModel.mime_type,
         # WebhookMessageModel.pty_mime_type,  # property
         WebhookMessageModel.push_to_talk,
         # WebhookMessageModel.pty_push_to_talk,  # property
         WebhookMessageModel.message,
         WebhookMessageModel.attachment_url,
         # WebhookMessageModel.pty_attachment_url,  # property
-        WebhookMessageModel.attachments,  ##
+        # WebhookMessageModel.attachments,  ##
         WebhookMessageModel.created_at,
         # WebhookMessageModel.external_created_at,
         # WebhookMessageModel.local_created_at,
@@ -175,7 +175,7 @@ class MessagesAdmin(ModelView,
                     title=LABELS.VOICE_MESSAGE_FILTER_TITLE),
 
                 # TODO: Settle a question of not displaying provider
-                # CustomUniqueProviderForeignKeyFilter(  # foreign key field: customer_id (display field: account_id)
+                # CustomUniqueProviderForeig1nKeyFilter(  # foreign key field: customer_id (display field: account_id)
                 #     foreign_key=WebhookMessageModel.conversation_local_id,
                 #     foreign_display_field=WebhookConversationModel.provider,
                 #     foreign_model=WebhookConversationModel,
@@ -186,6 +186,12 @@ class MessagesAdmin(ModelView,
                     column=WebhookMessageModel.provider,
                     values=provider_keys,
                     title=LABELS.PROVIDER_FILTER_TITLE),
+
+                CustomInviteUrlsFilter(  # field: WebhookMessageModel.conversation_local_id
+                    # Filter using custom overridden filter class for int(number) field
+                    column=WebhookMessageModel.message,
+                    values=[],
+                    title=LABELS.INVITES_FILTER_TITLE),
 
                 CustomStaticNumbersFilter(  # field: WebhookMessageModel.conversation_local_id
                     # Filter using custom overridden filter class for int(number) field

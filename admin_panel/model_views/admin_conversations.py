@@ -8,7 +8,7 @@ from admin_panel.custom_actions_mixins.mix_cancel_all_filters import (
     CanceAllFiltersSortsMixin)
 from admin_panel.custom_classes.custom_filter_classes import (
     CustomBooleanFilter, CustomRepliedStateFilter,
-    CustomStaticValuesFilter)
+    CustomStaticStringsFilter, CustomStaticNumbersFilter)
 from configs.labels_messages import LABELS
 from configs.settings import ALCHEMY_OPTIONS
 from db_postgres.postgres_conn.pgs_connection import (
@@ -132,13 +132,13 @@ class ConversationsAdmin(ModelView,
                     title=LABELS.REPLIED_FILTER_TITLE),
 
                 # Filter using custom overridden filter class for string field
-                CustomStaticValuesFilter(  # field: WebhookConversationModel.provider
+                CustomStaticStringsFilter(  # field: WebhookConversationModel.provider
                     column=WebhookConversationModel.provider,
                     values=providers_values,
                     title=LABELS.PROVIDER_FILTER_TITLE),
 
                 # Filter using custom overridden filter class for string field
-                CustomStaticValuesFilter(  # field: draft_category
+                CustomStaticNumbersFilter(  # field: draft_category
                     column=WebhookConversationModel.company_id,
                     values=company_id_values,
                     title=LABELS.COMPANY_ID_FILTER_TITLE),
