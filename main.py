@@ -12,6 +12,8 @@ from starlette.middleware.sessions import SessionMiddleware
 from admin_panel.model_views.__temp.admin_auth_role_backend import AdminAuthRoleAuthBackend
 from admin_panel.model_views.admin_conversations import ConversationsAdmin
 from admin_panel.model_views.admin_messages import MessagesAdmin
+from admin_panel.model_views.admin_minus_keywords import MinusKeywordsAdmin
+from admin_panel.model_views.admin_plus_keywords import PlusKeywordsAdmin
 from configs.labels_messages import LABELS
 from configs.settings import API_HOST, API_PORT, FASTAPI_OPTIONS, FASTAPI_SESSION_KEY
 from db_postgres.postgres_conn.pgs_connection import close_all_async_pgs_connections, close_all_sync_pgs_connections, \
@@ -40,6 +42,8 @@ routers_list = [
 admin_panel_views = [
     ConversationsAdmin,
     MessagesAdmin,
+    PlusKeywordsAdmin,
+    MinusKeywordsAdmin,
 ]
 
 
