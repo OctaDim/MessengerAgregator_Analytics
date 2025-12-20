@@ -55,7 +55,7 @@ WantedBy=multi-user.target
     (ВНИМАНИЕ: этот вариант без проверки успешно запущенного сервера Redis
     перед запуском самой службы):
 [Unit]
-Description=ML_BERT_NLU_Training_Classifier
+Description=MessengerAgregator_Analytics
 After=network.target
 #After=network.target redis-server.service
 [Service]
@@ -78,7 +78,7 @@ WantedBy=multi-user.target
 [CTRL]+[O] => [ENTER]
 
 - Проверяем, что все сохранилось, зайдя опять в файл:
-sudo nano /etc/systemd/system/bert_micro_auto_daemon.service
+sudo nano /etc/systemd/system/agregator_micro_auto_daemon.service
 
 - Выходим из файла:
 [CTRL+X] => [ENTER]
@@ -87,22 +87,22 @@ sudo nano /etc/systemd/system/bert_micro_auto_daemon.service
 sudo systemctl daemon-reload
 
 - Запускаем сервис bert_micro_auto_daemon, как димон:
-sudo systemctl start diarize_micro_auto_daemon
+sudo systemctl start agregator_micro_auto_daemon
 
 - Добавляем сервис в автозагрузку:
-sudo systemctl enable diarize_micro_auto_daemon.service
+sudo systemctl enable agregator_micro_auto_daemon.service
 
 - Проверяем статус запущенной службы (димона)
-sudo systemctl status diarize_micro_auto_daemon
+sudo systemctl status agregator_micro_auto_daemon
 
 - устанавливаем цветной вывод (необязательно, но информативнее)
 sudo apt install ccze
 
 - Смотрим логи ошибок и все логи консоли в онлайн режиме (ЦВЕТНОЙ ШРИФТ):
-sudo journalctl -u diarize_micro_auto_daemon -f --all | ccze -A
+sudo journalctl -u agregator_micro_auto_daemon -f --all | ccze -A
 
 - Смотрим логи ошибок и все логи консоли в онлайн режиме (БЕЛЫЙ ШРИФТ):
-sudo journalctl -u diarize_micro_auto_daemon -f --all
+sudo journalctl -u agregator_micro_auto_daemon -f --all
 
 - Посмотреть службу слушающую 8000 порт:
     - Сначала узнать номер PID процесса, слушающего порт:
@@ -112,10 +112,10 @@ sudo journalctl -u diarize_micro_auto_daemon -f --all
             - В выводе Loaded: ищем название <имя_службы>.service
 
 - Перезапуск службы-димона (долго):
-sudo systemctl restart diarize_micro_auto_daemon
+sudo systemctl restart agregator_micro_auto_daemon
 
 - Перезагрузка службы-димона (быстро):
-sudo systemctl reload diarize_micro_auto_daemon
+sudo systemctl reload agregator_micro_auto_daemon
 
 - Остановка службы-димона:
-sudo systemctl stop diarize_micro_auto_daemon.service
+sudo systemctl stop agregator_micro_auto_daemon.service
