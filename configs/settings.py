@@ -217,9 +217,10 @@ class API_OPTIONS:
 class WEBHOOKS_OPTIONS:
     WEBHOOKS_API_URL_BASE_NAME: str = "aggregator_api"
     OUTGOING_EXT_API_REQUEST_TIMEOUT: float = 120
-    LOG_WEBHOOK_INCOMING_REQ_DATA: bool = False
-    LOG_WEBHOOK_INCOMING_OBJ_DATA: bool = False
+    LOG_WEBHOOK_INCOMING_REQ_DATA: bool = True
+    LOG_WEBHOOK_INCOMING_OBJ_DATA: bool = True
     LOG_WEBHOOK_INCOMING_EXTRA_DATA: bool = True
+    DEBUG_SKIP_COMPANY_IDS_LIST: list|tuple = (100179, )
 
 
 @dataclass(frozen=True)
@@ -227,42 +228,7 @@ class SQLADMIN_OPTIONS:
     CREATE_DEFAULT_ADMIN_SUPERADMIN: bool = True
     CREATE_DEBUG_ADMIN_SUPERADMIN: bool = True
     MESSAGE_SYMBOLS_TRUNCATE_LIMIT: int = 50
-
-
-@dataclass(frozen=True)
-class SQLADMIN_FILTERS:
-    IMAGE_FILTER_EXTENSIONS: tuple | list = (
-    "jpg", "jpeg", "png", "gif", "webp", "bmp", "ico", "svg", "tiff", "tif",
-    "heic", "heif", "avif", "apng", "jfif", "pjpeg", "pjp", )
-
-    IMAGE_FILTER_MIME_TYPES: tuple | list = (
-    "image/jpeg", "image/jpg", "image/pjpeg", "image/jfif", "image/png",
-    "image/x-png", "image/apng", "image/gif", "image/webp", "image/bmp",
-    "image/x-bmp", "image/x-ms-bmp", "image/x-icon", "image/vnd.microsoft.icon",
-    "image/svg+xml", "image/svg", "image/tiff", "image/tif", "image/tiff-fx",
-    "image/heic", "image/heif", "image/heic-sequence", "image/heif-sequence",
-    "image/avif", "image/x-portable-bitmap", "image/x-portable-graymap",
-    "image/x-portable-pixmap", "image/x-xcf", "image/x-raw", )
-
-    AUDIO_FILTER_EXTENSIONS: tuple | list = (
-        "mp3", "mpga", "mpeg", "wav", "wave", "m4a", "aac", "flac",
-        "ogg",)
-    AUDIO_FILTER_MIME_TYPES: tuple | list = (
-        "audio/mpeg", "audio/wav", "audio/x-wav", "audio/wave",
-        "audio/mp4", "audio/x-m4a", "audio/m4a", "audio/aac",
-        "audio/x-aac", "audio/flac", "audio/x-flac", "audio/ogg",
-        "application/ogg", "audio/3gpp",)
-
-    VIDEO_FILTER_EXTENSIONS: tuple | list = (
-        "mp4", "m4v", "avi", "mkv", "webm", "mov", "qt", "wmv", "flv",
-        "ogv", "3gp", "3g2", "mpeg", "mpg", "ts ", "mts", "m2ts", "mxf",
-        "divx", "f4v", "vob", "asf", "rm", "rmvb", "swf", "heic", "heif",)
-    VIDEO_FILTER_MIME_TYPES: tuple | list = (
-        "video/mp4", "application/mp4", "video/x-m4v", "video/mp4",
-        "video/x-msvideo", "video/avi", "video/msvideo", "video/x-matroska",
-        "video/webm", "video/quicktime", "video/x-quicktime",
-        "video/x-ms-wmv", "video/x-flv", "application/x-shockwave-flash",
-        "video/ogg", "application/ogg", "video/ogm", "video/3gpp",
-        "video/3gp", "audio/3gpp", "video/3gpp2", "video/mpeg",
-        "video/mp2t", "video/MP2T", "application/mxf", "video/mxf",
-        "video/divx", "video/x-msvideo",)
+    PLUS_MINUS_WORDS_TRUNCATE_LIMIT: int = 100
+    SENDER_NAME_FILTER_TRUNC_LIMIT: int = 25
+    EMOJI_MAX_WIDTH = 500
+    EMOJI_MAX_HEIGHT = 500
