@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 from typing import Optional
 
@@ -9,13 +8,13 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from db_postgres.postgres_init.declarative_base_model import Base
 from db_postgres.postgres_models.orm_models_fields_mixins import (
-    ActiveMix, CreateUpdateMix)
+    ActiveMix, LocalCreateUpdateMix)
 
 
-class WebhookMessageModel(Base, ActiveMix, CreateUpdateMix):
+class WebhookMessageModel(Base, ActiveMix, LocalCreateUpdateMix):
     __tablename__ = "webhook_message"
 
-    local_id: Mapped[int] = mapped_column(primary_key=True)
+    local_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     conversation_local_id: Mapped[Optional[int]] = mapped_column(
         BigInteger, ForeignKey("webhook_conversation.local_id"))
 
@@ -33,15 +32,22 @@ class WebhookMessageModel(Base, ActiveMix, CreateUpdateMix):
     reactions: Mapped[Optional[list]] = mapped_column(JSON)  # JSON
     details: Mapped[Optional[list]] = mapped_column(JSON)  # JSON
     attachments: Mapped[Optional[list]] = mapped_column(JSON)  # JSON
+    delivery: Mapped[Optional[bool]] = mapped_column(default=False)
+    deleted: Mapped[Optional[bool]] = mapped_column(default=False)
 
     created_at: Mapped[Optional[datetime]] = mapped_column(
         TIMESTAMP(timezone=True))
     external_created_at: Mapped[Optional[datetime]] = mapped_column(
         TIMESTAMP(timezone=True))
 
+    provider: Mapped[Optional[str]] = mapped_column(String(30))
+    sender_name: Mapped[Optional[str]]
     file_name: Mapped[Optional[str]] = mapped_column(String(255))
     mime_type: Mapped[Optional[str]] = mapped_column(String(100))
     push_to_talk: Mapped[Optional[bool]] = mapped_column(default=False)
+    attachment_url: Mapped[Optional[str]] = mapped_column(String(255))
+    emoji_count: Mapped[Optional[int]]
+    webp_count: Mapped[Optional[int]]
 
     @hybrid_property
     def pty_file_name(self):
@@ -60,12 +66,26 @@ class WebhookMessageModel(Base, ActiveMix, CreateUpdateMix):
         if valid_attachment_flag:
             property_value = self.attachments[0].get("mime_type")
             return property_value
-            # attachments = self.attachments[0]
-            # attachment_file_name = attachments.get("file_name")
-            # file_extension = os.path.splitext(attachment_file_name)[1]
-            # attachment_mime_type = attachments.get("mime_type")
-            # field_value = f"{file_extension} / {attachment_mime_type}"
-            # return field_value
+        else:
+            return None
+
+    @hybrid_property
+    def pty_push_to_talk(self):
+        valid_attachment_flag = all([self.attachments,
+                                     isinstance(self.attachments, list)])
+        if valid_attachment_flag:
+            property_value = self.attachments[0].get("push_to_talk")
+            return property_value
+        else:
+            return None
+
+    @hybrid_property
+    def pty_attachment_url(self):
+        valid_attachment_flag = all([self.attachments,
+                                     isinstance(self.attachments, list)])
+        if valid_attachment_flag:
+            property_value = self.attachments[0].get("attachment_url")
+            return property_value
         else:
             return None
 
