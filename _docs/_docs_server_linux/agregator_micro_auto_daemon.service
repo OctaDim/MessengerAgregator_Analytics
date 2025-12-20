@@ -1,5 +1,5 @@
 [Unit]
-Description=ML_BERT_NLU_Training_Classifier
+Description=MessengerAgregator_Analytics
 After=network.target
 #After=network.target redis-server.service
 [Service]
