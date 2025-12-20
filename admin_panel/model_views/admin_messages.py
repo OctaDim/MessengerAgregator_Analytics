@@ -55,7 +55,7 @@ class MessagesAdmin(ModelView,
         WebhookMessageModel.replied_to_id,  ##
         WebhookMessageModel.income,
         WebhookMessageModel.status,  ##
-        WebhookMessageModel.reactions,  ##
+        # WebhookMessageModel.reactions,  ##
         WebhookMessageModel.details,  ##
         WebhookMessageModel.file_name,
         # WebhookMessageModel.pty_file_name,  # property
@@ -102,6 +102,9 @@ class MessagesAdmin(ModelView,
         WebhookMessageModel.external_created_at: LABELS.UPDATED_AT,
         WebhookMessageModel.local_created_at: LABELS.LOCAL_CREATED,
         WebhookMessageModel.local_updated_at: LABELS.LOCAL_UPDATED,
+        WebhookMessageModel.delivery: LABELS.DELIVERY,
+        WebhookMessageModel.deleted: LABELS.DELETED,
+        WebhookMessageModel.active: LABELS.ACTIVE,
     }
 
     column_searchable_list = [  # Search included fields
