@@ -158,7 +158,6 @@ async def receive_pact_webhooks(
                               "########################################\n"
                               "####### 15 MINUTES CALL (start) ########\n"
                               "########################################\n"
-
                               "########################################\n"
                               "\n\n")
 
@@ -171,14 +170,13 @@ async def receive_pact_webhooks(
                         emergency_call_dict = await request_emergency_call_msvc(
                             auth_data=auth_data,
                             warning_call_data=warning_call_data)
-                print("emergency_call_dict: ", emergency_call_dict)
+                if emergency_call_dict:
+                    print("emergency_call_dict: ", emergency_call_dict)
                 print("\n\n"
                       "########################################\n"
                       "########################################\n"
-
                       "####### 15 MINUTES CALL (end) ########\n"
                       "########################################\n"
-
                       "########################################\n"
                       "\n\n")
 
