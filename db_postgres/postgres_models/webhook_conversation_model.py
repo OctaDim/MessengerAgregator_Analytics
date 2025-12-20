@@ -6,10 +6,10 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from db_postgres.postgres_init.declarative_base_model import Base
 from db_postgres.postgres_models.orm_models_fields_mixins import (
-    ActiveMix, CreateUpdateMix)
+    ActiveMix, LocalCreateUpdateMix)
 
 
-class WebhookConversationModel(Base, ActiveMix, CreateUpdateMix):
+class WebhookConversationModel(Base, ActiveMix, LocalCreateUpdateMix):
     __tablename__ = "webhook_conversation"
 
     local_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
@@ -23,7 +23,7 @@ class WebhookConversationModel(Base, ActiveMix, CreateUpdateMix):
     sender_external_id: Mapped[Optional[str]]
     sender_external_public_id: Mapped[Optional[str]]
     provider: Mapped[Optional[str]] = mapped_column(String(30))
-    avatar_url: Mapped[Optional[str]]
+    avatar_url: Mapped[Optional[str]]  = mapped_column(String(255))
     last_message_id: Mapped[Optional[int]] = mapped_column(BigInteger)
     operational_state: Mapped[Optional[str]] = mapped_column(String(15))
     replied_state: Mapped[Optional[str]] = mapped_column(String(15))

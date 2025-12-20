@@ -6,10 +6,10 @@ from sqlalchemy.orm import Mapped, mapped_column
 from configs.enums import USER_ROLE
 from db_postgres.postgres_init.declarative_base_model import Base
 from db_postgres.postgres_models.orm_models_fields_mixins import (
-    ActiveMix, CreateUpdateMix)
+    ActiveMix, LocalCreateUpdateMix)
 
 
-class AuthRoleModel(Base, ActiveMix, CreateUpdateMix):
+class AuthRoleModel(Base, ActiveMix, LocalCreateUpdateMix):
     __tablename__ = "admin_auth_role"
     __table_args__ = (UniqueConstraint(
         "auth_username", "auth_hashed_password",
