@@ -232,3 +232,9 @@ class SQLADMIN_OPTIONS:
     SENDER_NAME_FILTER_TRUNC_LIMIT: int = 25
     EMOJI_MAX_WIDTH = 500
     EMOJI_MAX_HEIGHT = 500
+
+@dataclass(frozen=True)
+class EMERGENCY_CALL_OPTIONS:
+    EMERGENCY_CALL_URL = "https://samara.softats.ru/account/pact/emergency_call"
+    EMERGENCY_CALL_REQUEST_TIMEOUT: float = 120
+    LOG_EMERGENCY_CALL_REQ_RESPONSE: bool = True

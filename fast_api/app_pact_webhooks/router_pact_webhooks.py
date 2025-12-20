@@ -35,6 +35,10 @@ from fast_api.app_pact_conversation_data_by_id.scheme_pact_conversation_data imp
     InConversDataByConversID)
 from fast_api.app_pact_webhooks.scheme_pact_webhooks import (
     PactWebhookData, MessageObject, AuthObject, ConversationObject)
+from fast_api.app_send_emergency_call.router_request_emergency_call import (
+    request_emergency_call_msvc)
+from fast_api.app_send_emergency_call.scheme_request_emergency_call import (
+    InWarningCallData)
 from utils_common.get_log_request_data import (
     log_all_request_data)
 from utils_common.validate_log_pydantic_errors import (
@@ -146,15 +150,37 @@ async def receive_pact_webhooks(
                 message = event_object.message
                 plus_keywords_list = await get_plus_keywords_list_qry(
                     ongoing_sync_session=pgs_session)
+
                 for cur_plus_keyword in plus_keywords_list:
-                    if cur_plus_keyword.lower() in message.lower():
+                    if cur_plus_keyword in message.lower():
                         print("\n\n"
                               "########################################\n"
                               "########################################\n"
-                              "########### 15 MINUTES CALL ############\n"
+                              "####### 15 MINUTES CALL (start) ########\n"
                               "########################################\n"
+
                               "########################################\n"
                               "\n\n")
+
+                        auth_data = AuthDataAggregator(
+                            username=API_USERNAME,
+                            password=API_PASSWORD)
+                        warning_call_data = InWarningCallData(
+                            company_uuid="cf655b4a-4fca-4b0d-b9c1-e272c082a9ba")
+
+                        emergency_call_dict = await request_emergency_call_msvc(
+                            auth_data=auth_data,
+                            warning_call_data=warning_call_data)
+                print("emergency_call_dict: ", emergency_call_dict)
+                print("\n\n"
+                      "########################################\n"
+                      "########################################\n"
+
+                      "####### 15 MINUTES CALL (end) ########\n"
+                      "########################################\n"
+
+                      "########################################\n"
+                      "\n\n")
 
                 company_id = event_object.company_id
                 event_convers_id = event_object.conversation_id
