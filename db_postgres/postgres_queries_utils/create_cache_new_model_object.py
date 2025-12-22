@@ -16,6 +16,7 @@ async def create_cache_new_model_obj_qry(
         ModelClassORM: Type[Base] | DeclarativeMeta,
         ongoing_session: AsyncSession,
         new_data: dict,
+        log_new_data: bool = False
 ) -> WebhookConversationModel | None:
     if not new_data:
         return None
@@ -23,7 +24,8 @@ async def create_cache_new_model_obj_qry(
     try:
         new_model_obj = ModelClassORM()
         update_model_obj_no_commit(orm_model_object=new_model_obj,
-                                   new_update_data=new_data)
+                                   new_update_data=new_data,
+                                   log_update_data=log_new_data)
         ongoing_session.add(new_model_obj)
         await ongoing_session.flush()
         return new_model_obj

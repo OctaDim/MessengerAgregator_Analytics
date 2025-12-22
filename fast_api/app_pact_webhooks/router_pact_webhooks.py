@@ -29,6 +29,8 @@ from db_postgres.postgres_queries_utils.create_cache_new_model_object import (
 from db_postgres.postgres_queries_utils.update_existing_model_objects import (
     update_existing_model_objs_qry)
 from fast_api.app_auth.scheme_auth import AuthDataAggregator
+from fast_api.app_pact_all_companies.router_pact_all_companies import get_pact_all_companies
+from fast_api.app_pact_all_companies.scheme_pact_all_companies import InPactAllCompanies
 from fast_api.app_pact_conversation_data_by_id.router_pact_conversation_data import (
     get_pact_conversation_data)
 from fast_api.app_pact_conversation_data_by_id.scheme_pact_conversation_data import (
@@ -36,7 +38,7 @@ from fast_api.app_pact_conversation_data_by_id.scheme_pact_conversation_data imp
 from fast_api.app_pact_webhooks.scheme_pact_webhooks import (
     PactWebhookData, MessageObject, AuthObject, ConversationObject)
 from fast_api.app_send_emergency_call.router_request_emergency_call import (
-    request_emergency_call_msvc)
+    request_emergency_call)
 from fast_api.app_send_emergency_call.scheme_request_emergency_call import (
     InWarningCallData)
 from utils_common.get_log_request_data import (
@@ -63,9 +65,15 @@ async def receive_pact_webhooks(
         event_name = pact_resp_json.get("type")
         event_type = pact_resp_json.get("event")
         skip_list = ["new", "ack"]
-        if (event_name == "group_message"
-                or (event_name == "message" and event_type in skip_list)):
-            log_txt = f"SKIPPED WEBHOOK [OK]: event_name: {event_name}\n"
+        old_version_webhook_flag = any([
+            event_name == "group_message",
+            event_name == "message" and event_type in skip_list, ])
+
+        if old_version_webhook_flag:
+            log_txt = (f"WEBHOOK SKIPPED [OK]: "
+                       f"type: {event_name}, event: {event_type}, "
+                       f"old_version_webhook_flag: {old_version_webhook_flag}")
+            print(log_txt)
             json_response = JSONResponse(
                 content={"Message": log_txt},
                 status_code=status.HTTP_200_OK)
@@ -78,15 +86,21 @@ async def receive_pact_webhooks(
             event_obj = webhook_data.object
             if isinstance(event_obj, (MessageObject, ConversationObject)):
                 company_id = event_obj.company_id
-                if company_id in WEBHOOKS_OPTIONS.DEBUG_SKIP_COMPANY_IDS_LIST:
-                    log_txt = f"SKIPPED WEBHOOK [OK]: company_id: {company_id}\n"
+                skip_company_id_flag = (
+                        company_id in WEBHOOKS_OPTIONS.DEBUG_SKIP_COMPANY_IDS_LIST)
+
+                if skip_company_id_flag:
+                    log_txt = (f"WEBHOOK SKIPPED [OK]: "
+                               f"type: {event_name}, event: {event_type}, "
+                               f"company_id: {company_id}, "
+                               f"skip_company_id_flag: {skip_company_id_flag}")
+                    print(log_txt)
                     json_response = JSONResponse(
                         content={"Message": log_txt},
                         status_code=status.HTTP_200_OK)
                     return json_response
 
-    print(f"\n\n{'>' * 75}\n{'>' * 75}\n{'>' * 75}")
-
+    print(f"\n{'>' * 75}")
     if WEBHOOKS_OPTIONS.LOG_WEBHOOK_INCOMING_REQ_DATA:
         await log_all_request_data(request=request)
 
@@ -119,7 +133,8 @@ async def receive_pact_webhooks(
                 new_auth_obj = await create_cache_new_model_obj_qry(
                     ModelClassORM=WebhookAuthModel,
                     ongoing_session=pgs_session,
-                    new_data=new_event_data)
+                    new_data=new_event_data,
+                    log_new_data=WEBHOOKS_OPTIONS.LOG_WEBHOOK_NEW_AUTH_DATA)
             elif isinstance(event_object, ConversationObject):
                 print("\n####### EVENT: CONVERSATION OBJECT")
                 event_convers_id = event_object.id
@@ -148,37 +163,44 @@ async def receive_pact_webhooks(
                     update_data=new_event_data)
             elif isinstance(event_object, MessageObject):
                 print("\n####### EVENT: MESSAGE OBJECT")
+                pact_api_timeout = WEBHOOKS_OPTIONS.OUTGOING_EXT_API_REQ_TIMEOUT
                 message = event_object.message
                 plus_keywords_list = await get_plus_keywords_list_qry(
                     ongoing_sync_session=pgs_session)
 
-                for cur_plus_keyword in plus_keywords_list:
-                    if cur_plus_keyword in message.lower():
-                        print(f"\n\n{'#' * 50}\n{'#' * 50}\n"
-                              f"####### 15 MINUTES CALL (START) ########\n"
-                              f"call_response_dict: {call_response_dict}"
-                              f"{'#' * 50}\n{'#' * 50}\n\n")
+                if WEBHOOKS_OPTIONS.MAKE_EMERGENCY_CALL:
+                    for cur_plus_keyword in plus_keywords_list:
+                        if cur_plus_keyword in message.lower():
+                            print(f"\n\n####### 15 MINUTES CALL (START)\n"
+                                  f"cur_plus_keyword: {cur_plus_keyword}\n"
+                                  f"message: {message.lower()}\n\n")
 
-                        auth_data = AuthDataAggregator(
-                            username=API_USERNAME,
-                            password=API_PASSWORD)
-                        warning_call_data = InWarningCallData(
-                            company_uuid="cf655b4a-4fca-4b0d-b9c1-e272c082a9ba")
+                            try:
+                                auth_data = AuthDataAggregator(
+                                    username=API_USERNAME,
+                                    password=API_PASSWORD)
+                                pact_data = InPactAllCompanies(
+                                    pact_api_token=PACT_API_TOKEN_KEY,
+                                    pact_api_timeout=pact_api_timeout, )
+                                companies_dict = await get_pact_all_companies(
+                                    auth_data=auth_data,
+                                    pact_api_data=pact_data)
+                                companies_list = companies_dict["data"]["companies"]
+                                for cur_company in companies_list:
+                                    external_id = cur_company["external_id"]
+                                    if event_object.company_id == external_id:
+                                        ext_co_uuid = cur_company["external_uuid"]
 
-                        try:
-                            call_response_dict = await request_emergency_call_msvc(
-                                auth_data=auth_data,
-                                warning_call_data=warning_call_data)
-
-                            print(f"\n\n{'#' * 50}\n{'#' * 50}\n"
-                                  f"####### 15 MINUTES CALL (END) ########\n"
-                                  f"call_response_dict: {call_response_dict}"
-                                  f"{'#' * 50}\n{'#' * 50}\n\n")
-                        except Exception as emergency_call_error:
-                            print(f"\n\n{'#' * 50}\n{'#' * 50}\n"
-                                  f"####### 15 MINUTES CALL (ERROR) ########\n"
-                                  f"emergency_call_error: {emergency_call_error}"
-                                  f"{'#' * 50}\n{'#' * 50}\n\n")
+                                warning_call_data = InWarningCallData(
+                                    company_uuid=ext_co_uuid)
+                                call_response_dict = await request_emergency_call(
+                                    auth_data=auth_data,
+                                    warning_call_data=warning_call_data)
+                                print(f"\n\n####### 15 MINUTES CALL (END)\n"
+                                      f"call_response_dict: {call_response_dict}\n\n")
+                            except Exception as emergency_call_error:
+                                print(f"\n\n####### 15 MINUTES CALL (ERROR)\n"
+                                      f"emergency_call_error: {emergency_call_error}\n\n")
 
                 company_id = event_object.company_id
                 event_convers_id = event_object.conversation_id
@@ -194,7 +216,7 @@ async def receive_pact_webhooks(
                         pact_api_token=PACT_API_TOKEN_KEY,
                         company_id=company_id,
                         conversation_id=event_convers_id,
-                        pact_api_timeout=WEBHOOKS_OPTIONS.OUTGOING_EXT_API_REQUEST_TIMEOUT)
+                        pact_api_timeout=pact_api_timeout)
 
                     pact_response_json = await get_pact_conversation_data(
                         auth_data=req_auth_data,
@@ -217,7 +239,8 @@ async def receive_pact_webhooks(
                     new_convers_obj = await create_cache_new_model_obj_qry(
                         ModelClassORM=WebhookConversationModel,
                         ongoing_session=pgs_session,
-                        new_data=conver_req_data)
+                        new_data=conver_req_data,
+                        log_new_data=WEBHOOKS_OPTIONS.LOG_NEW_CONVERSATION_DATA)
                     convers_local_id = new_convers_obj.local_id
                     convers_provider = new_convers_obj.provider  # from conversation model
                     sender_name = new_convers_obj.sender_name  # from conversation model
@@ -268,13 +291,9 @@ async def receive_pact_webhooks(
                         is_emoji_type_flag, is_emoji_size_flag, ])
 
                     if has_emoji_flag:
-                        print("\n\n"
-                              "########################################\n"
-                              "########################################\n"
-                              "############ HAS EMOJI FLAG ############\n"
-                              "########################################\n"
-                              "########################################\n"
-                              "\n\n")
+                        print(f"\n\n{'#' * 50}\n{'#' * 50}\n"
+                              f"HAS EMOJI FLAG (START)\n"
+                              f"{'#' * 50}\n{'#' * 50}\n\n")
 
                 data_from_convers = {
                     "conversation_local_id": convers_local_id,
@@ -285,7 +304,8 @@ async def receive_pact_webhooks(
                 new_message_obj = await create_cache_new_model_obj_qry(
                     ModelClassORM=WebhookMessageModel,
                     ongoing_session=pgs_session,
-                    new_data=new_event_data)
+                    new_data=new_event_data,
+                    log_new_data=WEBHOOKS_OPTIONS.LOG_NEW_MESSAGE_DATA)
                 message_local_id = new_message_obj.local_id
 
                 if attachments:
@@ -298,7 +318,9 @@ async def receive_pact_webhooks(
                     await create_cache_new_model_obj_qry(
                         ModelClassORM=MessageAttachmentsModel,
                         ongoing_session=pgs_session,
-                        new_data=new_attachment_data)
+                        new_data=new_attachment_data,
+                        log_new_data=WEBHOOKS_OPTIONS.LOG_NEW_ATTACHMENT_DATA)
+
             else:
                 print(f"UNKNOWN WEBHOOK EVENT OBJECT [ERROR]:\n"
                       f"type(event_object): {type(event_object)}\n"

@@ -11,4 +11,4 @@ class InAllMessagesByConversation(BaseModel):
     conversation_id: int
     page_number: Optional[int]
     items_per_page: Optional[int]
-    pact_api_timeout: Optional[float] = WEBHOOKS_OPTIONS.OUTGOING_EXT_API_REQUEST_TIMEOUT
+    pact_api_timeout: Optional[float] = WEBHOOKS_OPTIONS.OUTGOING_EXT_API_REQ_TIMEOUT

@@ -9,4 +9,4 @@ class InConversDataByConversID(BaseModel):
     pact_api_token: Optional[str]
     company_id: int
     conversation_id: int
-    pact_api_timeout: Optional[float] = WEBHOOKS_OPTIONS.OUTGOING_EXT_API_REQUEST_TIMEOUT
+    pact_api_timeout: Optional[float] = WEBHOOKS_OPTIONS.OUTGOING_EXT_API_REQ_TIMEOUT

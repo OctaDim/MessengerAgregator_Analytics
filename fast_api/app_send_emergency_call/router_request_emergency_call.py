@@ -14,7 +14,7 @@ router_request_emergency_call = APIRouter(prefix=f"/{base_url_name}",
 
 @router_request_emergency_call.post(path="/request_emergency_call/",
                                     response_model=None)
-async def request_emergency_call_msvc(
+async def request_emergency_call(
         auth_data: AuthDataAggregator,
         warning_call_data: InWarningCallData,
 ) -> dict | None:

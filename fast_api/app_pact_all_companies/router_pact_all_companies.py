@@ -54,9 +54,11 @@ async def get_pact_all_companies(
 
             all_companies = response_json["data"]["companies"]
             next_page_token = response_json["data"].get("next_page", "N/A")
-            print(f"next_page_token: {next_page_token}")
-            for cur_company in all_companies:
-                print(f"cur_company: {cur_company}")
+
+            if API_OPTIONS.LOG_ALL_COMPANIES_REQ_RESPONSE:
+                print(f"next_page_token: {next_page_token}")
+                for cur_company in all_companies:
+                    print(f"cur_company: {cur_company}")
             return dict(response_json)
         except httpx.HTTPStatusError as ext_api_error:
             raise HTTPException(
