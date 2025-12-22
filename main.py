@@ -15,7 +15,7 @@ from admin_panel.model_views.admin_messages import MessagesAdmin
 from admin_panel.model_views.admin_keywords_minus import MinusKeywordsAdmin
 from admin_panel.model_views.admin_keywords_plus import PlusKeywordsAdmin
 from configs.labels_messages import LABELS
-from configs.settings import API_HOST, API_PORT, FASTAPI_OPTIONS, FASTAPI_SESSION_KEY
+from configs.settings import API_HOST, API_PORT, FASTAPI_OPTIONS, FASTAPI_SESSION_KEY, ALCHEMY_OPTIONS
 from db_postgres.postgres_conn.pgs_connection import close_all_async_pgs_connections, close_all_sync_pgs_connections, \
     PgsAsyncConnection
 from db_postgres.postgres_init.db_create_sqladmin_users import create_default_sqladmin_users
@@ -109,7 +109,11 @@ def setup_admin_panel(
 
 
 def create_fastapi_application() -> SessionMiddleware:
-    fastapi_app = FastAPI(lifespan=fast_api_lifespan)
+    fastapi_app = FastAPI(
+        lifespan=fast_api_lifespan,
+        docs_url = None,
+        redoc_url = None, )
+
     for cur_router in routers_list:
         fastapi_app.include_router(router=cur_router, )
 

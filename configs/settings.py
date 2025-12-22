@@ -191,6 +191,7 @@ class FASTAPI_OPTIONS:
 
 @dataclass(frozen=True)
 class ALCHEMY_OPTIONS:
+    DISABLE_SWAGGER_DOCUMENTATION: bool = True
     USE_POSTGRES_DATABASE: bool = True
     ALCHEMY_ORM_RAW_SQL_LOGS: bool = False
     ALCHEMY_QUERY_EXEC_TIME_LOGS: bool = False
