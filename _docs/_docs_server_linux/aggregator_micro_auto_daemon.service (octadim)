@@ -4,9 +4,9 @@ After=network.target
 #After=network.target redis-server.service
 [Service]
 User=octadim
-WorkingDirectory=/usr/local/MessengerAgregator_Analytics
-#ExecStartPre=/bin/bash -c '/usr/local/MessengerAgregator_Analytics/db_redis/check_version_auto_install_redis.sh'
-ExecStart=/usr/local/MessengerAgregator_Analytics/.venv31211/bin/python3.12 /usr/local/MessengerAgregator_Analytics/main.py
+WorkingDirectory=/home/octadim/PycharmProjects/MessengerAgregator_Analytics
+#ExecStartPre=/bin/bash -c '/home/octadim/PycharmProjects/MessengerAgregator_Analytics/db_redis/check_version_auto_install_redis.sh'
+ExecStart=/home/octadim/PycharmProjects/MessengerAgregator_Analytics/.venv31211/bin/python3.12 /home/octadim/PycharmProjects/MessengerAgregator_Analytics/main.py
 Restart=always
 RestartSec=180
 Type=simple

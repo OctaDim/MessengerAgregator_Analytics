@@ -14,9 +14,9 @@ After=network.target redis-server.service
 Requires=redis-server.service
 [Service]
 User=octadim
-WorkingDirectory=/home/octadim/PycharmProjects/MessengerAgregator_Analytics
-ExecStartPre=/bin/bash -c '/home/octadim/PycharmProjects/MessengerAgregator_Analytics/db_redis/check_version_auto_install_redis.sh'
-ExecStart=/home/octadim/PycharmProjects/MessengerAgregator_Analytics/.venv31211_pyann/bin/python3.12 /home/octadim/PycharmProjects/MessengerAgregator_Analytics/main.py
+WorkingDirectory=/usr/local/MessengerAgregator_Analytics
+ExecStartPre=/bin/bash -c '/usr/local/MessengerAgregator_Analytics/db_redis/check_version_auto_install_redis.sh'
+ExecStart=/usr/local/MessengerAgregator_Analytics/.venv31211_pyann/bin/python3.12 /usr/local/MessengerAgregator_Analytics/main.py
 Restart=always
 RestartSec=180
 Type=simple
@@ -37,9 +37,9 @@ After=network.target redis-server.service
 Requires=redis-server.service
 [Service]
 User=octadim
-WorkingDirectory=/home/octadim/PycharmProjects/MessengerAgregator_Analytics
-ExecStartPre=/bin/bash -c '/home/octadim/PycharmProjects/MessengerAgregator_Analytics/db_redis/check_version_auto_install_redis.sh'
-ExecStart=/home/octadim/PycharmProjects/MessengerAgregator_Analytics/.venv31211_pyann/bin/python3.12 /home/octadim/PycharmProjects/MessengerAgregator_Analytics/main.py
+WorkingDirectory=/usr/local/MessengerAgregator_Analytics
+ExecStartPre=/bin/bash -c '/usr/local/MessengerAgregator_Analytics/db_redis/check_version_auto_install_redis.sh'
+ExecStart=/usr/local/MessengerAgregator_Analytics/.venv31211_pyann/bin/python3.12 /usr/local/MessengerAgregator_Analytics/main.py
 Restart=always
 RestartSec=180
 Type=simple
@@ -60,9 +60,9 @@ After=network.target
 #After=network.target redis-server.service
 [Service]
 User=octadim
-WorkingDirectory=/home/octadim/PycharmProjects/MessengerAgregator_Analytics
-#ExecStartPre=/bin/bash -c '/home/octadim/PycharmProjects/MessengerAgregator_Analytics/db_redis/check_version_auto_install_redis.sh'
-ExecStart=/home/octadim/PycharmProjects/MessengerAgregator_Analytics/.venv31211_pyann/bin/python3.12 /home/octadim/PycharmProjects/MessengerAgregator_Analytics/main.py
+WorkingDirectory=/usr/local/MessengerAgregator_Analytics
+#ExecStartPre=/bin/bash -c '/usr/local/MessengerAgregator_Analytics/db_redis/check_version_auto_install_redis.sh'
+ExecStart=/usr/local/MessengerAgregator_Analytics/.venv31211_pyann/bin/python3.12 /usr/local/MessengerAgregator_Analytics/main.py
 Restart=always
 RestartSec=180
 Type=simple
@@ -78,7 +78,7 @@ WantedBy=multi-user.target
 [CTRL]+[O] => [ENTER]
 
 - Проверяем, что все сохранилось, зайдя опять в файл:
-sudo nano /etc/systemd/system/agregator_micro_auto_daemon.service
+sudo nano /etc/systemd/system/aggregator_micro_auto_daemon.service
 
 - Выходим из файла:
 [CTRL+X] => [ENTER]
@@ -87,22 +87,22 @@ sudo nano /etc/systemd/system/agregator_micro_auto_daemon.service
 sudo systemctl daemon-reload
 
 - Запускаем сервис bert_micro_auto_daemon, как димон:
-sudo systemctl start agregator_micro_auto_daemon
+sudo systemctl start aggregator_micro_auto_daemon
 
 - Добавляем сервис в автозагрузку:
-sudo systemctl enable agregator_micro_auto_daemon.service
+sudo systemctl enable aggregator_micro_auto_daemon.service
 
 - Проверяем статус запущенной службы (димона)
-sudo systemctl status agregator_micro_auto_daemon
+sudo systemctl status aggregator_micro_auto_daemon
 
 - устанавливаем цветной вывод (необязательно, но информативнее)
 sudo apt install ccze
 
 - Смотрим логи ошибок и все логи консоли в онлайн режиме (ЦВЕТНОЙ ШРИФТ):
-sudo journalctl -u agregator_micro_auto_daemon -f --all | ccze -A
+sudo journalctl -u aggregator_micro_auto_daemon -f --all | ccze -A
 
 - Смотрим логи ошибок и все логи консоли в онлайн режиме (БЕЛЫЙ ШРИФТ):
-sudo journalctl -u agregator_micro_auto_daemon -f --all
+sudo journalctl -u aggregator_micro_auto_daemon -f --all
 
 - Посмотреть службу слушающую 8000 порт:
     - Сначала узнать номер PID процесса, слушающего порт:
@@ -112,10 +112,13 @@ sudo journalctl -u agregator_micro_auto_daemon -f --all
             - В выводе Loaded: ищем название <имя_службы>.service
 
 - Перезапуск службы-димона (долго):
-sudo systemctl restart agregator_micro_auto_daemon
+sudo systemctl restart aggregator_micro_auto_daemon
 
 - Перезагрузка службы-димона (быстро):
-sudo systemctl reload agregator_micro_auto_daemon
+sudo systemctl reload aggregator_micro_auto_daemon
 
 - Остановка службы-димона:
-sudo systemctl stop agregator_micro_auto_daemon.service
+sudo systemctl stop aggregator_micro_auto_daemon.service
+
+- Убрать службу из автозагрузки:
+sudo systemctl disable aggregator_micro_auto_daemon.service
