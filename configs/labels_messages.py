@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class LABELS:
-    ADMIN_PANEL_TITLE = "АДМИН-ПАНЕЛЬ"
+    ADMIN_PANEL_TITLE = "АНАЛИЗ СООБЩЕНИЙ"
     ICON = "ℹ️"
 
     CONVERSATION_PANEL_TITLE = "РАЗГОВОР:"
