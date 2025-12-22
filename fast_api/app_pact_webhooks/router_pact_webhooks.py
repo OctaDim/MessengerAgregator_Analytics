@@ -62,8 +62,9 @@ async def receive_pact_webhooks(
         pact_resp_json = await request.json()
         event_name = pact_resp_json.get("type")
         event_type = pact_resp_json.get("event")
+        skip_list = ["new", "ack"]
         if (event_name == "group_message"
-                or (event_name == "message" and event_type == "new")):
+                or (event_name == "message" and event_type in skip_list)):
             log_txt = f"SKIPPED WEBHOOK [OK]: event_name: {event_name}\n"
             json_response = JSONResponse(
                 content={"Message": log_txt},
@@ -153,13 +154,10 @@ async def receive_pact_webhooks(
 
                 for cur_plus_keyword in plus_keywords_list:
                     if cur_plus_keyword in message.lower():
-                        print("\n\n"
-                              "########################################\n"
-                              "########################################\n"
-                              "####### 15 MINUTES CALL (start) ########\n"
-                              "########################################\n"
-                              "########################################\n"
-                              "\n\n")
+                        print(f"\n\n{'#' * 50}\n{'#' * 50}\n"
+                              f"####### 15 MINUTES CALL (START) ########\n"
+                              f"call_response_dict: {call_response_dict}"
+                              f"{'#' * 50}\n{'#' * 50}\n\n")
 
                         auth_data = AuthDataAggregator(
                             username=API_USERNAME,
@@ -167,18 +165,20 @@ async def receive_pact_webhooks(
                         warning_call_data = InWarningCallData(
                             company_uuid="cf655b4a-4fca-4b0d-b9c1-e272c082a9ba")
 
-                        emergency_call_dict = await request_emergency_call_msvc(
-                            auth_data=auth_data,
-                            warning_call_data=warning_call_data)
-                if emergency_call_dict:
-                    print("emergency_call_dict: ", emergency_call_dict)
-                print("\n\n"
-                      "########################################\n"
-                      "########################################\n"
-                      "####### 15 MINUTES CALL (end) ########\n"
-                      "########################################\n"
-                      "########################################\n"
-                      "\n\n")
+                        try:
+                            call_response_dict = await request_emergency_call_msvc(
+                                auth_data=auth_data,
+                                warning_call_data=warning_call_data)
+
+                            print(f"\n\n{'#' * 50}\n{'#' * 50}\n"
+                                  f"####### 15 MINUTES CALL (END) ########\n"
+                                  f"call_response_dict: {call_response_dict}"
+                                  f"{'#' * 50}\n{'#' * 50}\n\n")
+                        except Exception as emergency_call_error:
+                            print(f"\n\n{'#' * 50}\n{'#' * 50}\n"
+                                  f"####### 15 MINUTES CALL (ERROR) ########\n"
+                                  f"emergency_call_error: {emergency_call_error}"
+                                  f"{'#' * 50}\n{'#' * 50}\n\n")
 
                 company_id = event_object.company_id
                 event_convers_id = event_object.conversation_id
