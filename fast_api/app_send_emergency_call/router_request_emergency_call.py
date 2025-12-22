@@ -34,7 +34,7 @@ async def request_emergency_call_msvc(
                                          timeout=emergency_call_timeout, )
             response.raise_for_status()
             response_json = response.json()
-            response_json.update({"status_code": response.status_code})
+            response_json.update({"response.status_code": response.status_code})
             if EMERGENCY_CALL_OPTIONS.LOG_EMERGENCY_CALL_REQ_RESPONSE:
                 print(f"response_json: {response_json}")
             return dict(response_json)
