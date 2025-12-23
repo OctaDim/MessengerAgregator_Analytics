@@ -114,9 +114,9 @@ class CustomInviteUrlsFilter(StaticValuesFilter):
                        ("telegram", LABELS.TELEGRAM_FILTER_LABEL),
                        ("whatsapp", LABELS.WHATSAPP_FILTER_LABEL),
                        # ("discord", LABELS.DISCORD_FILTER_LABEL),
-                       # ("viber", LABELS.VIBER_FILTER_LABEL),
                        # ("slack", LABELS.SLACK_FILTER_LABEL),
                        # ("signal", LABELS.SIGNAL_FILTER_LABEL),
+                       ("viber", LABELS.VIBER_FILTER_LABEL),
                        ("vk", LABELS.VK_FILTER_LABEL),
                        ("max", LABELS.MAX_FILTER_LABEL), ]
         return custom_list
@@ -130,10 +130,11 @@ class CustomInviteUrlsFilter(StaticValuesFilter):
         signal_invites_urls = SQLADMIN_FILTERS.SIGNAL_INVITES_URLS
         vk_invites_urls = SQLADMIN_FILTERS.VK_INVITES_URLS
         max_invites_urls = SQLADMIN_FILTERS.MAX_INVITES_URLS
-        all_invites_urls = (telegram_invites_urls + whatsapp_invites_urls +
-                            discord_invites_urls + viber_invites_urls +
-                            slack_invites_urls + signal_invites_urls +
-                            vk_invites_urls + max_invites_urls)
+        all_invites_urls = (
+                telegram_invites_urls + whatsapp_invites_urls +
+                discord_invites_urls + viber_invites_urls +
+                slack_invites_urls + signal_invites_urls +
+                vk_invites_urls + max_invites_urls)
 
         invites_urls_types = {
             "telegram": telegram_invites_urls,  # urls
@@ -148,15 +149,11 @@ class CustomInviteUrlsFilter(StaticValuesFilter):
 
         invites_urls_list = invites_urls_types.get(value)
         if invites_urls_list:
-            print("@@@@@@@@@@@@ invites_urls_list: ", invites_urls_list)
             invites_urls_conditions = []
             for cur_invite_url in invites_urls_list:
                 cur_invite_query = model.message.ilike(f"%{cur_invite_url}%")  # Contains <cur_invite_url>
                 invites_urls_conditions.append(cur_invite_query)
-            modified_query = query.filter(*invites_urls_conditions)
-            print("@@@@@@@@@@@@ invites_urls_conditions: ", invites_urls_conditions)
-            print("@@@@@@@@@@@@ modified_query: ", modified_query)
-
+            modified_query = query.filter(or_(*invites_urls_conditions))
             return modified_query
         else:
             return query
@@ -210,36 +207,19 @@ class CustomAttachedMediaTypeFilter(StaticValuesFilter):
 
             extension_conditions = []
             for cur_ext in extensions_list:
+                # TODO: make filtering by hybrid properties pty_file_name
                 cur_condition_query = model.file_name.ilike(f"%.{cur_ext}")  # Ends with ".<cur_ext>"
                 extension_conditions.append(cur_condition_query)
             mime_conditions = []
 
             for cur_mime in mime_types_list:
+                # TODO: make filtering by hybrid properties pty_mime_type
                 cur_condition_query = model.mime_type.ilike(f"%{cur_mime}%")  # Contains <cur_mime>
                 mime_conditions.append(cur_condition_query)
 
-            modified_query = query.filter(
-                or_(*extension_conditions, *mime_conditions))
+            united_conditions = extension_conditions + mime_conditions  # United filters
+            modified_query = query.filter(or_(*united_conditions))
             return modified_query
-
-            # # TODO: make filtering by hybrid properties
-            # extension_conditions = []
-            # for cur_ext in extensions_list:
-            #     cur_condition_query = model.file_name.ilike(f"%.{cur_ext}")
-            #     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ cur_condition_query: ", cur_condition_query)
-            #     extension_conditions.append(cur_condition_query)
-            # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ extension_conditions: ", extension_conditions)
-            # mime_conditions = []
-            # for cur_mime in mime_types_list:
-            #     cur_condition_query = model.file_mime_type.ilike(f"%{cur_mime}%")
-            #     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ cur_condition_query: ", cur_condition_query)
-            #     mime_conditions.append(cur_condition_query)
-            # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ mime_conditions: ", mime_conditions)
-            #
-            # modified_query = query.filter(
-            #     or_(*extension_conditions, *mime_conditions))
-            # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ modified_query: ", modified_query)
-            # return modified_query
         else:
             return query
 
