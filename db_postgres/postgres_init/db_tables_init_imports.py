@@ -14,6 +14,7 @@ from db_postgres.postgres_models.keywords_plus_model import PlusKeywordsModel
 from db_postgres.postgres_models.keywords_minus_model import MinusKeywordsModel
 from db_postgres.postgres_models.keywords_subjects_model import PlusKeywordsSubjectModel
 from db_postgres.postgres_models.keywords_subjects_model import MinusKeywordsSubjectModel
+from db_postgres.postgres_models.chats_subjects_model import ChatsSubjectModel
 
 # ######################################################################
 # ############ DON'T AUTO FORMAT, COMMIT OR REMOVE IMPORTS #############
