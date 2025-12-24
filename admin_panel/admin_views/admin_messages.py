@@ -1,24 +1,21 @@
 from datetime import datetime
 
 from sqladmin import ModelView
-from sqlalchemy import select
 from starlette.requests import Request
 
+from admin_panel.admin_views.mixin_update_model_old_pk_val import (
+    set_old_pkey_in_new_data_mixin)
 from admin_panel.custom_actions_mixins.mix_cancel_all_filters import (
     CanceAllFiltersSortsMixin)
 from admin_panel.custom_classes.custom_filter_classes import (
     CustomBooleanFilter, CustomAttachedMediaTypeFilter,
     CustomStaticNumbersFilter, CustomInviteUrlsFilter)
 from configs.labels_messages import LABELS
-from configs.settings import ALCHEMY_OPTIONS, SQLADMIN_OPTIONS
-from db_postgres.postgres_conn.pgs_connection import (
-    PgsSyncConnection, PgsAsyncConnection)
-from db_postgres.postgres_conn.postgres_session import (
-    PgsSyncSession, PgsAsyncSession)
+from configs.settings import SQLADMIN_OPTIONS
 from db_postgres.postgres_models.webhook_message_model import (
     WebhookMessageModel)
-from db_postgres.postgres_queries.qry_get_messages_filter_values import (
-    get_sync_filters_keys_labels_qry)
+from db_postgres.postgres_queries.qry_sync_get_messages_filter_values import (
+    get_sync_message_filters_values_qry)
 
 
 class MessagesAdmin(ModelView,
@@ -144,115 +141,109 @@ class MessagesAdmin(ModelView,
 
     @property
     def column_filters(self):  # Standard and custom filters to filter column list
-        pgs_sync_conn = PgsSyncConnection()
-        with PgsSyncSession(engine=pgs_sync_conn.engine,
-                            log_good_ops=ALCHEMY_OPTIONS.ALCHEMY_ORM_RAW_SQL_LOGS
-                            ) as pgs_sync_session:
-            # Getting all possible unique and sorted values for filters
-            filters_keys = get_sync_filters_keys_labels_qry(
-                ongoing_sync_session=pgs_sync_session)
-            convers_local_id_keys = filters_keys["convers_local_id_keys"]
-            company_id_keys = filters_keys["company_id_keys"]
-            provider_keys = filters_keys["provider_keys"]
-            sender_name_keys = filters_keys["sender_name_keys"]
+        filters_values = get_sync_message_filters_values_qry()  # All possible unique and sorted values for filters
+        convers_local_id_keys = filters_values["convers_local_id_keys"]
+        company_id_keys = filters_values["company_id_keys"]
+        provider_keys = filters_values["provider_keys"]
+        sender_name_keys = filters_values["sender_name_keys"]
 
-            column_filters_list = [
+        column_filters_list = [
+            # Filter using custom overridden filter class for boolean field
+            CustomBooleanFilter(  # field: WebhookMessageModel.group
+                column=WebhookMessageModel.income,
+                title=LABELS.INCOME_FILTER_TITLE),
+
+            CustomStaticNumbersFilter(  # field: WebhookMessageModel.company_id
+                # Filter using custom overridden filter class for int(number) field
+                column=WebhookMessageModel.company_id,
+                values=company_id_keys,
+                title=LABELS.COMPANY_ID_FILTER_TITLE),
+
+            CustomAttachedMediaTypeFilter(  # combined fields: WebhookMessageModel.file_name and mime_type
+                # Filter using custom overridden filter class for string field
+                column=WebhookMessageModel.mime_type,  # Used by parent to define Model class, but not in overridden
+                values=[],  # Defined in overridden CustomRepliedStateFilter (def lookups), but can be defined here
+                title=LABELS.FILE_TYPE_FILTER_TITLE),
+
+            CustomBooleanFilter(  # field: WebhookMessageModel.push_to_talk
                 # Filter using custom overridden filter class for boolean field
-                CustomBooleanFilter(  # field: WebhookMessageModel.group
-                    column=WebhookMessageModel.income,
-                    title=LABELS.INCOME_FILTER_TITLE),
+                column=WebhookMessageModel.push_to_talk,
+                title=LABELS.VOICE_MESSAGE_FILTER_TITLE),
 
-                CustomStaticNumbersFilter(  # field: WebhookMessageModel.company_id
-                    # Filter using custom overridden filter class for int(number) field
-                    column=WebhookMessageModel.company_id,
-                    values=company_id_keys,
-                    title=LABELS.COMPANY_ID_FILTER_TITLE),
+            # TODO: Settle a question of not displaying provider
+            # CustomUniqueProviderForeig1nKeyFilter(  # foreign key field: customer_id (display field: account_id)
+            #     foreign_key=WebhookMessageModel.conversation_local_id,
+            #     foreign_display_field=WebhookConversationModel.provider,
+            #     foreign_model=WebhookConversationModel,
+            #     title=LABELS.PROVIDER),
 
-                CustomAttachedMediaTypeFilter(  # combined fields: WebhookMessageModel.file_name and mime_type
-                    # Filter using custom overridden filter class for string field
-                    column=WebhookMessageModel.mime_type,  # Used by parent to define Model class, but not in overridden
-                    values=[],  # Defined in overridden CustomRepliedStateFilter (def lookups), but can be defined here
-                    title=LABELS.FILE_TYPE_FILTER_TITLE),
+            CustomStaticNumbersFilter(  # field: WebhookMessageModel.conversation_local_id
+                # Filter using custom overridden filter class for int(number) field
+                column=WebhookMessageModel.provider,
+                values=provider_keys,
+                title=LABELS.PROVIDER_FILTER_TITLE),
 
-                CustomBooleanFilter(  # field: WebhookMessageModel.push_to_talk
-                    # Filter using custom overridden filter class for boolean field
-                    column=WebhookMessageModel.push_to_talk,
-                    title=LABELS.VOICE_MESSAGE_FILTER_TITLE),
+            CustomInviteUrlsFilter(  # field: WebhookMessageModel.conversation_local_id
+                # Filter using custom overridden filter class for int(number) field
+                column=WebhookMessageModel.message,
+                values=[],
+                title=LABELS.INVITES_FILTER_TITLE),
 
-                # TODO: Settle a question of not displaying provider
-                # CustomUniqueProviderForeig1nKeyFilter(  # foreign key field: customer_id (display field: account_id)
-                #     foreign_key=WebhookMessageModel.conversation_local_id,
-                #     foreign_display_field=WebhookConversationModel.provider,
-                #     foreign_model=WebhookConversationModel,
-                #     title=LABELS.PROVIDER),
+            CustomStaticNumbersFilter(  # field: WebhookMessageModel.conversation_local_id
+                # Filter using custom overridden filter class for int(number) field
+                column=WebhookMessageModel.sender_name,
+                values=sender_name_keys,
+                title=LABELS.SENDER_NAME_FILTER_TITLE),
 
-                CustomStaticNumbersFilter(  # field: WebhookMessageModel.conversation_local_id
-                    # Filter using custom overridden filter class for int(number) field
-                    column=WebhookMessageModel.provider,
-                    values=provider_keys,
-                    title=LABELS.PROVIDER_FILTER_TITLE),
+            # CustomStaticNumbersFilter(  # field: WebhookMessageModel.conversation_local_id
+            #     # Filter using custom overridden filter class for int(number) field
+            #     column=WebhookMessageModel.conversation_local_id,
+            #     values=convers_local_id_keys,
+            #     title=LABELS.CONVERS_LOCAL_ID_FILTER_TITLE),
 
-                CustomInviteUrlsFilter(  # field: WebhookMessageModel.conversation_local_id
-                    # Filter using custom overridden filter class for int(number) field
-                    column=WebhookMessageModel.message,
-                    values=[],
-                    title=LABELS.INVITES_FILTER_TITLE),
+            # CustomRepliedStateFilter(  # field: WebhookMessageModel.replied_state
+            # # Filter using custom overridden filter class for string field
+            #     column=WebhookMessageModel.replied_state,
+            #     values=[],  # Defined in overridden CustomRepliedStateFilter and 'def lookups', can be defined here
+            #     title=LABELS.REPLIED_FILTER_TITLE),
 
-                CustomStaticNumbersFilter(  # field: WebhookMessageModel.conversation_local_id
-                    # Filter using custom overridden filter class for int(number) field
-                    column=WebhookMessageModel.sender_name,
-                    values=sender_name_keys,
-                    title=LABELS.SENDER_NAME_FILTER_TITLE),
+            # Filter using custom overridden filter class for property model field
+            # CustAccountDataFilter(  # combine fields: account_username, account_id
+            #     column=WebhookMessageModel.account_data,
+            #     values=acc_data_values,
+            #     title=LABELS.FILTER_ACCOUNT_DATA),
 
-                # CustomStaticNumbersFilter(  # field: WebhookMessageModel.conversation_local_id
-                #     # Filter using custom overridden filter class for int(number) field
-                #     column=WebhookMessageModel.conversation_local_id,
-                #     values=convers_local_id_keys,
-                #     title=LABELS.CONVERS_LOCAL_ID_FILTER_TITLE),
+            # CustomNewCategoryTextFilter(  # combine fields: new_category, new_text
+            #     column=WebhookMessageModel.new_category,
+            #     values=[("all", LABELS.ALL_RECS),
+            #             ("new_category", LABELS.NEW_CLASS_ONLY),
+            #             ("new_text", LABELS.NEW_TEXT_ONLY),
+            #             ("new_category_text", LABELS.NEW_CLASS_AND_TEXT)],
+            #     title=LABELS.FILTER_NEW_DRAFT),
 
-                # CustomRepliedStateFilter(  # field: WebhookMessageModel.replied_state
-                # # Filter using custom overridden filter class for string field
-                #     column=WebhookMessageModel.replied_state,
-                #     values=[],  # Defined in overridden CustomRepliedStateFilter and 'def lookups', can be defined here
-                #     title=LABELS.REPLIED_FILTER_TITLE),
+            # CustomStaticValuesFilter(  # field: account_username
+            #     column=WebhookMessageModel.account_username,
+            #     values=username_values,
+            #     title=LABELS.FILTER_ACCOUNT_USERNAME),
 
-                # Filter using custom overridden filter class for property model field
-                # CustAccountDataFilter(  # combine fields: account_username, account_id
-                #     column=WebhookMessageModel.account_data,
-                #     values=acc_data_values,
-                #     title=LABELS.FILTER_ACCOUNT_DATA),
+            # CustomStaticValuesFilter(  # field: account_id
+            #     column=WebhookMessageModel.account_id,
+            #     values=acc_id_values,
+            #     title=LABELS.ACCOUNT_ID),
 
-                # CustomNewCategoryTextFilter(  # combine fields: new_category, new_text
-                #     column=WebhookMessageModel.new_category,
-                #     values=[("all", LABELS.ALL_RECS),
-                #             ("new_category", LABELS.NEW_CLASS_ONLY),
-                #             ("new_text", LABELS.NEW_TEXT_ONLY),
-                #             ("new_category_text", LABELS.NEW_CLASS_AND_TEXT)],
-                #     title=LABELS.FILTER_NEW_DRAFT),
+            # CustomForeignKeyFilter(  # foreign key field: customer_id (display field: account_id)
+            #     foreign_key=WebhookMessageModel.conversation_local_id,
+            #     foreign_display_field=WebhookConversationModel.provider,
+            #     foreign_model=WebhookConversationModel,
+            #     title=LABELS.PROVIDER),
 
-                # CustomStaticValuesFilter(  # field: account_username
-                #     column=WebhookMessageModel.account_username,
-                #     values=username_values,
-                #     title=LABELS.FILTER_ACCOUNT_USERNAME),
+            # CustomForeignKeyFilter(  # foreign key field: customer_id (display field: account_id)
+            #     foreign_key=WebhookMessageModel.customer_id,
+            #     foreign_display_field=CustomerModel.account_id,
+            #     foreign_model=CustomerModel,
+            #     title=LABELS.FILTER_ACCOUNT_ID),
 
-                # CustomStaticValuesFilter(  # field: account_id
-                #     column=WebhookMessageModel.account_id,
-                #     values=acc_id_values,
-                #     title=LABELS.ACCOUNT_ID),
-
-                # CustomForeignKeyFilter(  # foreign key field: customer_id (display field: account_id)
-                #     foreign_key=WebhookMessageModel.conversation_local_id,
-                #     foreign_display_field=WebhookConversationModel.provider,
-                #     foreign_model=WebhookConversationModel,
-                #     title=LABELS.PROVIDER),
-
-                # CustomForeignKeyFilter(  # foreign key field: customer_id (display field: account_id)
-                #     foreign_key=WebhookMessageModel.customer_id,
-                #     foreign_display_field=CustomerModel.account_id,
-                #     foreign_model=CustomerModel,
-                #     title=LABELS.FILTER_ACCOUNT_ID),
-
-            ]  # <== Do not remove or comment!!! It's used!!!
+        ]  # <== Do not remove or comment!!! It's used!!!
         return column_filters_list
 
     column_default_sort = [
@@ -375,17 +366,15 @@ class MessagesAdmin(ModelView,
 
     form_include_pk = False  # Display primary key fields in edit form or not
 
-    # Preserve changing field value via request or via editable form field, or some other logic on update
+    # Preserve changing local_id via request or via editable form field
+    # Some other functionality can be defined on update
     async def update_model(self, request: Request, pk: str, data: dict) -> None:
-        pgs_async_conn = PgsAsyncConnection()
-        async with PgsAsyncSession(engine=pgs_async_conn.engine,
-                                   log_good_ops=ALCHEMY_OPTIONS.ALCHEMY_ORM_RAW_SQL_LOGS
-                                   ) as pgs_async_session:
-            on_update_query = select(self.model).where(self.model.local_id == int(pk))
-            query_result = await pgs_async_session.execute(on_update_query)
-            current_obj = query_result.scalar_one()
-            data["local_id"] = current_obj.local_id
-            return await super().update_model(request, pk, data)
+        data_with_old_pk = await set_old_pkey_in_new_data_mixin(
+            orm_model=self.model,
+            prim_key_value_str=pk,
+            prim_key_name="local_id",
+            form_data=data)
+        return await super().update_model(request, pk, data=data_with_old_pk)
 
     # form_widget_args = {  # Edit form fields additional properties
     #     "local_id": {"readonly": True, "disabled": True},
