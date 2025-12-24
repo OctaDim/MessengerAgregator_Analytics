@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import String, BigInteger, TIMESTAMP
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import String, BigInteger, TIMESTAMP, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db_postgres.postgres_init.declarative_base_model import Base
 from db_postgres.postgres_models.orm_models_fields_mixins import (
@@ -13,6 +13,8 @@ class WebhookConversationModel(Base, ActiveMix, LocalCreateUpdateMix):
     __tablename__ = "webhook_conversation"
 
     local_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    chats_subject_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("chats_subject_name.id", ondelete="SET NULL"))
 
     event: Mapped[Optional[str]] = mapped_column(String(15))
     type: Mapped[Optional[str]] = mapped_column(String(15))
@@ -33,3 +35,9 @@ class WebhookConversationModel(Base, ActiveMix, LocalCreateUpdateMix):
         TIMESTAMP(timezone=True))
     last_updated_at: Mapped[Optional[datetime]] = mapped_column(
         TIMESTAMP(timezone=True))
+
+    this_conversation_subject = relationship(
+    # this_conversation_subject: Mapped[Optional["ChatsSubjectModel"]] = relationship(
+        argument="ChatsSubjectModel",
+        order_by="ChatsSubjectModel.chats_subject_name",
+        back_populates="this_subject_conversations")
