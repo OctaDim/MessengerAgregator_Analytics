@@ -9,24 +9,38 @@ from sqladmin import Admin
 from starlette.applications import Starlette
 from starlette.middleware.sessions import SessionMiddleware
 
-from admin_panel.model_views.__temp.admin_auth_role_backend import AdminAuthRoleAuthBackend
-from admin_panel.model_views.admin_conversations import ConversationsAdmin
-from admin_panel.model_views.admin_messages import MessagesAdmin
-from admin_panel.model_views.admin_keywords_minus import MinusKeywordsAdmin
-from admin_panel.model_views.admin_keywords_plus import PlusKeywordsAdmin
+from admin_panel.admin_views.__temp.admin_auth_role_backend import (
+    AdminAuthRoleAuthBackend)
+from admin_panel.admin_views.admin_chats_subjects import (
+    ChatSubjectsAdmin)
+from admin_panel.admin_views.admin_conversations import (
+    ConversationsAdmin)
+from admin_panel.admin_views.admin_keywords_minus import (
+    MinusKeywordsAdmin)
+from admin_panel.admin_views.admin_keywords_plus import (
+    PlusKeywordsAdmin)
+from admin_panel.admin_views.admin_messages import MessagesAdmin
 from configs.labels_messages import LABELS
-from configs.settings import API_HOST, API_PORT, FASTAPI_OPTIONS, FASTAPI_SESSION_KEY, ALCHEMY_OPTIONS
-from db_postgres.postgres_conn.pgs_connection import close_all_async_pgs_connections, close_all_sync_pgs_connections, \
-    PgsAsyncConnection
-from db_postgres.postgres_init.db_create_sqladmin_users import create_default_sqladmin_users
-from db_postgres.postgres_init.db_tables_initialization import sync_initialize_db_tables
-from fast_api.app_pact_all_conversations.router_pact_all_conversations import router_pact_get_all_conversations
-from fast_api.app_pact_message_data_by_id.router_pact_message_data import router_pact_get_message_data
-from fast_api.app_pact_messages_by_conversation.router_messages_by_conversation import \
-    router_pact_get_messages_by_convers
-from fast_api.app_pact_webhooks.router_pact_webhooks import router_pact_receive_webhooks
+from configs.settings import (
+    API_HOST, API_PORT, FASTAPI_OPTIONS, FASTAPI_SESSION_KEY)
+from db_postgres.postgres_conn.pgs_connection import (
+    close_all_async_pgs_connections, close_all_sync_pgs_connections,
+    PgsAsyncConnection)
+from db_postgres.postgres_init.db_create_sqladmin_users import (
+    create_default_sqladmin_users)
+from db_postgres.postgres_init.db_tables_initialization import (
+    sync_initialize_db_tables)
+from fast_api.app_pact_all_conversations.router_pact_all_conversations import (
+    router_pact_get_all_conversations)
+from fast_api.app_pact_message_data_by_id.router_pact_message_data import (
+    router_pact_get_message_data)
+from fast_api.app_pact_messages_by_conversation.router_messages_by_conversation import (
+    router_pact_get_messages_by_convers)
+from fast_api.app_pact_webhooks.router_pact_webhooks import (
+    router_pact_receive_webhooks)
 from fast_api.app_root_url.router_main import router_root_url
-from fast_api.app_test_endpoint.router_test_endpoint import router_develop_test_endpoint
+from fast_api.app_test_endpoint.router_test_endpoint import (
+    router_develop_test_endpoint)
 
 routers_list = [
     router_root_url,
@@ -42,6 +56,7 @@ routers_list = [
 admin_panel_views = [
     ConversationsAdmin,
     MessagesAdmin,
+    ChatSubjectsAdmin,
     PlusKeywordsAdmin,
     MinusKeywordsAdmin,
 ]
@@ -111,8 +126,8 @@ def setup_admin_panel(
 def create_fastapi_application() -> SessionMiddleware:
     fastapi_app = FastAPI(
         lifespan=fast_api_lifespan,
-        docs_url = None,
-        redoc_url = None, )
+        docs_url=None,
+        redoc_url=None, )
 
     for cur_router in routers_list:
         fastapi_app.include_router(router=cur_router, )
