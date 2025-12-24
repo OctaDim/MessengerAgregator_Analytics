@@ -64,7 +64,7 @@ class MessagesAdmin(ModelView,
         WebhookMessageModel.push_to_talk,
         # WebhookMessageModel.pty_push_to_talk,  # property
         WebhookMessageModel.message,
-        WebhookMessageModel.attachment_url,
+        # WebhookMessageModel.attachment_url,
         # WebhookMessageModel.pty_attachment_url,  # property
         # WebhookMessageModel.attachments,  ##
         WebhookMessageModel.created_at,
@@ -111,33 +111,35 @@ class MessagesAdmin(ModelView,
         WebhookMessageModel.local_id,
         WebhookMessageModel.conversation_local_id,
         WebhookMessageModel.event,
-        WebhookMessageModel.type,
-        WebhookMessageModel.id,
+        WebhookMessageModel.type,  ##
+        WebhookMessageModel.id,  ##
         WebhookMessageModel.provider,
         WebhookMessageModel.sender_name,
         # WebhookMessageModel.emoji_count,
         # WebhookMessageModel.webp_count,
-        WebhookMessageModel.external_id,
+        WebhookMessageModel.external_id,  ##
         WebhookMessageModel.company_id,
-        WebhookMessageModel.conversation_id,
+        WebhookMessageModel.conversation_id,  ##
         WebhookMessageModel.contact_id,
-        WebhookMessageModel.replied_to_id,
+        WebhookMessageModel.replied_to_id,  ##
         WebhookMessageModel.income,
-        WebhookMessageModel.status,
-        WebhookMessageModel.message,
-        WebhookMessageModel.reactions,
-        WebhookMessageModel.details,
-        WebhookMessageModel.attachments,
-        WebhookMessageModel.attachment_url,
+        WebhookMessageModel.status,  ##
+        # WebhookMessageModel.reactions,  ##
+        WebhookMessageModel.details,  ##
         WebhookMessageModel.file_name,
+        # WebhookMessageModel.pty_file_name,  # property
         WebhookMessageModel.mime_type,
+        # WebhookMessageModel.pty_mime_type,  # property
         WebhookMessageModel.push_to_talk,
-        # WebhookMessageModel.pty_file_name,
-        # WebhookMessageModel.pty_mime_type,
+        # WebhookMessageModel.pty_push_to_talk,  # property
+        WebhookMessageModel.message,
+        # WebhookMessageModel.attachment_url,
+        # WebhookMessageModel.pty_attachment_url,  # property
+        # WebhookMessageModel.attachments,  ##
         WebhookMessageModel.created_at,
-        WebhookMessageModel.external_created_at,
-        WebhookMessageModel.local_created_at,
-        WebhookMessageModel.local_updated_at,
+        # WebhookMessageModel.external_created_at,
+        # WebhookMessageModel.local_created_at,
+        # WebhookMessageModel.local_updated_at,
     ]
 
     @property
@@ -291,31 +293,79 @@ class MessagesAdmin(ModelView,
         WebhookMessageModel.local_updated_at,
     ]
 
-    # column_details_list = [  # Display form fields, all fields if not defined
-    #     WebhookMessageModel.id,
-    #     WebhookMessageModel.account_data,
-    #     WebhookMessageModel.ds_existing_category,
-    #     WebhookMessageModel.draft_category,
-    #     WebhookMessageModel.ds_existing_text,
-    #     WebhookMessageModel.draft_text,
-    #     WebhookMessageModel.current_status,
-    #     WebhookMessageModel.active,
-    #     WebhookMessageModel.created_at, ]
+    column_details_list = [  # Display form fields, all fields if not defined
+        WebhookMessageModel.local_id,
+        WebhookMessageModel.conversation_local_id,
+        WebhookMessageModel.event,
+        WebhookMessageModel.type,  ##
+        WebhookMessageModel.id,  ##
+        WebhookMessageModel.provider,
+        WebhookMessageModel.sender_name,
+        # WebhookMessageModel.emoji_count,
+        # WebhookMessageModel.webp_count,
+        # WebhookMessageModel.external_id,  ##
+        WebhookMessageModel.company_id,
+        WebhookMessageModel.conversation_id,  ##
+        # WebhookMessageModel.contact_id,
+        WebhookMessageModel.replied_to_id,  ##
+        WebhookMessageModel.income,
+        WebhookMessageModel.status,  ##
+        # WebhookMessageModel.reactions,  ##
+        WebhookMessageModel.details,  ##
+        WebhookMessageModel.file_name,
+        # WebhookMessageModel.pty_file_name,  # property
+        # WebhookMessageModel.mime_type,
+        # WebhookMessageModel.pty_mime_type,  # property
+        WebhookMessageModel.push_to_talk,
+        # WebhookMessageModel.pty_push_to_talk,  # property
+        WebhookMessageModel.message,
+        # WebhookMessageModel.attachment_url,
+        # WebhookMessageModel.pty_attachment_url,  # property
+        # WebhookMessageModel.attachments,  ##
+        WebhookMessageModel.created_at,
+        WebhookMessageModel.external_created_at,
+        # WebhookMessageModel.local_created_at,
+        # WebhookMessageModel.local_updated_at,
+    ]
 
     # column_details_exclude_list = [  # If column_details_list not defined, all fields except defined
     #     WebhookMessageModel.local_created_at,
     #     WebhookMessageModel.local_updated_at, ]
 
-    # form_columns = [  #  Edit form fields, all fields if not defined
-    #     WebhookMessageModel.account_id,
-    #     WebhookMessageModel.account_username,
-    #     WebhookMessageModel.ds_existing_category,
-    #     WebhookMessageModel.draft_category,
-    #     WebhookMessageModel.ds_existing_text,
-    #     WebhookMessageModel.draft_text,
-    #     WebhookMessageModel.current_status,
-    #     WebhookMessageModel.active,
-    #     WebhookMessageModel.created_at, ]
+    form_columns = [  # Edit form fields, all fields if not defined
+        WebhookMessageModel.local_id,
+        WebhookMessageModel.conversation_local_id,
+        WebhookMessageModel.event,
+        WebhookMessageModel.type,  ##
+        WebhookMessageModel.id,  ##
+        WebhookMessageModel.provider,
+        WebhookMessageModel.sender_name,
+        # WebhookMessageModel.emoji_count,
+        # WebhookMessageModel.webp_count,
+        # WebhookMessageModel.external_id,  ##
+        WebhookMessageModel.company_id,
+        WebhookMessageModel.conversation_id,  ##
+        # WebhookMessageModel.contact_id,
+        WebhookMessageModel.replied_to_id,  ##
+        WebhookMessageModel.income,
+        WebhookMessageModel.status,  ##
+        # WebhookMessageModel.reactions,  ##
+        WebhookMessageModel.details,  ##
+        WebhookMessageModel.file_name,
+        # WebhookMessageModel.pty_file_name,  # property
+        # WebhookMessageModel.mime_type,
+        # WebhookMessageModel.pty_mime_type,  # property
+        WebhookMessageModel.push_to_talk,
+        # WebhookMessageModel.pty_push_to_talk,  # property
+        WebhookMessageModel.message,
+        # WebhookMessageModel.attachment_url,
+        # WebhookMessageModel.pty_attachment_url,  # property
+        # WebhookMessageModel.attachments,  ##
+        WebhookMessageModel.created_at,
+        # WebhookMessageModel.external_created_at,
+        # WebhookMessageModel.local_created_at,
+        # WebhookMessageModel.local_updated_at,
+    ]
 
     # form_excluded_columns = [  # If form_columns not defined
     #     "id",

@@ -14,18 +14,18 @@ from db_postgres.postgres_conn.pgs_connection import (
     PgsAsyncConnection)
 from db_postgres.postgres_conn.postgres_session import (
     PgsAsyncSession)
-from db_postgres.postgres_models.keywords_plus_model import (
-    PlusKeywordsModel)
+from db_postgres.postgres_models.keywords_minus_model import (
+    MinusKeywordsModel)
 
 
-class PlusKeywordsAdmin(ModelView,
+class MinusKeywordsAdmin(ModelView,
                         CanceAllFiltersSortsMixin,
-                        model=PlusKeywordsModel):
-    name = LABELS.PLUS_KEYWORD_PANEL_TITLE
-    name_plural = LABELS.PLUS_KEYWORDS_PANEL_TITLE
+                        model=MinusKeywordsModel):
+    name = LABELS.MINUS_KEYWORD_PANEL_TITLE
+    name_plural = LABELS.MINUS_KEYWORDS_PANEL_TITLE
     icon = LABELS.ICON
-    category = LABELS.PLUS_KEYWORDS_CATEGORY_TITLE
-    category_icon = LABELS.PLUS_KEYWORDS_CATEGORY_ICON
+    category = LABELS.MINUS_KEYWORDS_CATEGORY_TITLE
+    category_icon = LABELS.MINUS_KEYWORDS_CATEGORY_ICON
     is_async = True  # Default False
     page_size = 100
     page_size_options = [25, 50, 100, 200, 500, 1000]
@@ -36,30 +36,30 @@ class PlusKeywordsAdmin(ModelView,
     can_export = True
 
     column_list = [  # Main table columns
-        PlusKeywordsModel.id,
-        # PlusKeywordsModel.plus_subject_id,
-        PlusKeywordsModel.plus_keyword,
-        PlusKeywordsModel.active,
-        PlusKeywordsModel.local_created_at,
-        PlusKeywordsModel.local_updated_at,
+        MinusKeywordsModel.id,
+        # MinusKeywordsModel.minus_subject_id,
+        MinusKeywordsModel.minus_keyword,
+        MinusKeywordsModel.active,
+        MinusKeywordsModel.local_created_at,
+        MinusKeywordsModel.local_updated_at,
     ]
 
     column_labels = {  # Human labels instead of table fields names
-        PlusKeywordsModel.id: LABELS.ID_NUMBER,
-        PlusKeywordsModel.plus_subject_id: LABELS.PLUS_KEYWORD,
-        PlusKeywordsModel.plus_keyword: LABELS.PLUS_KEYWORD,
-        PlusKeywordsModel.active: LABELS.ACTIVE,
-        PlusKeywordsModel.local_created_at: LABELS.LOCAL_CREATED,
-        PlusKeywordsModel.local_updated_at: LABELS.LOCAL_UPDATED,
+        MinusKeywordsModel.id: LABELS.ID_NUMBER,
+        MinusKeywordsModel.minus_subject_id: LABELS.MINUS_SUBJECT,
+        MinusKeywordsModel.minus_keyword: LABELS.MINUS_KEYWORD,
+        MinusKeywordsModel.active: LABELS.ACTIVE,
+        MinusKeywordsModel.local_created_at: LABELS.LOCAL_CREATED,
+        MinusKeywordsModel.local_updated_at: LABELS.LOCAL_UPDATED,
     }
 
     column_searchable_list = [  # Search included fields
-        PlusKeywordsModel.id,
-        # PlusKeywordsModel.plus_subject_id,
-        PlusKeywordsModel.plus_keyword,
-        PlusKeywordsModel.active,
-        PlusKeywordsModel.local_created_at,
-        PlusKeywordsModel.local_updated_at,
+        MinusKeywordsModel.id,
+        # MinusKeywordsModel.minus_subject_id,
+        MinusKeywordsModel.minus_keyword,
+        MinusKeywordsModel.active,
+        MinusKeywordsModel.local_created_at,
+        MinusKeywordsModel.local_updated_at,
     ]
 
     @property
@@ -67,46 +67,46 @@ class PlusKeywordsAdmin(ModelView,
         column_filters_list = [
             # Filter using custom overridden filter class for boolean field
             CustomBooleanFilter(  # field: WebhookMessageModel.group
-                column=PlusKeywordsModel.active,
+                column=MinusKeywordsModel.active,
                 title=LABELS.ACTIVE_FILTER_TITLE),
         ]  # <== Do not remove or comment!!! It's used!!!
         return column_filters_list
 
     column_default_sort = [
-        # (PlusKeywordsModel.plus_subject_id, False),  # True - descending, False - ascending
-        (PlusKeywordsModel.plus_keyword, False),  # True - descending, False - ascending
-        (PlusKeywordsModel.active, False),  # True - descending, False - ascending
+        # (MinusKeywordsModel.minus_subject_id, False),  # True - descending, False - ascending
+        (MinusKeywordsModel.minus_keyword, False),  # True - descending, False - ascending
+        (MinusKeywordsModel.active, False),  # True - descending, False - ascending
     ]
 
     column_sortable_list = [  # Column list (main table) sortable fields
-        PlusKeywordsModel.id,
-        # PlusKeywordsModel.plus_subject_id,
-        PlusKeywordsModel.plus_keyword,
-        PlusKeywordsModel.active,
-        PlusKeywordsModel.local_created_at,
-        PlusKeywordsModel.local_updated_at,
+        MinusKeywordsModel.id,
+        # MinusKeywordsModel.minus_subject_id,
+        MinusKeywordsModel.minus_keyword,
+        MinusKeywordsModel.active,
+        MinusKeywordsModel.local_created_at,
+        MinusKeywordsModel.local_updated_at,
     ]
 
     column_details_list = [  # Display form fields, all fields if not defined
-        PlusKeywordsModel.id,
-        # PlusKeywordsModel.plus_subject_id,
-        PlusKeywordsModel.plus_keyword,
-        PlusKeywordsModel.active,
-        PlusKeywordsModel.local_created_at,
-        PlusKeywordsModel.local_updated_at,
+        MinusKeywordsModel.id,
+        # MinusKeywordsModel.minus_subject_id,
+        MinusKeywordsModel.minus_keyword,
+        MinusKeywordsModel.active,
+        MinusKeywordsModel.local_created_at,
+        MinusKeywordsModel.local_updated_at,
     ]
 
     # column_details_exclude_list = [  # If column_details_list not defined, all fields except defined
-    #     PlusKeywordsModel.local_created_at,
-    #     PlusKeywordsModel.local_updated_at, ]
+    #     MinusKeywordsModel.local_created_at,
+    #     MinusKeywordsModel.local_updated_at, ]
 
     form_columns = [  # Edit form fields, all fields if not defined
-        PlusKeywordsModel.id,
-        # PlusKeywordsModel.plus_subject_id,
-        PlusKeywordsModel.plus_keyword,
-        PlusKeywordsModel.active,
-        # PlusKeywordsModel.local_created_at,
-        # PlusKeywordsModel.local_updated_at,
+        MinusKeywordsModel.id,
+        # MinusKeywordsModel.minus_subject_id,
+        MinusKeywordsModel.minus_keyword,
+        MinusKeywordsModel.active,
+        MinusKeywordsModel.local_created_at,
+        MinusKeywordsModel.local_updated_at,
     ]
 
     # form_excluded_columns = [  # If form_columns not defined
@@ -130,11 +130,11 @@ class PlusKeywordsAdmin(ModelView,
 
     form_widget_args = {  # Edit form fields additional properties
         "id": {"readonly": True, "disabled": True},
-        "plus_subject_id": {"readonly": True},
-        "plus_keyword": {},
+        "minus_subject_id": {"readonly": True},
+        "minus_keyword": {},
         "active": {},
-        "created_at": {"readonly": True, "disabled": True},
-        "updated_at": {"readonly": True, "disabled": True},
+        "local_created_at": {"readonly": False, "disabled": True},
+        "local_updated_at": {"readonly": False, "disabled": True},
     }
 
     @staticmethod
@@ -153,7 +153,7 @@ class PlusKeywordsAdmin(ModelView,
     @staticmethod
     # used by column_formatters/column_formatters_detail bellow, single field operation
     # model_obj = cur record, attribute = field string name
-    def format_plus_keyword_field(model_obj, attribute):
+    def format_minus_keyword_field(model_obj, attribute):
         field_value = getattr(model_obj, attribute)
         if field_value and isinstance(field_value, str):
             truncation_limit = SQLADMIN_OPTIONS.PLUS_MINUS_WORDS_TRUNCATE_LIMIT
@@ -168,9 +168,9 @@ class PlusKeywordsAdmin(ModelView,
             return field_value
 
     column_formatters = {
-        PlusKeywordsModel.local_created_at: format_datetime_fields,
-        PlusKeywordsModel.local_updated_at: format_datetime_fields,
-        PlusKeywordsModel.plus_keyword: format_plus_keyword_field,
+        MinusKeywordsModel.local_created_at: format_datetime_fields,
+        MinusKeywordsModel.local_updated_at: format_datetime_fields,
+        MinusKeywordsModel.minus_keyword: format_minus_keyword_field,
     }
 
     # def can_view_details(self, request: Request) -> bool:
