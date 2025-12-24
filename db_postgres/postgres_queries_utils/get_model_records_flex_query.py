@@ -28,7 +28,7 @@ async def get_model_rows_flex_query(
         UnaryExpression, Tuple[UnaryExpression, ...],
         InstrumentedAttribute, None]] = (
                 "field_name", "ModelClass.field_obj", "ModelClass.field_obj.desc()"),
-        #TODO: make distinct() partial query
+        # TODO: make distinct() partial query
         distinct_on: Optional[Union[Literal["entire_row"], str, List[str], Tuple[str, ...]]] = None,
         return_scalars: bool = True
 ) -> Sequence[Row[tuple[Any, ...]]] | Sequence[Row | RowMapping]:
