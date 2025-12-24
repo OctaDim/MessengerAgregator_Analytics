@@ -3,6 +3,7 @@ import sys
 from configparser import ConfigParser
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Tuple
 
 from dotenv import load_dotenv
 
@@ -217,7 +218,7 @@ class API_OPTIONS:
 @dataclass(frozen=True)
 class WEBHOOKS_OPTIONS:
     WEBHOOKS_API_URL_BASE_NAME: str = "aggregator_api"
-    DEBUG_SKIP_COMPANY_IDS_LIST: list|tuple = (100179, )
+    DEBUG_SKIP_COMPANY_IDS_LIST: tuple[str] = (123456789, )  # (100179,)
     OUTGOING_EXT_API_REQ_TIMEOUT: float = 120
     LOG_WEBHOOK_INCOMING_REQ_DATA: bool = False
     LOG_WEBHOOK_INCOMING_OBJ_DATA: bool = False
@@ -235,9 +236,11 @@ class SQLADMIN_OPTIONS:
     CREATE_DEBUG_ADMIN_SUPERADMIN: bool = True
     MESSAGE_SYMBOLS_TRUNCATE_LIMIT: int = 50
     PLUS_MINUS_WORDS_TRUNCATE_LIMIT: int = 100
+    CHATS_SUBJECT_TRUNCATE_LIMIT: int = 100
     SENDER_NAME_FILTER_TRUNC_LIMIT: int = 25
     EMOJI_MAX_WIDTH = 500
     EMOJI_MAX_HEIGHT = 500
+
 
 @dataclass(frozen=True)
 class EMERGENCY_CALL_OPTIONS:
