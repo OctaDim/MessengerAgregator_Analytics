@@ -1,25 +1,23 @@
 from datetime import datetime
 
 from sqladmin import ModelView
-from sqlalchemy import select
 from starlette.requests import Request
 
+from admin_panel.admin_views.mixin_set_new_data_old_pk import (
+    OldPrimKeyNewDataMixin)
 from admin_panel.custom_actions_mixins.mix_cancel_all_filters import (
     CanceAllFiltersSortsMixin)
 from admin_panel.custom_classes.custom_filter_classes import (
     CustomBooleanFilter)
 from configs.labels_messages import LABELS
-from configs.settings import ALCHEMY_OPTIONS, SQLADMIN_OPTIONS
-from db_postgres.postgres_conn.pgs_connection import (
-    PgsAsyncConnection)
-from db_postgres.postgres_conn.postgres_session import (
-    PgsAsyncSession)
+from configs.settings import SQLADMIN_OPTIONS
 from db_postgres.postgres_models.chats_subjects_model import (
     ChatsSubjectModel)
 
 
 class ChatSubjectsAdmin(ModelView,
                         CanceAllFiltersSortsMixin,
+                        OldPrimKeyNewDataMixin,  # Update mixin
                         model=ChatsSubjectModel):
     name = LABELS.CHAT_SUBJECT_PANEL_TITLE
     name_plural = LABELS.CHAT_SUBJECTS_PANEL_TITLE
@@ -47,7 +45,8 @@ class ChatSubjectsAdmin(ModelView,
     column_labels = {  # Human labels instead of table fields names
         ChatsSubjectModel.id: LABELS.ID_NUMBER,
         ChatsSubjectModel.chats_subject_name: LABELS.CHATS_SUBJECT,
-        ChatsSubjectModel.active: LABELS.ACTIVE,
+        ChatsSubjectModel.this_subject_conversations: LABELS.SUBJECT_CHATS,
+    ChatsSubjectModel.active: LABELS.ACTIVE,
         ChatsSubjectModel.local_created_at: LABELS.LOCAL_CREATED,
         ChatsSubjectModel.local_updated_at: LABELS.LOCAL_UPDATED,
     }
@@ -55,6 +54,7 @@ class ChatSubjectsAdmin(ModelView,
     column_searchable_list = [  # Search included fields
         ChatsSubjectModel.id,
         ChatsSubjectModel.chats_subject_name,
+        ChatsSubjectModel.this_subject_conversations,
         ChatsSubjectModel.active,
         ChatsSubjectModel.local_created_at,
         ChatsSubjectModel.local_updated_at,
@@ -79,6 +79,7 @@ class ChatSubjectsAdmin(ModelView,
     column_sortable_list = [  # Column list (main table) sortable fields
         ChatsSubjectModel.id,
         ChatsSubjectModel.chats_subject_name,
+        ChatsSubjectModel.this_subject_conversations,
         ChatsSubjectModel.active,
         ChatsSubjectModel.local_created_at,
         ChatsSubjectModel.local_updated_at,
@@ -87,6 +88,7 @@ class ChatSubjectsAdmin(ModelView,
     column_details_list = [  # Display form fields, all fields if not defined
         ChatsSubjectModel.id,
         ChatsSubjectModel.chats_subject_name,
+        ChatsSubjectModel.this_subject_conversations,
         ChatsSubjectModel.active,
         ChatsSubjectModel.local_created_at,
         ChatsSubjectModel.local_updated_at,
@@ -99,6 +101,7 @@ class ChatSubjectsAdmin(ModelView,
     form_columns = [  # Edit form fields, all fields if not defined
         ChatsSubjectModel.id,
         ChatsSubjectModel.chats_subject_name,
+        ChatsSubjectModel.this_subject_conversations,
         ChatsSubjectModel.active,
         ChatsSubjectModel.local_created_at,
         ChatsSubjectModel.local_updated_at,
@@ -111,17 +114,14 @@ class ChatSubjectsAdmin(ModelView,
 
     form_include_pk = False  # Display primary key fields in edit form or not
 
-    # Preserve changing field value via request or via editable form field, or some other logic on update
     async def update_model(self, request: Request, pk: str, data: dict) -> None:
-        pgs_async_conn = PgsAsyncConnection()
-        async with PgsAsyncSession(engine=pgs_async_conn.engine,
-                                   log_good_ops=ALCHEMY_OPTIONS.ALCHEMY_ORM_RAW_SQL_LOGS
-                                   ) as pgs_async_session:
-            on_update_query = select(self.model).where(self.model.id == int(pk))
-            query_result = await pgs_async_session.execute(on_update_query)
-            current_obj = query_result.scalar_one()
-            data["id"] = current_obj.id
-            return await super().update_model(request, pk, data)
+        # Preserve changing local_id via request or via editable form field
+        # Some other functionality can be defined here on update
+        data_with_old_pk = await self.set_new_data_old_pk_mixin(  # mixin func set_new_data_old_pkey_util() can be used
+            prim_key_value_str=pk,
+            prim_key_name="id",
+            form_data=data)
+        return await super().update_model(request, pk, data=data_with_old_pk)
 
     form_widget_args = {  # Edit form fields additional properties
         "id": {"readonly": True, "disabled": True},
@@ -161,7 +161,29 @@ class ChatSubjectsAdmin(ModelView,
         else:
             return field_value
 
+    @staticmethod
+    # used by column_formatters/column_formatters_detail bellow, single field operation
+    # model_obj = cur record, attribute = field string name
+    def format_this_subj_convers_field(model_obj, attribute):
+        nested_model_objs = getattr(model_obj, attribute)
+        if nested_model_objs:
+            subject_chats_set = set()
+            for cur_nested_obj in nested_model_objs:
+                if cur_nested_obj.sender_name:
+                    subject_chats_set.add(cur_nested_obj.sender_name)
+                    # sorted(subject_chats_set)
+            return subject_chats_set
+        return ""
+
     column_formatters = {
+        ChatsSubjectModel.this_subject_conversations: format_this_subj_convers_field,
+        ChatsSubjectModel.local_created_at: format_datetime_fields,
+        ChatsSubjectModel.local_updated_at: format_datetime_fields,
+        ChatsSubjectModel.chats_subject_name: format_chats_subject_field,
+    }
+
+    column_formatters_detail = {
+        ChatsSubjectModel.this_subject_conversations: format_this_subj_convers_field,
         ChatsSubjectModel.local_created_at: format_datetime_fields,
         ChatsSubjectModel.local_updated_at: format_datetime_fields,
         ChatsSubjectModel.chats_subject_name: format_chats_subject_field,
