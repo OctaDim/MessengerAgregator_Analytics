@@ -62,8 +62,8 @@ class ConversationsAdmin(ModelView,
 
     column_labels = {  # Human labels instead of table fields names
         WebhookConversationModel.local_id: LABELS.LOCAL_ID,
-        WebhookConversationModel.chats_subject_id: LABELS.CHATS_SUBJECT_ID,
-        WebhookConversationModel.this_conversation_subject: LABELS.THIS_CONVERSATION_SUBJECT,
+        WebhookConversationModel.chats_subject_id: LABELS.CHATS_SUBJECT_NAME_BY_ID,
+        WebhookConversationModel.this_conversation_subject: LABELS.CHATS_SUBJECT_LINK,
         WebhookConversationModel.event: LABELS.EVENT,
         WebhookConversationModel.type: LABELS.TYPE,
         WebhookConversationModel.id: LABELS.ID,
@@ -187,7 +187,7 @@ class ConversationsAdmin(ModelView,
     column_sortable_list = [  # Column list (main table) sortable fields
         WebhookConversationModel.local_id,
         WebhookConversationModel.chats_subject_id,
-        WebhookConversationModel.this_conversation_subject,
+        # WebhookConversationModel.this_conversation_subject,
         WebhookConversationModel.event,  ##
         WebhookConversationModel.type,  ##
         WebhookConversationModel.id,  ##
@@ -355,10 +355,21 @@ class ConversationsAdmin(ModelView,
     @staticmethod
     # used by column_formatters/column_formatters_detail bellow, single field operation
     # model_obj = cur record, attribute = field string name
+    def format_chats_subject_id_field(model_obj, attribute):
+        parent_model_obj = getattr(model_obj, "this_conversation_subject")
+        if parent_model_obj and parent_model_obj.chats_subject_name:
+            display_value = parent_model_obj.chats_subject_name
+            return display_value
+        return ""
+
+    @staticmethod
+    # used by column_formatters/column_formatters_detail bellow, single field operation
+    # model_obj = cur record, attribute = field string name
     def format_this_convers_subj_field(model_obj, attribute):
         parent_model_obj = getattr(model_obj, attribute)
         if parent_model_obj and parent_model_obj.chats_subject_name:
-            return parent_model_obj.chats_subject_name
+            display_value = parent_model_obj.chats_subject_name
+            return display_value
         return ""
 
     # @staticmethod
@@ -379,6 +390,7 @@ class ConversationsAdmin(ModelView,
 
     column_formatters = {
         WebhookConversationModel.replied_state: format_replied_state_field,
+        WebhookConversationModel.chats_subject_id: format_chats_subject_id_field,
         WebhookConversationModel.this_conversation_subject: format_this_convers_subj_field,
         WebhookConversationModel.created_at: format_datetime_fields,
         WebhookConversationModel.last_updated_at: format_datetime_fields,
@@ -388,16 +400,8 @@ class ConversationsAdmin(ModelView,
         # WebhookConversationModel.current_status: format_current_status,  # as example for enum field
     }
 
-    column_formatters_detail = {
-        WebhookConversationModel.created_at: format_datetime_fields,
-        WebhookConversationModel.last_updated_at: format_datetime_fields,
-        WebhookConversationModel.local_created_at: format_datetime_fields,
-        WebhookConversationModel.local_updated_at: format_datetime_fields,
-        WebhookConversationModel.replied_state: format_replied_state_field,
-        WebhookConversationModel.this_conversation_subject: format_this_convers_subj_field,
-        # WebhookConversationModel.current_status: format_created_at,  # as example for single field
-        # WebhookConversationModel.current_status: format_current_status,  # as example for enum field
-    }
+    column_formatters_detail = {}
+    column_formatters_detail.update(column_formatters)
 
     # def can_view_details(self, request: Request) -> bool:
     #     return False

@@ -1,20 +1,16 @@
 from datetime import datetime
 
 from sqladmin import ModelView
-from sqlalchemy import select
 from starlette.requests import Request
 
-from admin_panel.admin_views.mixin_set_new_data_old_pk import OldPrimKeyNewDataMixin
+from admin_panel.admin_views.mixin_set_new_data_old_pk import (
+    OldPrimKeyNewDataMixin)
 from admin_panel.custom_actions_mixins.mix_cancel_all_filters import (
     CanceAllFiltersSortsMixin)
 from admin_panel.custom_classes.custom_filter_classes import (
     CustomBooleanFilter)
 from configs.labels_messages import LABELS
-from configs.settings import ALCHEMY_OPTIONS, SQLADMIN_OPTIONS
-from db_postgres.postgres_conn.pgs_connection import (
-    PgsAsyncConnection)
-from db_postgres.postgres_conn.postgres_session import (
-    PgsAsyncSession)
+from configs.settings import SQLADMIN_OPTIONS
 from db_postgres.postgres_models.keywords_plus_model import (
     PlusKeywordsModel)
 

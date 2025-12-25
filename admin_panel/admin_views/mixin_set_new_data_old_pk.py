@@ -39,7 +39,7 @@ class OldPrimKeyNewDataMixin:
             for fld_name, fld_value in form_data.items():  # Not form modified fields are always None => old values used
                 if fld_value is None and hasattr(obj_before_update, fld_name):
                     fixed_data[fld_name] = getattr(obj_before_update, fld_name)
-            fixed_data["local_id"] = obj_before_update.local_id
+            fixed_data[prim_key_name] = getattr(obj_before_update, prim_key_name)
             return fixed_data
 
 

@@ -471,6 +471,9 @@ class MessagesAdmin(ModelView,
         # WebhookMessageModel.current_status: format_current_status,  # as example for enum field
     }
 
+    column_formatters_detail = {}
+    column_formatters_detail.update(column_formatters)
+
     # def can_view_details(self, request: Request) -> bool:
     #     return False
     #

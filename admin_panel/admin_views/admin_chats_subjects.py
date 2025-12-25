@@ -79,7 +79,7 @@ class ChatSubjectsAdmin(ModelView,
     column_sortable_list = [  # Column list (main table) sortable fields
         ChatsSubjectModel.id,
         ChatsSubjectModel.chats_subject_name,
-        ChatsSubjectModel.this_subject_conversations,
+        # ChatsSubjectModel.this_subject_conversations,
         ChatsSubjectModel.active,
         ChatsSubjectModel.local_created_at,
         ChatsSubjectModel.local_updated_at,
