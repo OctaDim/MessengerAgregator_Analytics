@@ -3,7 +3,7 @@ from datetime import datetime
 from sqladmin import ModelView
 from starlette.requests import Request
 
-from admin_panel.admin_views.mixin_update_model_old_pk_val import (
+from admin_panel.admin_views.mixin_set_new_data_old_pk import (
     OldPrimKeyNewDataMixin)
 from admin_panel.custom_actions_mixins.mix_cancel_all_filters import (
     CanceAllFiltersSortsMixin)
@@ -19,7 +19,7 @@ from db_postgres.postgres_queries.qry_sync_get_conversations_filter_values impor
 
 class ConversationsAdmin(ModelView,
                          CanceAllFiltersSortsMixin,
-                         OldPrimKeyNewDataMixin,
+                         OldPrimKeyNewDataMixin,  # Update mixin
                          model=WebhookConversationModel):
     name = LABELS.CONVERSATION_PANEL_TITLE
     name_plural = LABELS.CONVERSATIONS_PANEL_TITLE
@@ -42,22 +42,22 @@ class ConversationsAdmin(ModelView,
         WebhookConversationModel.event,  ##
         WebhookConversationModel.type,  ##
         WebhookConversationModel.id,  ##
-        WebhookConversationModel.company_id,  #
-        WebhookConversationModel.sender_name,  #
-        WebhookConversationModel.sender_phone,  #
+        WebhookConversationModel.company_id,
+        WebhookConversationModel.sender_name,
+        WebhookConversationModel.sender_phone,
         WebhookConversationModel.sender_external_id,  ##
-        WebhookConversationModel.sender_external_public_id,  #
+        WebhookConversationModel.sender_external_public_id,
         WebhookConversationModel.provider,
         # WebhookConversationModel.avatar_url,  ##
         WebhookConversationModel.last_message_id,  ##
         WebhookConversationModel.operational_state,  ##
-        WebhookConversationModel.replied_state,  #
-        WebhookConversationModel.group,  #
-        # WebhookConversationModel.created_at,
-        WebhookConversationModel.last_updated_at,
-        # WebhookConversationModel.active,
-        # WebhookConversationModel.local_created_at,
-        # WebhookConversationModel.local_updated_at,
+        WebhookConversationModel.replied_state,  ##
+        WebhookConversationModel.group,
+        # WebhookConversationModel.created_at,  ##
+        WebhookConversationModel.last_updated_at,  ##
+        WebhookConversationModel.active,  ##
+        # WebhookConversationModel.local_created_at,  ##
+        # WebhookConversationModel.local_updated_at,  ##
     ]
 
     column_labels = {  # Human labels instead of table fields names
@@ -92,22 +92,22 @@ class ConversationsAdmin(ModelView,
         WebhookConversationModel.event,  ##
         WebhookConversationModel.type,  ##
         WebhookConversationModel.id,  ##
-        WebhookConversationModel.company_id,  #
-        WebhookConversationModel.sender_name,  #
-        WebhookConversationModel.sender_phone,  #
+        WebhookConversationModel.company_id,
+        WebhookConversationModel.sender_name,
+        WebhookConversationModel.sender_phone,
         WebhookConversationModel.sender_external_id,  ##
-        WebhookConversationModel.sender_external_public_id,  #
+        WebhookConversationModel.sender_external_public_id,
         WebhookConversationModel.provider,
-        # WebhookConversationModel.avatar_url,  ##
+        WebhookConversationModel.avatar_url,  ##
         WebhookConversationModel.last_message_id,  ##
         WebhookConversationModel.operational_state,  ##
-        WebhookConversationModel.replied_state,  #
-        WebhookConversationModel.group,  #
-        WebhookConversationModel.created_at,
-        WebhookConversationModel.last_updated_at,
-        # WebhookConversationModel.active,
-        # WebhookConversationModel.local_created_at,
-        # WebhookConversationModel.local_updated_at,
+        WebhookConversationModel.replied_state,  ##
+        WebhookConversationModel.group,
+        WebhookConversationModel.created_at,  ##
+        WebhookConversationModel.last_updated_at,  ##
+        WebhookConversationModel.active,  ##
+        WebhookConversationModel.local_created_at,  ##
+        WebhookConversationModel.local_updated_at,  ##
     ]
 
     @property
@@ -191,22 +191,22 @@ class ConversationsAdmin(ModelView,
         WebhookConversationModel.event,  ##
         WebhookConversationModel.type,  ##
         WebhookConversationModel.id,  ##
-        WebhookConversationModel.company_id,  #
-        WebhookConversationModel.sender_name,  #
-        WebhookConversationModel.sender_phone,  #
+        WebhookConversationModel.company_id,
+        WebhookConversationModel.sender_name,
+        WebhookConversationModel.sender_phone,
         WebhookConversationModel.sender_external_id,  ##
-        WebhookConversationModel.sender_external_public_id,  #
+        WebhookConversationModel.sender_external_public_id,
         WebhookConversationModel.provider,
         WebhookConversationModel.avatar_url,  ##
         WebhookConversationModel.last_message_id,  ##
         WebhookConversationModel.operational_state,  ##
-        WebhookConversationModel.replied_state,  #
-        WebhookConversationModel.group,  #
-        WebhookConversationModel.created_at,
-        WebhookConversationModel.last_updated_at,
-        WebhookConversationModel.active,
-        WebhookConversationModel.local_created_at,
-        WebhookConversationModel.local_updated_at,
+        WebhookConversationModel.replied_state,  ##
+        WebhookConversationModel.group,
+        WebhookConversationModel.created_at,  ##
+        WebhookConversationModel.last_updated_at,  ##
+        WebhookConversationModel.active,  ##
+        WebhookConversationModel.local_created_at,  ##
+        WebhookConversationModel.local_updated_at,  ##
     ]
 
     column_details_list = [  # Display form fields, all fields if not defined
@@ -216,22 +216,22 @@ class ConversationsAdmin(ModelView,
         WebhookConversationModel.event,  ##
         WebhookConversationModel.type,  ##
         WebhookConversationModel.id,  ##
-        WebhookConversationModel.company_id,  #
-        WebhookConversationModel.sender_name,  #
-        WebhookConversationModel.sender_phone,  #
+        WebhookConversationModel.company_id,
+        WebhookConversationModel.sender_name,
+        WebhookConversationModel.sender_phone,
         WebhookConversationModel.sender_external_id,  ##
-        WebhookConversationModel.sender_external_public_id,  #
+        WebhookConversationModel.sender_external_public_id,
         WebhookConversationModel.provider,
         # WebhookConversationModel.avatar_url,  ##
         WebhookConversationModel.last_message_id,  ##
         WebhookConversationModel.operational_state,  ##
-        WebhookConversationModel.replied_state,  #
-        WebhookConversationModel.group,  #
-        WebhookConversationModel.created_at,
-        WebhookConversationModel.last_updated_at,
-        # WebhookConversationModel.active,
-        # WebhookConversationModel.local_created_at,
-        # WebhookConversationModel.local_updated_at,
+        WebhookConversationModel.replied_state,  ##
+        WebhookConversationModel.group,
+        WebhookConversationModel.created_at,  ##
+        WebhookConversationModel.last_updated_at,  ##
+        WebhookConversationModel.active,  ##
+        # WebhookConversationModel.local_created_at,  ##
+        # WebhookConversationModel.local_updated_at,  ##
     ]
 
     # column_details_exclude_list = [  # If column_details_list not defined, all fields except defined
@@ -242,25 +242,25 @@ class ConversationsAdmin(ModelView,
         WebhookConversationModel.local_id,
         WebhookConversationModel.chats_subject_id,
         WebhookConversationModel.this_conversation_subject,
-        # WebhookConversationModel.event,  ##
-        # WebhookConversationModel.type,  ##
-        # WebhookConversationModel.id,  ##
-        WebhookConversationModel.company_id,  #
-        WebhookConversationModel.sender_name,  #
-        WebhookConversationModel.sender_phone,  #
+        WebhookConversationModel.event,  ##
+        WebhookConversationModel.type,  ##
+        WebhookConversationModel.id,  ##
+        WebhookConversationModel.company_id,
+        WebhookConversationModel.sender_name,
+        WebhookConversationModel.sender_phone,
         WebhookConversationModel.sender_external_id,  ##
-        WebhookConversationModel.sender_external_public_id,  #
+        WebhookConversationModel.sender_external_public_id,
         WebhookConversationModel.provider,
         # WebhookConversationModel.avatar_url,  ##
-        # WebhookConversationModel.last_message_id,  ##
-        # WebhookConversationModel.operational_state,  ##
-        # WebhookConversationModel.replied_state,  #
-        WebhookConversationModel.group,  #
-        # WebhookConversationModel.created_at,
-        # WebhookConversationModel.last_updated_at,
-        # WebhookConversationModel.active,
-        # WebhookConversationModel.local_created_at,
-        # WebhookConversationModel.local_updated_at,
+        WebhookConversationModel.last_message_id,  ##
+        WebhookConversationModel.operational_state,  ##
+        WebhookConversationModel.replied_state,  ##
+        WebhookConversationModel.group,
+        WebhookConversationModel.created_at,  ##
+        WebhookConversationModel.last_updated_at,  ##
+        WebhookConversationModel.active,  ##
+        # WebhookConversationModel.local_created_at,  ##
+        # WebhookConversationModel.local_updated_at,  ##
     ]
 
     # form_excluded_columns = [  # If form_columns not defined
@@ -271,32 +271,40 @@ class ConversationsAdmin(ModelView,
 
     form_include_pk = True  # Display primary key fields in edit form or not
 
-    # form_overrides = {
-    #     # See all possible fields types in:
-    #     # from wtforms.fields.choices
-    #     # from wtforms.fields.core
-    #     # from wtforms.fields.datetime
-    #     # from wtforms.fields.form
-    #     # from wtforms.fields.list
-    #     # from wtforms.fields.numeric
-    #     # from wtforms.fields.simple
-    #     # from wtforms.utils import unset_value
-    #     "this_conversation_subject": QuerySelectField,
-    # }
+    form_overrides = {
+        # See all possible fields types in:
+        # from wtforms.fields.choices
+        # from wtforms.fields.core
+        # from wtforms.fields.datetime
+        # from wtforms.fields.form
+        # from wtforms.fields.list
+        # from wtforms.fields.numeric
+        # from wtforms.fields.simple
+        # from wtforms.utils import unset_value
+        # "this_conversation_subject": QuerySelectField,
+    }
 
     form_widget_args = {  # Edit form fields additional properties
         # "local_id": {"readonly": True, "disabled": True},
         "chats_subject_id": {"disabled": True},
+        # "this_conversation_subject": {"disabled": True},
+        "event": {"disabled": True},
+        "type": {"disabled": True},
+        "id": {"disabled": True},
         "company_id": {"disabled": True},
         "sender_name": {"disabled": True},
         "sender_phone": {"disabled": True},
         "sender_external_id": {"disabled": True},
         "sender_external_public_id": {"disabled": True},
         "provider": {"disabled": True},
+        "avatar_url": {"disabled": True},
+        "last_message_id": {"disabled": True},
+        "operational_state": {"disabled": True},
+        "replied_state": {"disabled": True},
         "group": {"disabled": True},
         "created_at": {"disabled": True},
-        # "active": {"disabled": True},
         "last_updated_at": {"disabled": True},
+        # "active": {"disabled": True},
         "local_created_at": {"disabled": True},
         "local_updated_at": {"disabled": True}, }
 
@@ -306,10 +314,10 @@ class ConversationsAdmin(ModelView,
     #         "order_by": "chats_subject_name",
     #         "page_size": 10}}
 
-    # Preserve changing local_id via request or via editable form field
-    # Some other functionality can be defined here on update
     async def update_model(self, request: Request, pk: str, data: dict) -> None:
-        data_with_old_pk = await self.set_old_pkey_in_new_data(
+        # Preserve changing local_id via request or via editable form field
+        # Some other functionality can be defined here on update
+        data_with_old_pk = await self.set_new_data_old_pk_mixin(  # mixin func set_new_data_old_pkey_util() can be used
             prim_key_value_str=pk,
             prim_key_name="local_id",
             form_data=data)
@@ -347,10 +355,10 @@ class ConversationsAdmin(ModelView,
     @staticmethod
     # used by column_formatters/column_formatters_detail bellow, single field operation
     # model_obj = cur record, attribute = field string name
-    def format_subject_name_field(model_obj, attribute):
-        model_obj = getattr(model_obj, attribute)
-        if model_obj and hasattr(model_obj, 'chats_subject_name'):
-            return model_obj.chats_subject_name
+    def format_this_convers_subj_field(model_obj, attribute):
+        parent_model_obj = getattr(model_obj, attribute)
+        if parent_model_obj and parent_model_obj.chats_subject_name:
+            return parent_model_obj.chats_subject_name
         return ""
 
     # @staticmethod
@@ -370,12 +378,12 @@ class ConversationsAdmin(ModelView,
     #     return list_display_value
 
     column_formatters = {
+        WebhookConversationModel.replied_state: format_replied_state_field,
+        WebhookConversationModel.this_conversation_subject: format_this_convers_subj_field,
         WebhookConversationModel.created_at: format_datetime_fields,
         WebhookConversationModel.last_updated_at: format_datetime_fields,
         WebhookConversationModel.local_created_at: format_datetime_fields,
         WebhookConversationModel.local_updated_at: format_datetime_fields,
-        WebhookConversationModel.replied_state: format_replied_state_field,
-        WebhookConversationModel.this_conversation_subject: format_subject_name_field,
         # WebhookConversationModel.current_status: format_created_at,  # as example for single field
         # WebhookConversationModel.current_status: format_current_status,  # as example for enum field
     }
@@ -386,7 +394,7 @@ class ConversationsAdmin(ModelView,
         WebhookConversationModel.local_created_at: format_datetime_fields,
         WebhookConversationModel.local_updated_at: format_datetime_fields,
         WebhookConversationModel.replied_state: format_replied_state_field,
-        WebhookConversationModel.this_conversation_subject: format_subject_name_field,
+        WebhookConversationModel.this_conversation_subject: format_this_convers_subj_field,
         # WebhookConversationModel.current_status: format_created_at,  # as example for single field
         # WebhookConversationModel.current_status: format_current_status,  # as example for enum field
     }

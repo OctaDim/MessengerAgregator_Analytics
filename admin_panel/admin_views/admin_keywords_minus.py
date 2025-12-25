@@ -1,26 +1,24 @@
 from datetime import datetime
 
 from sqladmin import ModelView
-from sqlalchemy import select
 from starlette.requests import Request
 
+from admin_panel.admin_views.mixin_set_new_data_old_pk import (
+    OldPrimKeyNewDataMixin)
 from admin_panel.custom_actions_mixins.mix_cancel_all_filters import (
     CanceAllFiltersSortsMixin)
 from admin_panel.custom_classes.custom_filter_classes import (
     CustomBooleanFilter)
 from configs.labels_messages import LABELS
-from configs.settings import ALCHEMY_OPTIONS, SQLADMIN_OPTIONS
-from db_postgres.postgres_conn.pgs_connection import (
-    PgsAsyncConnection)
-from db_postgres.postgres_conn.postgres_session import (
-    PgsAsyncSession)
+from configs.settings import SQLADMIN_OPTIONS
 from db_postgres.postgres_models.keywords_minus_model import (
     MinusKeywordsModel)
 
 
 class MinusKeywordsAdmin(ModelView,
-                        CanceAllFiltersSortsMixin,
-                        model=MinusKeywordsModel):
+                         CanceAllFiltersSortsMixin,
+                         OldPrimKeyNewDataMixin,  # Update mixin
+                         model=MinusKeywordsModel):
     name = LABELS.MINUS_KEYWORD_PANEL_TITLE
     name_plural = LABELS.MINUS_KEYWORDS_PANEL_TITLE
     icon = LABELS.ICON
@@ -116,17 +114,14 @@ class MinusKeywordsAdmin(ModelView,
 
     form_include_pk = False  # Display primary key fields in edit form or not
 
-    # Preserve changing field value via request or via editable form field, or some other logic on update
     async def update_model(self, request: Request, pk: str, data: dict) -> None:
-        pgs_async_conn = PgsAsyncConnection()
-        async with PgsAsyncSession(engine=pgs_async_conn.engine,
-                                   log_good_ops=ALCHEMY_OPTIONS.ALCHEMY_ORM_RAW_SQL_LOGS
-                                   ) as pgs_async_session:
-            on_update_query = select(self.model).where(self.model.id == int(pk))
-            query_result = await pgs_async_session.execute(on_update_query)
-            current_obj = query_result.scalar_one()
-            data["id"] = current_obj.id
-            return await super().update_model(request, pk, data)
+        # Preserve changing local_id via request or via editable form field
+        # Some other functionality can be defined here on update
+        data_with_old_pk = await self.set_new_data_old_pk_mixin(  # mixin func set_new_data_old_pkey_util() can be used
+            prim_key_value_str=pk,
+            prim_key_name="id",
+            form_data=data)
+        return await super().update_model(request, pk, data=data_with_old_pk)
 
     form_widget_args = {  # Edit form fields additional properties
         "id": {"readonly": True, "disabled": True},
