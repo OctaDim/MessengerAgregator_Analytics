@@ -22,7 +22,8 @@ from admin_panel.admin_views.admin_keywords_plus import (
 from admin_panel.admin_views.admin_messages import MessagesAdmin
 from configs.labels_messages import LABELS
 from configs.settings import (
-    API_HOST, API_PORT, FASTAPI_OPTIONS, FASTAPI_SESSION_KEY)
+    API_HOST, API_PORT, FASTAPI_OPTIONS, FASTAPI_SESSION_KEY,
+    SQLADMIN_OPTIONS)
 from db_postgres.postgres_conn.pgs_connection import (
     close_all_async_pgs_connections, close_all_sync_pgs_connections,
     PgsAsyncConnection)
@@ -111,13 +112,13 @@ def setup_admin_panel(
         engine=PgsAsyncConnection().engine,
         authentication_backend=authentication_backend,
         session_maker=None,
-        base_url="/admin_panel",
+        base_url=SQLADMIN_OPTIONS.SQLADMIN_PANEL_BASE_URL,
         title=LABELS.ADMIN_PANEL_TITLE,
         logo_url=None,
         favicon_url=None,
         middlewares=None,
         debug=False,
-        templates_dir="admin_panel/custom_templates", )  # Custom templates, origin SQLAdmin value = "templates"
+        templates_dir=SQLADMIN_OPTIONS.SQLADMIN_CUSTOM_TEMPLATES_DIR, )  # Origin SQLAdmin value = "templates"
     for cur_admin_view in admin_panel_views:
         admin.add_view(cur_admin_view)
     return admin

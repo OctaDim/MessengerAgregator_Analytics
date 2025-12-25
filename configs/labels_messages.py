@@ -36,6 +36,7 @@ class LABELS:
     ID_NUMBER = "НОМЕР"
     CONVERSATION_LOCAL_ID = "ID РАЗГОВОРА"
     CHATS_SUBJECT = "ТЕМА ЧАТОВ"
+    SUBJECT_CHATS = "ЧАТЫ ТЕМЫ"
     CHATS_SUBJECT_ID = "ID ТЕМЫ ЧАТОВ"
     THIS_CONVERSATION_SUBJECT = "ТЕМА ЧАТА"
     PLUS_KEYWORD = "ПЛЮСОВОЕ СЛОВО"
