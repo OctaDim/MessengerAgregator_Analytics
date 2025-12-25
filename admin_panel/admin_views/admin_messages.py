@@ -4,7 +4,7 @@ from sqladmin import ModelView
 from starlette.requests import Request
 
 from admin_panel.admin_views.mixin_update_model_old_pk_val import (
-    set_old_pkey_in_new_data_mixin)
+    OldPrimKeyNewDataMixin)
 from admin_panel.custom_actions_mixins.mix_cancel_all_filters import (
     CanceAllFiltersSortsMixin)
 from admin_panel.custom_classes.custom_filter_classes import (
@@ -20,6 +20,7 @@ from db_postgres.postgres_queries.qry_sync_get_messages_filter_values import (
 
 class MessagesAdmin(ModelView,
                     CanceAllFiltersSortsMixin,
+                    OldPrimKeyNewDataMixin,
                     model=WebhookMessageModel):
     name = LABELS.MESSAGE_PANEL_TITLE
     name_plural = LABELS.MESSAGES_PANEL_TITLE
@@ -366,11 +367,10 @@ class MessagesAdmin(ModelView,
 
     form_include_pk = False  # Display primary key fields in edit form or not
 
-    # Preserve changing local_id via request or via editable form field
-    # Some other functionality can be defined on update
     async def update_model(self, request: Request, pk: str, data: dict) -> None:
-        data_with_old_pk = await set_old_pkey_in_new_data_mixin(
-            orm_model=self.model,
+        # Preserve changing local_id via request or via editable form field
+        # Some other functionality can be defined here on update
+        data_with_old_pk = await self.set_old_pkey_in_new_data(
             prim_key_value_str=pk,
             prim_key_name="local_id",
             form_data=data)
