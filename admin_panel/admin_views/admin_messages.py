@@ -142,7 +142,7 @@ class MessagesAdmin(ModelView,
 
     @property
     def column_filters(self):  # Standard and custom filters to filter column list
-        filters_values = get_sync_message_filters_values_qry()  # All possible unique and sorted values for filters
+        filters_values = get_sync_message_filters_values_qry()  # Custom unique and sorted values for filters
         convers_local_id_keys = filters_values["convers_local_id_keys"]
         company_id_keys = filters_values["company_id_keys"]
         provider_keys = filters_values["provider_keys"]

@@ -9,8 +9,12 @@ from admin_panel.custom_actions_mixins.mix_cancel_all_filters import (
     CanceAllFiltersSortsMixin)
 from admin_panel.custom_classes.custom_filter_classes import (
     CustomBooleanFilter, CustomRepliedStateFilter,
-    CustomStaticStringsFilter, CustomStaticNumbersFilter)
+    CustomStaticStringsFilter, CustomStaticNumbersFilter,
+    CustomForeignKeyFilter)
 from configs.labels_messages import LABELS
+from configs.settings import SQLADMIN_OPTIONS
+from db_postgres.postgres_models.chats_subjects_model import (
+    ChatsSubjectModel)
 from db_postgres.postgres_models.webhook_conversation_model import (
     WebhookConversationModel)
 from db_postgres.postgres_queries.qry_sync_get_conversations_filter_values import (
@@ -29,7 +33,7 @@ class ConversationsAdmin(ModelView,
     is_async = True  # Default False
     page_size = 200
     page_size_options = [25, 50, 100, 200, 500, 1000]
-    can_create = False  # Some bug: if not displayed or hidden, change can_export to False, restart, then True, restart
+    can_create = True  # Some bug: if not displayed or hidden, change can_export to False, restart, then True, restart
     can_delete = False
     can_edit = True
     can_view_details = True
@@ -38,7 +42,7 @@ class ConversationsAdmin(ModelView,
     column_list = [  # Main table columns
         WebhookConversationModel.local_id,
         WebhookConversationModel.chats_subject_id,
-        WebhookConversationModel.this_conversation_subject,
+        WebhookConversationModel.this_conversation_subject,  # Display relation fld links. If commented => lazy load err
         WebhookConversationModel.event,  ##
         WebhookConversationModel.type,  ##
         WebhookConversationModel.id,  ##
@@ -112,7 +116,7 @@ class ConversationsAdmin(ModelView,
 
     @property
     def column_filters(self):  # Ordinal and custom filters to filter column list
-        filters_values = get_sync_conversation_filters_values_qry()  # All possible unique and sorted values for filters
+        filters_values = get_sync_conversation_filters_values_qry()  # Custom unique and sorted values for filters
         providers_values = filters_values["provider_values"]
         company_id_values = filters_values["company_id_values"]
 
@@ -139,6 +143,12 @@ class ConversationsAdmin(ModelView,
                 column=WebhookConversationModel.company_id,
                 values=company_id_values,
                 title=LABELS.COMPANY_ID_FILTER_TITLE),
+
+            CustomForeignKeyFilter(  # foreign key field: customer_id (display field: account_id)
+                foreign_key=WebhookConversationModel.chats_subject_id,
+                foreign_display_field=ChatsSubjectModel.chats_subject_name,
+                foreign_model=ChatsSubjectModel,
+                title=LABELS.CHATS_SUBJECT_NAME_BY_ID),
 
             # Filter using custom overridden filter class for property model field
             # CustAccountDataFilter(  # combine fields: account_username, account_id
@@ -187,7 +197,7 @@ class ConversationsAdmin(ModelView,
     column_sortable_list = [  # Column list (main table) sortable fields
         WebhookConversationModel.local_id,
         WebhookConversationModel.chats_subject_id,
-        # WebhookConversationModel.this_conversation_subject,
+        # WebhookConversationModel.this_conversation_subject,  # Excluded because relation field sorting error
         WebhookConversationModel.event,  ##
         WebhookConversationModel.type,  ##
         WebhookConversationModel.id,  ##
@@ -280,7 +290,8 @@ class ConversationsAdmin(ModelView,
         # from wtforms.fields.list
         # from wtforms.fields.numeric
         # from wtforms.fields.simple
-        # from wtforms.utils import unset_value
+        # from wtforms.utils import unset_value,
+        # "chats_subject_id": SelectMultipleField,
         # "this_conversation_subject": QuerySelectField,
     }
 
@@ -307,12 +318,6 @@ class ConversationsAdmin(ModelView,
         # "active": {"disabled": True},
         "local_created_at": {"disabled": True},
         "local_updated_at": {"disabled": True}, }
-
-    # form_ajax_refs = {
-    #     "this_conversation_subject": {
-    #         "fields": ("chats_subject_name", "id"),
-    #         "order_by": "chats_subject_name",
-    #         "page_size": 10}}
 
     async def update_model(self, request: Request, pk: str, data: dict) -> None:
         # Preserve changing local_id via request or via editable form field
@@ -368,6 +373,8 @@ class ConversationsAdmin(ModelView,
     def format_this_convers_subj_field(model_obj, attribute):
         parent_model_obj = getattr(model_obj, attribute)
         if parent_model_obj and parent_model_obj.chats_subject_name:
+            if SQLADMIN_OPTIONS.DISPLAY_SUBJECT_AS_ARROW:
+                return "<=="
             display_value = parent_model_obj.chats_subject_name
             return display_value
         return ""
