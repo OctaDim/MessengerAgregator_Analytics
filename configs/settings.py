@@ -3,7 +3,6 @@ import sys
 from configparser import ConfigParser
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Tuple
 
 from dotenv import load_dotenv
 
@@ -71,6 +70,29 @@ API_HOST: str = api_conf_parser.get(section=api_conf_name, option="API_HOST")
 API_PORT: int = int(api_conf_parser.get(section=api_conf_name, option="API_PORT"))
 API_USERNAME: str = api_conf_parser.get(section=api_conf_name, option="API_USERNAME")
 API_PASSWORD: str = api_conf_parser.get(section=api_conf_name, option="API_PASSWORD")
+
+
+# GETTING TELEGRAM API INI CONFIGS #####################################
+@dataclass(frozen=True)
+class TELEGRAM_API_CONFIG_NAMES:
+    TELEGRAM_API_ANY_PRODUCT_IP = "TELEGRAM_OFFICIAL_API_any_ip_prod"
+
+
+telegram_api_ini_normal_path = get_full_file_normal_path(
+    all_dir_str_parts=[BASE_DIR],
+    file_name_with_ext=".configs_telegram.ini")
+telegram_api_conf_parser = ConfigParser()
+telegram_api_conf_parser.read(filenames=telegram_api_ini_normal_path)
+
+if cur_external_ip == "___.___.___.___":  # Just example
+    telegram_api_conf_name = TELEGRAM_API_CONFIG_NAMES.TELEGRAM_API_ANY_PRODUCT_IP  # Certain configs can be defined
+else:
+    telegram_api_conf_name = TELEGRAM_API_CONFIG_NAMES.TELEGRAM_API_ANY_PRODUCT_IP
+
+TELEGRAM_OFFICIAL_API_ID = telegram_api_conf_parser.get(
+    section=telegram_api_conf_name, option="TELEGRAM_OFFICIAL_API_ID")
+TELEGRAM_OFFICIAL_API_HASH = telegram_api_conf_parser.get(
+    section=telegram_api_conf_name, option="TELEGRAM_OFFICIAL_API_HASH")
 
 
 # GETTING SQLADMIN INI CONFIGS #########################################
@@ -218,7 +240,7 @@ class API_OPTIONS:
 @dataclass(frozen=True)
 class WEBHOOKS_OPTIONS:
     WEBHOOKS_API_URL_BASE_NAME: str = "aggregator_api"
-    DEBUG_SKIP_COMPANY_IDS_LIST: tuple[str] = (123456789, )  # (100179,)
+    DEBUG_SKIP_COMPANY_IDS_LIST: tuple[str] = (123456789,)  # (100179,)
     OUTGOING_EXT_API_REQ_TIMEOUT: float = 120
     LOG_WEBHOOK_INCOMING_REQ_DATA: bool = False
     LOG_WEBHOOK_INCOMING_OBJ_DATA: bool = False
@@ -251,3 +273,9 @@ class EMERGENCY_CALL_OPTIONS:
     EMERGENCY_CALL_URL = "https://samara.softats.ru/account/pact/emergency_call"
     EMERGENCY_CALL_REQUEST_TIMEOUT: float = 120
     LOG_EMERGENCY_CALL_REQ_RESPONSE: bool = True
+
+
+@dataclass(frozen=True)
+class TELETHON_OPTIONS:
+    TERMINATE_PROCESS_TIMEOUT = 15
+    KILL_PROCESS_TIMEOUT = 10

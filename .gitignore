@@ -262,3 +262,4 @@ ML_BERT_train_datasets/DATASETS_BACKUP/*
 temporary_audio/
 audio_samples/
 __temp/
+*.session
