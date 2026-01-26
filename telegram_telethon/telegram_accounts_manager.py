@@ -7,7 +7,7 @@ from telethon.sessions import StringSession, SQLiteSession
 
 from configs.enums import (
     TELEGRAM_ACCOUNT_TYPE, QR_CODE_ERROR_CORRECTION)
-from configs.settings import ALCHEMY_OPTIONS
+from configs.settings import ALCHEMY_OPTIONS, TELETHON_OPTIONS
 from db_postgres.postgres_conn.pgs_connection import PgsAsyncConnection
 from db_postgres.postgres_conn.postgres_session import PgsAsyncSession
 from db_postgres.postgres_queries.qry_get_telethon_configs_objs import (
@@ -93,6 +93,7 @@ class TelethonManager:
             self, telethon_configs: List[TelethonConfig]
     ) -> None:
         print(f"Running all telethon telegram clients by list:")
+        previous_is_bot_flag = False
         for cur_config in telethon_configs:
             account_type = cur_config.account_type
             config_name = cur_config.name
@@ -102,33 +103,50 @@ class TelethonManager:
                 if account_type == TELEGRAM_ACCOUNT_TYPE.ACCOUNT:
                     print(f"\n>>>>>>> START PERSONAL ACCOUNT TELETHON CLIENT:\n"
                           f"account_type: {account_type}\n")
-                    client = await self.create_telethon_user_client(
+                    cur_client = await self.create_telethon_user_client(
                         telethon_config=cur_config)
+                    previous_is_bot_flag = False
                 elif account_type == TELEGRAM_ACCOUNT_TYPE.BOT:
                     print(f"\n>>>>>>> START TELEGRAM BOT TELETHON CLIENT:\n"
                           f"account_type: {account_type}\n")
-                    client = await self.create_telethon_bot_client(
+
+                    if previous_is_bot_flag:
+                        delay_seconds = TELETHON_OPTIONS.EACH_CLIENT_STARTUP_DELAY_SEC
+                        print(f"Waiting before starting next bot client...\n"
+                              f"delay_seconds: {delay_seconds}\n"
+                              f"previous_is_bot_flag: {previous_is_bot_flag}\n")
+                        await asyncio.sleep(delay_seconds)
+
+                    cur_client = await self.create_telethon_bot_client(
                         telethon_config=cur_config)
+                    previous_is_bot_flag = True
                 else:  # Telethon account type not defined
                     print(f"Telethon client with empty account_type skipped [ERROR]\n"
                           f"account_type: {account_type}\n"
                           f"config_name: {config_name}\n"
                           f"phone: {phone}\n")
                     continue
-                self.clients[config_name] = client
+
+                if cur_client:
+                    self.clients[config_name] = cur_client
+                else:
+                    print(f"Not authorised and skipped Telethon client [ERROR]\n"
+                          f"cur_client: {cur_client}\n")
+
+                    continue
             except Exception as error:
                 error_log = (f"Run multiple Telethon clients [ERROR]: \n"
                              f"error: {error}\n")
                 print(error_log)
 
-        print(f"Telethon clients started successfully [OK]:")
+        print(f"\nTelethon clients started successfully [OK]:")
         for cur_config, cur_client in self.clients.items():
             print(f"cur_config: {cur_config}, cur_client: {cur_client}")
 
     async def create_telethon_user_client(
             self,
             telethon_config: TelethonConfig
-    ) -> TelegramClient:
+    ) -> TelegramClient | None:
         print("Creating existing or new Telethon session:")
         session_string = telethon_config.session_string
 
@@ -138,8 +156,9 @@ class TelethonManager:
                   f"session_string: {session_string}\n"
                   f"session: {session}\n")
         else:
+            session_prefix = TELETHON_OPTIONS.NEW_SESSION_FILE_PREFIX
             config_name = telethon_config.name
-            new_session_id = f"session_{config_name}"
+            new_session_id = f"{session_prefix}{config_name}"
             session = SQLiteSession(session_id=new_session_id)
             print(f"New Telethon session created via SQLiteSession [OK]:\n"
                   f"session_string: {session_string}\n"
@@ -178,11 +197,13 @@ class TelethonManager:
             print(f"Telethon user client state after authorise_client_user():\n"
                   f"after_auth_is_connected: {after_auth_is_connected}\n"
                   f"after_auth_is_authorised: {after_auth_is_authorised}\n")
+            if after_auth_is_authorised:
+                return user_client
         else:
             print(f"Telethon user client initially authorised:\n"
                   f"after_connect_is_connected: {after_connect_is_connected}\n"
                   f"after_connect_is_authorised: {after_connect_is_authorised}\n")
-        return user_client
+            return user_client
 
     async def authorise_client_user(
             self,
@@ -206,9 +227,10 @@ class TelethonManager:
         try:
             auth_type_choice = input(f"Выберите метод авторизации для "
                                      f"[{telegram_phone}]-[{config_name}]:\n"
-                                     f"1-по телефону \n"
-                                     f"2- QR code \n"
-                                     f"введите ваш выбор: ")
+                                     f"1 - по телефону \n"
+                                     f"2 - QR code \n"
+                                     f"3 - пропустить клиента\n"
+                                     f"Введите ваш выбор: ")
 
             if auth_type_choice == "1" and telegram_phone:
                 print("Telethon user client authorising via phone")
@@ -229,7 +251,7 @@ class TelethonManager:
                 print(f"Phone user client authorised successfully [OK]:\n"
                       f"request_sent_code: {request_sent_code}\n"
                       f"phone_signed_in_user: {phone_signed_in_user}\n")
-
+                authorised_user_flag = True
             elif auth_type_choice == "2":
                 print("Telethon user client authorisation via QR code")
                 qr_code_login = await user_client.qr_login(
@@ -252,12 +274,17 @@ class TelethonManager:
                       f"qr_code_login: {qr_code_login}\n"
                       f"qr_code: {qr_code}\n"
                       f"qrcode_signed_in_user: {qrcode_signed_in_user}\n")
+                authorised_user_flag = True
+            else:
+                authorised_user_flag = False
 
-            print("Telethon obtaining user client session string:")
-            session_string = user_client.session.save()
-            print("####### session_string: ", session_string)
-            # await self.save_session_to_db(config.name, session_string)
-
+            if authorised_user_flag:
+                print("Telethon obtaining user client session string:")
+                session_string = user_client.session.save()
+                print("####### session_string: ", session_string)
+                # await self.save_session_to_db(config.name, session_string)
+                return True
+            return False
         except Exception as error:
             error_log = (f"Telethon User Client authorisation [ERROR]: \n"
                          f"error: {error}\n"
@@ -270,13 +297,15 @@ class TelethonManager:
                          f"session_string: {session_string}\n"
                          f"auth_type_choice: {auth_type_choice}\n")
             print(error_log)
+            return False
 
     @staticmethod
     async def create_telethon_bot_client(
             telethon_config: TelethonConfig
-    ) -> TelegramClient:
+    ) -> TelegramClient | None:
+        session_prefix = TELETHON_OPTIONS.NEW_SESSION_FILE_PREFIX
         config_name = telethon_config.name
-        new_session_id = f"sess_{config_name}"
+        new_session_id = f"{session_prefix}{config_name}"
         bot_client = TelegramClient(
             session=new_session_id,
             api_id=telethon_config.api_id,
@@ -295,7 +324,6 @@ class TelethonManager:
                 first_name="New User",
                 last_name="",
                 max_attempts=3)
-        print(333333333333333333333333333333333333333)
 
         after_start_is_connected = bot_client.is_connected()
         after_start_is_authorised = await bot_client.is_user_authorized()
@@ -304,7 +332,9 @@ class TelethonManager:
               f"after_start_is_connected: {after_start_is_connected}\n"
               f"after_start_is_authorised: {after_start_is_authorised}\n"
               f"after_start_is_bot: {after_start_is_bot}\n")
-        return bot_client
+        if after_start_is_authorised:
+            return bot_client
+        return None
 
 
 import asyncio
