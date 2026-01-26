@@ -75,7 +75,8 @@ API_PASSWORD: str = api_conf_parser.get(section=api_conf_name, option="API_PASSW
 # GETTING TELEGRAM API INI CONFIGS #####################################
 @dataclass(frozen=True)
 class TELEGRAM_API_CONFIG_NAMES:
-    TELEGRAM_API_ANY_PRODUCT_IP = "TELEGRAM_OFFICIAL_API_any_ip_prod"
+    TG_OFFICIAL_API_any_ip_prod = "TELEGRAM_OFFICIAL_API_any_ip_prod"
+    TG_OFFICIAL_API_TEST_375296085622 = "TELEGRAM_OFFICIAL_API_TEST_375296085622"
 
 
 telegram_api_ini_normal_path = get_full_file_normal_path(
@@ -85,14 +86,16 @@ telegram_api_conf_parser = ConfigParser()
 telegram_api_conf_parser.read(filenames=telegram_api_ini_normal_path)
 
 if cur_external_ip == "___.___.___.___":  # Just example
-    telegram_api_conf_name = TELEGRAM_API_CONFIG_NAMES.TELEGRAM_API_ANY_PRODUCT_IP  # Certain configs can be defined
+    telegram_api_conf_name = TELEGRAM_API_CONFIG_NAMES.TG_OFFICIAL_API_any_ip_prod  # Certain configs can be defined
+if cur_external_ip == "176.124.136.22":  # Just example
+    telegram_api_conf_name = TELEGRAM_API_CONFIG_NAMES.TG_OFFICIAL_API_TEST_375296085622
 else:
-    telegram_api_conf_name = TELEGRAM_API_CONFIG_NAMES.TELEGRAM_API_ANY_PRODUCT_IP
+    telegram_api_conf_name = TELEGRAM_API_CONFIG_NAMES.TG_OFFICIAL_API_TEST_375296085622
 
-TELEGRAM_OFFICIAL_API_ID = telegram_api_conf_parser.get(
-    section=telegram_api_conf_name, option="TELEGRAM_OFFICIAL_API_ID")
-TELEGRAM_OFFICIAL_API_HASH = telegram_api_conf_parser.get(
-    section=telegram_api_conf_name, option="TELEGRAM_OFFICIAL_API_HASH")
+TELEGRAM_OFFICIAL_APP_API_ID = telegram_api_conf_parser.get(
+    section=telegram_api_conf_name, option="TG_OFFICIAL_APP_API_ID")
+TELEGRAM_OFFICIAL_APP_API_HASH = telegram_api_conf_parser.get(
+    section=telegram_api_conf_name, option="TG_OFFICIAL_APP_API_HASH")
 
 
 # GETTING SQLADMIN INI CONFIGS #########################################
