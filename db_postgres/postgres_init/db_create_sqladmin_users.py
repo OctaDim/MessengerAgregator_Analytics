@@ -7,7 +7,7 @@ from db_postgres.postgres_conn.pgs_connection import PgsAsyncConnection
 from db_postgres.postgres_conn.postgres_session import PgsAsyncSession
 from db_postgres.postgres_models.auth_role_model import AuthRoleModel
 from db_postgres.postgres_queries_utils.get_model_records_flex_query import get_model_rows_flex_query
-from db_postgres.postgres_queries_utils.save_new_model_object import save_new_model_data_qry
+from db_postgres.postgres_queries_utils.save_new_model_object import save_new_model_object_qry
 
 
 async def create_default_sqladmin_users() -> bool | None:
@@ -56,7 +56,7 @@ async def create_default_sqladmin_users() -> bool | None:
             sqladmin_initial_users.extend(sqladmin_debug_users)
 
         for cur_sqladmin_user_data in sqladmin_initial_users:
-            await save_new_model_data_qry(
+            await save_new_model_object_qry(
                 ModelClassORM=AuthRoleModel,
                 ongoing_session=pgs_async_session,
                 new_data=cur_sqladmin_user_data)
