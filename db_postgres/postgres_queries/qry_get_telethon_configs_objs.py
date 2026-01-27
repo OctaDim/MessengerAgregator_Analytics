@@ -19,7 +19,7 @@ async def get_telethon_configs_objs_qry(
         ongoing_session=ongoing_session,
         selected_fields=None,
         fields_values_filter=filter_fields,
-        order_by_fields=None,
+        order_by_fields="id",
         return_scalars=True)
     # print(f"####### telethon_configs_objs: {telethon_configs_objs}")  # Too long
     print(f"####### type(telethon_configs_objs): {type(telethon_configs_objs)}")
