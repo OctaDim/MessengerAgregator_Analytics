@@ -7,12 +7,13 @@ from telethon.sessions import StringSession, SQLiteSession
 
 from configs.enums import (
     TELEGRAM_ACCOUNT_TYPE, QR_CODE_ERROR_CORRECTION)
-from configs.settings import ALCHEMY_OPTIONS, TELETHON_OPTIONS
+from configs.settings import ALCHEMY_OPTIONS, TELETHON_OPTIONS, BASE_DIR
 from db_postgres.postgres_conn.pgs_connection import PgsAsyncConnection
 from db_postgres.postgres_conn.postgres_session import PgsAsyncSession
 from db_postgres.postgres_queries.qry_get_telethon_configs_objs import (
     get_telethon_configs_objs_qry)
 from db_postgres.postgres_queries.qry_update_telethon_session_data import update_telethon_session_data_qry
+from utils_common.normalized_path import get_full_file_normal_path
 
 
 class TelethonConfig(BaseModel):
@@ -148,7 +149,6 @@ class TelethonManager:
                 else:
                     print(f"Not authorised and skipped Telethon client [ERROR]\n"
                           f"cur_client: {cur_client}\n")
-
                     continue
             except Exception as error:
                 error_log = (f"Run multiple Telethon clients [ERROR]: \n"
@@ -172,14 +172,20 @@ class TelethonManager:
                   f"session_string: {session_string}\n"
                   f"session: {session}\n")
         else:
-            session_prefix = TELETHON_OPTIONS.NEW_SESSION_FILE_PREFIX
+            session_prefix = TELETHON_OPTIONS.ACCOUNT_SESSION_FILE_PREFIX
             config_name = telethon_config.name
             new_session_id = f"{session_prefix}{config_name}"
-            session = SQLiteSession(session_id=new_session_id)
+            telethon_sessions_dir = TELETHON_OPTIONS.BASE_TELETHON_SESSIONS_DIR
+            session_full_file_path = get_full_file_normal_path(
+                all_dir_str_parts=[BASE_DIR, telethon_sessions_dir],
+                file_name_with_ext=new_session_id)
+
+            session = SQLiteSession(session_id=session_full_file_path)
             print(f"New Telethon session created via SQLiteSession [OK]:\n"
                   f"session_string: {session_string}\n"
                   f"config_name: {config_name}\n"
                   f"new_session_id: {new_session_id}\n"
+                  f"session_full_file_path: {session_full_file_path}\n"
                   f"session: {session}\n")
 
         user_client = TelegramClient(
@@ -192,7 +198,7 @@ class TelethonManager:
             flood_sleep_threshold=120, )
 
         before_connect_is_connected = user_client.is_connected()
-        print(f"Telethon user client state before connect():\n"
+        print(f"Telethon User client state before connect():\n"
               f"before_connect_is_connected: {before_connect_is_connected}\n")
 
         if not before_connect_is_connected:
@@ -200,7 +206,7 @@ class TelethonManager:
 
         after_connect_is_connected = user_client.is_connected()
         after_connect_is_authorised = await user_client.is_user_authorized()
-        print(f"Telethon user client state after connect():\n"
+        print(f"Telethon User client state after connect():\n"
               f"after_connect_is_connected: {after_connect_is_connected}\n"
               f"after_connect_is_authorised: {after_connect_is_authorised}\n")
 
@@ -210,13 +216,13 @@ class TelethonManager:
                 telethon_config=telethon_config)
             after_auth_is_connected = user_client.is_connected()
             after_auth_is_authorised = await user_client.is_user_authorized()
-            print(f"Telethon user client state after authorise_telethon_user_client():\n"
+            print(f"Telethon User client state after authorise_telethon_user_client():\n"
                   f"after_auth_is_connected: {after_auth_is_connected}\n"
                   f"after_auth_is_authorised: {after_auth_is_authorised}\n")
             if after_auth_is_authorised:
                 return user_client
         else:
-            print(f"Telethon user client initially authorised:\n"
+            print(f"Telethon User client initially authorised:\n"
                   f"after_connect_is_connected: {after_connect_is_connected}\n"
                   f"after_connect_is_authorised: {after_connect_is_authorised}\n")
             return user_client
@@ -335,17 +341,24 @@ class TelethonManager:
     async def create_telethon_bot_client(
             telethon_config: TelethonConfig
     ) -> TelegramClient | None:
-        session_prefix = TELETHON_OPTIONS.NEW_SESSION_FILE_PREFIX
+        session_prefix = TELETHON_OPTIONS.BOT_SESSION_FILE_PREFIX
         config_name = telethon_config.name
         new_session_id = f"{session_prefix}{config_name}"
+        telethon_sessions_dir = TELETHON_OPTIONS.BASE_TELETHON_SESSIONS_DIR
+        session_full_file_path = get_full_file_normal_path(
+            all_dir_str_parts=[BASE_DIR, telethon_sessions_dir],
+            file_name_with_ext=new_session_id)
+
+        # session = SQLiteSession(session_id=session_full_file_path)
+
         bot_client = TelegramClient(
-            session=new_session_id,
+            session=session_full_file_path,
             api_id=telethon_config.api_id,
             api_hash=telethon_config.api_hash,
             proxy=telethon_config.proxy, )
 
         before_connect_is_connected = bot_client.is_connected()
-        print(f"Telethon bot client state before start():\n"
+        print(f"Telethon Bot client state before start():\n"
               f"before_connect_is_connected: {before_connect_is_connected}\n")
 
         if not before_connect_is_connected:
@@ -354,7 +367,7 @@ class TelethonManager:
         after_connect_is_connected = bot_client.is_connected()
         after_connect_is_authorised = await bot_client.is_user_authorized()
         after_connect_is_bot = await bot_client.is_bot()
-        print(f"Telethon user client state after connect():\n"
+        print(f"Telethon Bot client state after connect():\n"
               f"after_connect_is_connected: {after_connect_is_connected}\n"
               f"after_connect_is_authorised: {after_connect_is_authorised}\n"
               f"after_connect_is_bot: {after_connect_is_bot}\n")
@@ -371,14 +384,14 @@ class TelethonManager:
             after_start_is_connected = bot_client.is_connected()
             after_start_is_authorised = await bot_client.is_user_authorized()
             after_start_is_bot = await bot_client.is_bot()
-            print(f"Telethon bot client state after start():\n"
+            print(f"Telethon Bot client state after start():\n"
                   f"after_start_is_connected: {after_start_is_connected}\n"
                   f"after_start_is_authorised: {after_start_is_authorised}\n"
                   f"after_start_is_bot: {after_start_is_bot}\n")
             if after_start_is_authorised:
                 return bot_client
         else:
-            print(f"Telethon bot client initially authorised:\n"
+            print(f"Telethon Bot client initially authorised:\n"
                   f"after_connect_is_connected: {after_connect_is_connected}\n"
                   f"after_connect_is_authorised: {after_connect_is_authorised}\n"
                   f"after_connect_is_bot: {after_connect_is_bot}\n")
