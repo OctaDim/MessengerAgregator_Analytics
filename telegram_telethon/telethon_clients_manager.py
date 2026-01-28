@@ -1,7 +1,5 @@
 import asyncio
-import copy
 import weakref
-from datetime import datetime
 from typing import Dict, List, Literal
 
 import qrcode
@@ -420,7 +418,6 @@ class TelethonManager:
             await handle_new_message_helper(event=event,
                                             telethon_client=tlt_client,
                                             telethon_config=tlt_config)
-
 
         # @telethon_client.on(events.ChatAction())
         # async def chat_action_handler(event):
