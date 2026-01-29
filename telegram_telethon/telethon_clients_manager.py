@@ -1,6 +1,6 @@
 import asyncio
 import weakref
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Callable
 
 import qrcode
 from telethon import TelegramClient, events
@@ -25,7 +25,7 @@ from utils_common.normalized_path import get_full_file_normal_path
 class TelethonManager:
     def __init__(self):
         self.clients: Dict[str, TelegramClient] = {}
-        self.event_handlers: list[str] = []
+        self.event_handlers: Dict[str, List[Callable]] = {}
         self.running_state = False
 
     async def get_postgres_db_tlt_configs(self) -> List[TelethonConfig]:
@@ -63,8 +63,8 @@ class TelethonManager:
             pgs_telethon_configs_list.append(cur_telethon_config)
         return pgs_telethon_configs_list
 
+    @staticmethod
     async def create_session_name(
-            self,
             telethon_db_config_id: int,
             web_account_id: str,
             web_account_username: str,
@@ -134,19 +134,21 @@ class TelethonManager:
                           f"cur_client: {cur_client}\n")
                     continue
 
+                print(f"{'>' * 50}\n{'>' * 50}\n"
+                      "Telethon client created and authorised [OK]:\n"
+                      f"cur_client: {cur_client}\n"
+                      f"telethon_config_id: {telethon_config_id}\n"
+                      f"account_type: {account_type}\n"
+                      f"telegram_phone: {telegram_phone}\n"
+                      f"config_name: {config_name}\n")
+
                 print("Postgres-SQLite Telethon session saving:")
                 await self.postgres_db_save_tlt_session(
                     telethon_client=cur_client,
                     telethon_config=cur_config)
                 self.clients[config_name] = cur_client
 
-                print(f"{'>' * 50}\n{'>' * 50}\n"
-                      "Registering all events handlers per telethon client:\n"
-                      f"cur_client: {cur_client}\n"
-                      f"telethon_config_id: {telethon_config_id}\n"
-                      f"account_type: {account_type}\n"
-                      f"telegram_phone: {telegram_phone}\n"
-                      f"config_name: {config_name}\n")
+                print("Registering all events handlers per telethon client:")
                 await self.register_tlt_client_handlers(
                     telethon_client=cur_client,
                     telethon_config=cur_config)
@@ -229,8 +231,8 @@ class TelethonManager:
             return user_client
         # return None  # Not necessary
 
+    @staticmethod
     async def postgres_db_save_tlt_session(
-            self,
             telethon_config: TelethonConfig,
             telethon_client: TelegramClient
     ) -> bool:
@@ -252,8 +254,8 @@ class TelethonManager:
               f"session_string: {session_string}\n")
         return session_string
 
+    @staticmethod
     async def authorise_tlt_user_client(
-            self,
             telethon_user_client: TelegramClient,
             telethon_config: TelethonConfig
     ) -> bool:
@@ -307,7 +309,7 @@ class TelethonManager:
                 print(f"####### QR Code url: {qr_code_login.url}")
 
                 print("Generating QR code in console")
-                qr_code = qrcode.QRCode(
+                qr_code = qrcode.main.QRCode(
                     version=None,
                     error_correction=QR_CODE_ERROR_CORRECTION.LEVEL_M.value,
                     box_size=10,
@@ -377,7 +379,7 @@ class TelethonManager:
               f"after_connect_is_bot: {after_connect_is_bot}\n")
 
         if not after_connect_is_authorised:
-            await bot_client.start(  # Bug: await is necessary. Error without await but sync start()
+            bot_client.start(  # Telethon bug: await is necessary. Error without await but sync start()
                 bot_token=telethon_config.bot_token,
                 force_sms=False,
                 code_callback=None,
@@ -407,8 +409,12 @@ class TelethonManager:
             telethon_client: TelegramClient,
             telethon_config: TelethonConfig
     ) -> None:
+        # TODO: create and use HandlerBuilder Class or function
         telethon_client_weak_ref = weakref.ref(telethon_client)
         telethon_config_weak_ref = weakref.ref(telethon_config)
+
+        tlt_config_name = telethon_config.name
+        cur_tlt_client_handlers = []
 
         # New Message Handler
         @telethon_client.on(events.NewMessage())
@@ -418,6 +424,8 @@ class TelethonManager:
             await handle_new_message_helper(event=event,
                                             telethon_client=tlt_client,
                                             telethon_config=tlt_config)
+
+        cur_tlt_client_handlers.append(new_message_handler)
 
         # @telethon_client.on(events.ChatAction())
         # async def chat_action_handler(event):
@@ -463,17 +471,17 @@ class TelethonManager:
         # async def message_edited_handler(event):
         #     # await self._handle_message_edited(config_name, event)
         #     pass
+        self.event_handlers[tlt_config_name] = cur_tlt_client_handlers
 
     async def run_all_tlt_clients_tasks(self):
         self.running_state = True
 
         asyncio_tasks = []
-        for cur_config, cur_client in self.clients.items():
+        for cur_config_name, cur_tlt_client in self.clients.items():
             cur_task = asyncio.create_task(
-                coro=cur_client.run_until_disconnected(),
-                name=None,  # Human comfortable name
-                context=None  # Context variables can be passed: var = contextvars.ContextVar("var"); var.set("value")
-            )
+                coro=cur_tlt_client.run_until_disconnected(),
+                name=cur_config_name,  # Human comfortable name
+                context=None)  # Context vars can be passed/gotten: var = contextvars.ContextVar("var"); var.set("value")
             asyncio_tasks.append(cur_task)
 
         try:

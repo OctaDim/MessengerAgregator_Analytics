@@ -29,7 +29,7 @@ async def handle_new_message_helper(
     telethon_client = telethon_client  # Just for info
     sender = await event.get_sender()
     chat = await event.get_chat()
-    message_text = event.message.text
+    message_text = f"{event.message.text[:10]}....."
     chat_title = getattr(chat, "title", "")
 
     sender_first_name = getattr(sender, "first_name", "")
