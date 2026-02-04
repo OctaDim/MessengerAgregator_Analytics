@@ -85,12 +85,16 @@ async def lifespan_on_startup():
     # run_redis()
     run_postgres()
     await create_default_sqladmin_users()  # Creating default sqladmin users
+    # await initialise_telethon_manager()  # Telethon
+    # tlt_manager = get_global_telethon_manager_inst()  # Telethon
     # await init_and_start_bert_model()  # Initializing Bert model
-    # start_telethon_process()
 
 
 async def lifespan_on_shutdown():
     print(">>>>>>> FastAPI Lifespan (shutdown):")
+    # tlt_manager = get_global_telethon_manager_inst()  # Telethon
+    # await tlt_manager.disconnect_all_tlt_clients()  # Telethon
+    # await tlt_manager.cancel_all_tlt_clients_async_tasks()  # Telethon
     await close_all_async_pgs_connections()
     close_all_sync_pgs_connections()
     # stop_telethon_process()
