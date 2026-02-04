@@ -1,13 +1,12 @@
-from typing import Type
+from typing import Type, Any
 
 from fastapi import HTTPException
+from sqlalchemy import Row
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeMeta
 from starlette import status
 
 from db_postgres.postgres_init.declarative_base_model import Base
-from db_postgres.postgres_models.webhook_conversation_model import (
-    WebhookConversationModel)
 from db_postgres.postgres_queries_utils.model_object_attrs_update import (
     update_model_obj_no_commit)
 
@@ -17,7 +16,7 @@ async def create_cache_new_model_obj_qry(
         ongoing_session: AsyncSession,
         new_data: dict,
         log_new_data: bool = False
-) -> WebhookConversationModel | None:
+) -> Row[tuple[Any, ...]] | None:
     if not new_data:
         return None
 

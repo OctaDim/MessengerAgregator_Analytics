@@ -94,7 +94,7 @@ async def get_model_rows_flex_query(
             orm_model_rows = result.all()
         return orm_model_rows
     except Exception as error:
-        error_log = (f"Getting orm model rows with flex query [ERROR]: \n"
+        error_log = (f"Async Getting orm model rows with flex query [ERROR]: \n"
                      f"error: {error} \n"
                      f"orm_model_class: {orm_model_class} \n"
                      f"fields_values_filter: {fields_values_filter} \n"
@@ -181,7 +181,7 @@ def get_sync_model_rows_flex_query(
             orm_model_rows = result.all()
         return orm_model_rows
     except Exception as error:
-        error_log = (f"Getting orm model rows with flex query [ERROR]: \n"
+        error_log = (f"Sync Getting orm model rows with flex query [ERROR]: \n"
                      f"error: {error} \n"
                      f"orm_model_class: {orm_model_class} \n"
                      f"fields_values_filter: {fields_values_filter} \n"

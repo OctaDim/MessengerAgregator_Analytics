@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import Sequence, Row
+from sqlalchemy import Row
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db_postgres.postgres_models.telethon_configs_model import (
