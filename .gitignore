@@ -263,3 +263,4 @@ temporary_audio/
 audio_samples/
 __temp/
 *.session
+*.session-journal

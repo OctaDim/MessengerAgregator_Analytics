@@ -92,10 +92,40 @@ if cur_external_ip == "176.124.136.22":  # Just example
 else:
     telegram_api_conf_name = TELEGRAM_API_CONFIG_NAMES.TG_OFFICIAL_API_TEST_375296085622
 
-TELEGRAM_OFFICIAL_APP_API_ID = telegram_api_conf_parser.get(
-    section=telegram_api_conf_name, option="TG_OFFICIAL_APP_API_ID")
+TELEGRAM_OFFICIAL_APP_API_ID = int(telegram_api_conf_parser.get(
+    section=telegram_api_conf_name, option="TG_OFFICIAL_APP_API_ID"))
 TELEGRAM_OFFICIAL_APP_API_HASH = telegram_api_conf_parser.get(
     section=telegram_api_conf_name, option="TG_OFFICIAL_APP_API_HASH")
+
+
+# GETTING TELETHON FASTAPI INI CONFIGS #################################
+@dataclass(frozen=True)
+class TELETHON_FASTAPI_CONFIG_NAMES:
+    TLT_FAPI_any_ip_prod = "TELETHON_FASTAPI_any_ip_prod"
+    TLT_FAPI_test_ip = "TELETHON_FASTAPI_test_ip"
+
+
+tlt_fastapi_ini_normal_path = get_full_file_normal_path(
+    all_dir_str_parts=[BASE_DIR],
+    file_name_with_ext=".configs_telethon_fastapi.ini")
+tlt_fastapi_conf_parser = ConfigParser()
+tlt_fastapi_conf_parser.read(filenames=tlt_fastapi_ini_normal_path)
+
+if cur_external_ip == "___.___.___.___":  # Just example
+    tlt_fastapi_conf_name = TELETHON_FASTAPI_CONFIG_NAMES.TLT_FAPI_any_ip_prod  # Certain configs can be defined
+if cur_external_ip == "176.124.136.22":  # Just example
+    tlt_fastapi_conf_name = TELETHON_FASTAPI_CONFIG_NAMES.TLT_FAPI_test_ip
+else:
+    tlt_fastapi_conf_name = TELETHON_FASTAPI_CONFIG_NAMES.TLT_FAPI_test_ip
+
+TELETHON_FASTAPI_HOST = tlt_fastapi_conf_parser.get(
+    section=tlt_fastapi_conf_name, option="TELETHON_FASTAPI_HOST")
+TELETHON_FASTAPI_PORT = int(tlt_fastapi_conf_parser.get(
+    section=tlt_fastapi_conf_name, option="TELETHON_FASTAPI_PORT"))
+TELETHON_FASTAPI_USERNAME = tlt_fastapi_conf_parser.get(
+    section=tlt_fastapi_conf_name, option="TELETHON_FASTAPI_USERNAME")
+TELETHON_FASTAPI_PASSWORD = tlt_fastapi_conf_parser.get(
+    section=tlt_fastapi_conf_name, option="TELETHON_FASTAPI_PASSWORD")
 
 
 # GETTING SQLADMIN INI CONFIGS #########################################
@@ -216,6 +246,12 @@ class FASTAPI_OPTIONS:
 
 
 @dataclass(frozen=True)
+class TELETHON_FASTAPI_OPTIONS:
+    LOG_LEVEL = "debug"  # used in main.py when starting uvicorn
+    USE_COLORS = True  # used in main.py when starting uvicorn
+
+
+@dataclass(frozen=True)
 class ALCHEMY_OPTIONS:
     DISABLE_SWAGGER_DOCUMENTATION: bool = True
     USE_POSTGRES_DATABASE: bool = True
@@ -288,4 +324,6 @@ class TELETHON_OPTIONS:
     FLOOD_SLEEP_THRESHOLD = 120
     ACCOUNT_SESSION_FILE_PREFIX = "sess_acc_"
     BOT_SESSION_FILE_PREFIX = "sess_bot_"
-    BASE_TELETHON_SESSIONS_DIR = "telegram_telethon/TELETHON_SESSIONS"
+    LOG_NEW_TELETHON_CONFIG_DATA = True
+    BASE_TELETHON_SESSIONS_DIR = "tg_telethon/TELETHON_SESSIONS"
+    PERIODIC_ASYNC_TASK_INTERVAL_SEC = 43200
