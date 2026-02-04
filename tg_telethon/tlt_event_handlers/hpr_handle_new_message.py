@@ -1,8 +1,6 @@
-from datetime import datetime
-
 from telethon import events, TelegramClient
 
-from telegram_telethon.telethon_client_config import TelethonConfig
+from tg_telethon.tlt_manager.telethon_client_config import TelethonConfig
 
 
 async def handle_new_message_helper(
@@ -19,6 +17,8 @@ async def handle_new_message_helper(
     telethon_config_id = telethon_config.telethon_config_id
     config_name = telethon_config.name
     config_phone = telethon_config.phone
+    config_bot_token = telethon_config.bot_token
+    config_bot_token = config_bot_token[:10] if config_bot_token else None
     telethon_account_type = telethon_config.account_type
     web_account_id = telethon_config.web_account_id
     web_account_username = telethon_config.web_account_username
@@ -29,7 +29,8 @@ async def handle_new_message_helper(
     telethon_client = telethon_client  # Just for info
     sender = await event.get_sender()
     chat = await event.get_chat()
-    message_text = f"{event.message.text[:10]}....."
+    message_txt = event.message.text
+    message_txt = message_txt if len(message_txt) <=10 else f"{message_txt[:10]}..."
     chat_title = getattr(chat, "title", "")
 
     sender_first_name = getattr(sender, "first_name", "")
@@ -44,10 +45,11 @@ async def handle_new_message_helper(
     else:
         sender_name = ""
 
-    event_data = {"message_text": message_text,
+    event_data = {"message_txt": message_txt,
                   "telethon_config_id": telethon_config_id,
                   "config_name": config_name,
                   "config_phone": config_phone,
+                  "config_bot_token": config_bot_token,
                   "telethon_account_type": telethon_account_type,
                   "web_account_id": web_account_id,
                   "web_account_username": web_account_username,
