@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional
 
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
