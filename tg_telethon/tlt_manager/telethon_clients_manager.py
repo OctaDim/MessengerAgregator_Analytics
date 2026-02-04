@@ -114,7 +114,7 @@ class TelethonManager(metaclass=SingletonMeta):
             config_name = cur_config.name
             telegram_phone = cur_config.phone
             bot_token = cur_config.bot_token
-            bot_token_str = bot_token[:10] if bot_token else None
+            bot_token_info = f"{bot_token[:10]}..." if bot_token else None
 
             if account_type == TELEGRAM_ACCOUNT_TYPE.ACCOUNT:
                 previous_is_bot_flag = False
@@ -131,7 +131,7 @@ class TelethonManager(metaclass=SingletonMeta):
                       f"telethon_config_id: {telethon_config_id}\n"
                       f"account_type: {account_type}\n"
                       f"telegram_phone: {telegram_phone}\n"
-                      f"bot_token_str: {bot_token_str}\n"
+                      f"bot_token_info: {bot_token_info}\n"
                       f"config_name: {config_name}\n")
                 continue
 
@@ -156,7 +156,7 @@ class TelethonManager(metaclass=SingletonMeta):
         config_name = telethon_config.name
         telegram_phone = telethon_config.phone
         bot_token = telethon_config.bot_token
-        bot_token_str = bot_token[:10] if bot_token else None
+        bot_token_info = f"{bot_token[:10]}..." if bot_token else None
 
         try:
             if account_type == TELEGRAM_ACCOUNT_TYPE.ACCOUNT:
@@ -165,6 +165,7 @@ class TelethonManager(metaclass=SingletonMeta):
                       f"telethon_config_id: {telethon_config_id}\n"
                       f"account_type: {account_type}\n"
                       f"telegram_phone: {telegram_phone}\n"
+                      f"bot_token_info: {bot_token_info}\n"
                       f"config_name: {config_name}\n")
                 single_tlt_client = await self.start_tlt_user_client(
                     telethon_config=telethon_config)
@@ -173,7 +174,8 @@ class TelethonManager(metaclass=SingletonMeta):
                       f">>>>>>> START SINGLE TELEGRAM BOT TELETHON CLIENT:\n"
                       f"telethon_config_id: {telethon_config_id}\n"
                       f"account_type: {account_type}\n"
-                      f"bot_token: {bot_token}\n"
+                      f"telegram_phone: {telegram_phone}\n"
+                      f"bot_token_info: {bot_token_info}\n"
                       f"config_name: {config_name}\n")
                 single_tlt_client = await self.start_tlt_bot_client(
                     telethon_config=telethon_config)
@@ -182,6 +184,7 @@ class TelethonManager(metaclass=SingletonMeta):
                       f"telethon_config_id: {telethon_config_id}\n"
                       f"account_type: {account_type}\n"
                       f"telegram_phone: {telegram_phone}\n"
+                      f"bot_token_info: {bot_token_info}\n"
                       f"config_name: {config_name}\n")
                 return None
 
@@ -191,7 +194,7 @@ class TelethonManager(metaclass=SingletonMeta):
                       f"telethon_config_id: {telethon_config_id}\n"
                       f"account_type: {account_type}\n"
                       f"telegram_phone: {telegram_phone}\n"
-                      f"bot_token_str: {bot_token_str}\n"
+                      f"bot_token_info: {bot_token_info}\n"
                       f"config_name: {config_name}\n")
                 return None
             print(f"Telethon client created and authorised [OK]:\n"
@@ -199,13 +202,11 @@ class TelethonManager(metaclass=SingletonMeta):
                   f"telethon_config_id: {telethon_config_id}\n"
                   f"account_type: {account_type}\n"
                   f"telegram_phone: {telegram_phone}\n"
-                  f"bot_token_str: {bot_token_str}\n"
+                  f"bot_token_info: {bot_token_info}\n"
                   f"config_name: {config_name}\n")
 
-            session_string = StringSession.save(
-                single_tlt_client.session)  # Obtaining session str from tlt client for PGS
-
             print("Telethon client PGS-SQLite session saving:")
+            # session_str = StringSession.save(single_tlt_client.session)  # Obtain session str from tlt client for PGS
             await self.postgres_db_save_tlt_session(
                 telethon_client=single_tlt_client,
                 telethon_config=telethon_config)
@@ -225,7 +226,7 @@ class TelethonManager(metaclass=SingletonMeta):
                          f"telethon_config_id: {telethon_config_id}\n"
                          f"account_type: {account_type}\n"
                          f"telegram_phone: {telegram_phone}\n"
-                         f"bot_token_str: {bot_token_str}\n"
+                         f"bot_token_info: {bot_token_info}\n"
                          f"config_name: {config_name}\n")
             print(error_log)
 
@@ -234,12 +235,13 @@ class TelethonManager(metaclass=SingletonMeta):
             telethon_config: TelethonConfig
     ) -> TelegramClient | None:
         print("Creating existing or new Telethon session:")
-        session_string = telethon_config.session_string
+        session_str = telethon_config.session_string
+        session_str_info = f"...{session_str[-15:]}" if session_str else None
 
-        if session_string:
-            session = StringSession(string=session_string)
+        if session_str:
+            session = StringSession(string=session_str)
             print(f"Existing Telethon session used via StringSession [OK]:\n"
-                  f"session_string: {session_string[-10:]}\n"
+                  f"session_str_info: {session_str_info}\n"
                   f"session: {session}\n")
         else:
             session_prefix = TELETHON_OPTIONS.ACCOUNT_SESSION_FILE_PREFIX
@@ -252,7 +254,7 @@ class TelethonManager(metaclass=SingletonMeta):
 
             session = SQLiteSession(session_id=session_full_file_path)
             print(f"New Telethon session created via SQLiteSession [OK]:\n"
-                  f"session_string: {session_string[-10:]}\n"
+                  f"session_str_info: {session_str_info}\n"
                   f"config_name: {config_name}\n"
                   f"new_session_id: {new_session_id}\n"
                   f"session_full_file_path: {session_full_file_path}\n"
@@ -303,11 +305,12 @@ class TelethonManager(metaclass=SingletonMeta):
             telethon_config: TelethonConfig,
             telethon_client: TelegramClient
     ) -> bool:
-        session_string = StringSession.save(telethon_client.session)  # Obtaining session str from tlt client for PGS
+        session_str = StringSession.save(telethon_client.session)  # Obtain session str from tlt client for PGS
+        session_str_info = f"...{session_str[-15:]}" if session_str else None
         print(f"Telethon session string obtained from tlt client[OK]:\n"
-              f"session_string: {session_string[-10:]}\n")
+              f"session_str_info: {session_str_info}\n")
 
-        session_update_data = {"telethon_session_str": session_string}
+        session_update_data = {"telethon_session_str": session_str}
         session_is_updated = await update_telethon_session_data_qry(
             # Non Telethon standard Postgres saving session string
             telethon_config_id=telethon_config.telethon_config_id,
@@ -319,12 +322,12 @@ class TelethonManager(metaclass=SingletonMeta):
 
         if session_is_updated:
             print(f"DB Telethon session saved in Postgres [OK]\n"
-                  f"session_string: {session_string}\n")
+                  f"session_str_info: {session_str_info}\n")
 
         telethon_client.session.save()  # Standard Telethon session saving in SQLite session file
         print(f"DB Telethon session saved in SQLite [OK]\n"
-              f"session_string: {session_string[-10:]}\n")
-        return session_string
+              f"session_str_info: {session_str_info}\n")
+        return session_str
 
     @staticmethod
     async def authorise_tlt_user_client(
@@ -343,8 +346,9 @@ class TelethonManager(metaclass=SingletonMeta):
         phone_signed_in_user = None
         qr_code_login = None
         qr_code = None
-        session_string = None
         qrcode_signed_in_user = None
+        session_str = None
+        session_str_info = f"...{session_str[-15:]}" if session_str else None
         try:
             auth_type_choice = input(f"Choose authorisation type for "
                                      f"phone: {telegram_phone}, config name: {config_name}:\n"
@@ -407,7 +411,7 @@ class TelethonManager(metaclass=SingletonMeta):
                          f"qr_code_login: {qr_code_login}\n"
                          f"qr_code: {qr_code}\n"
                          f"qrcode_signed_in_user: {qrcode_signed_in_user}\n"
-                         f"session_string: {session_string[-10:]}\n"
+                         f"session_str_info: {session_str_info}\n"
                          f"auth_type_choice: {auth_type_choice}\n")
             print(error_log)
             return False
@@ -491,7 +495,7 @@ class TelethonManager(metaclass=SingletonMeta):
         # New Message Handler
         @telethon_client.on(events.NewMessage())
         async def new_message_handler(event):
-            #TODO: Think if weak_ref necessary
+            # TODO: Think if weak_ref necessary
             # tlt_client = telethon_client_weak_ref()
             # tlt_config = telethon_config_weak_ref()
             tlt_client = telethon_client
