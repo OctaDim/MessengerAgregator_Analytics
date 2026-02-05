@@ -599,6 +599,10 @@ class TelethonManager(metaclass=SingletonMeta):
 
     async def run_all_tlt_clients_async_tasks(self):
         print("\nTelethon clients async tasks startup and executing:\n")
+        def done_callback(task):
+            print(f"Async task done callback:\n"
+                  f"finished task: {task.get_name()}\n")
+
         self.running_state = True
         for cur_config_name, cur_tlt_client in self.clients.items():
             cur_tlt_client_task = asyncio.create_task(
@@ -606,6 +610,7 @@ class TelethonManager(metaclass=SingletonMeta):
                 name=cur_config_name,  # Human comfortable name
                 context=None)  # Context vars can be passed/gotten: var=contextvars.ContextVar("var"); var.set("value")
             self.running_tasks[cur_config_name] = cur_tlt_client_task
+            cur_tlt_client_task.add_done_callback(done_callback)
 
         periodic_async_task = asyncio.create_task(
             coro=self.execute_async_periodic_task(),
@@ -614,7 +619,6 @@ class TelethonManager(metaclass=SingletonMeta):
         self.running_tasks["periodic_async_task"] = periodic_async_task
 
         await self.init_all_fastapi_routers()
-
         server = uvicorn.Server(config=tlt_uvicorn_config)
         tlt_async_fastapi_uvicorn = asyncio.create_task(
             server.serve(),
@@ -624,7 +628,7 @@ class TelethonManager(metaclass=SingletonMeta):
 
         try:
             await asyncio.gather(*self.running_tasks.values(),
-                                 return_exceptions=True)
+                                 return_exceptions=True)  # if True all tasks don't depend on other task exception
             # done, pending = await asyncio.wait(
             #     self.running_tasks.values(),
             #     timeout=None,
