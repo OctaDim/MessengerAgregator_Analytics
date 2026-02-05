@@ -133,8 +133,9 @@ def setup_admin_panel(
 def create_fastapi_application() -> SessionMiddleware:
     fastapi_app = FastAPI(
         lifespan=fast_api_lifespan,
-        docs_url=None,
-        redoc_url=None, )
+        # docs_url=None,
+        # redoc_url=None,
+    )
 
     for cur_router in routers_list:
         fastapi_app.include_router(router=cur_router, )
