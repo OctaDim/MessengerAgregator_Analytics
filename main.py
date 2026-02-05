@@ -9,7 +9,7 @@ from sqladmin import Admin
 from starlette.applications import Starlette
 from starlette.middleware.sessions import SessionMiddleware
 
-from admin_panel.admin_views.__temp.admin_auth_role_backend import (
+from admin_panel.admin_views.admin_auth_role_backend import (
     AdminAuthRoleAuthBackend)
 from admin_panel.admin_views.admin_chats_subjects import (
     ChatSubjectsAdmin)
