@@ -119,7 +119,7 @@ class TelethonManager(metaclass=SingletonMeta):
 
             if account_type == TELEGRAM_ACCOUNT_TYPE.ACCOUNT:
                 if prev_is_acc_flag:
-                    delay_seconds = TELETHON_OPTIONS.EACH_ACCOUNT_CLIENT_START_DELAY_SEC
+                    delay_seconds = TELETHON_OPTIONS.EACH_ACC_CLIENT_START_DELAY_SEC
                     print(f"Waiting to start next account client right after account client...\n"
                           f"delay_seconds: {delay_seconds}\n"
                           f"prev_is_acc_flag: {prev_is_acc_flag}\n"
