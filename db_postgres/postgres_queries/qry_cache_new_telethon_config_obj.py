@@ -1,6 +1,5 @@
-from typing import Any, Dict
+from typing import Any, Dict, Union
 
-from aiohttp._websocket.reader_c import Union
 from fastapi import HTTPException
 from sqlalchemy import Row
 from starlette import status
@@ -15,8 +14,8 @@ from db_postgres.postgres_queries_utils.create_cache_new_model_object import (
 
 
 async def cache_new_telethon_config_qry(
-    new_telethon_config_data: Dict[str, Union[int, str]]
-) -> TelethonConfigModel |  Row[tuple[Any, ...]] | None:
+        new_telethon_config_data: Dict[str, Union[int, str]]
+) -> TelethonConfigModel | Row[tuple[Any, ...]] | None:
     pgs_conn = PgsAsyncConnection()
     async with PgsAsyncSession(engine=pgs_conn.engine,
                                log_good_ops=ALCHEMY_OPTIONS.ALCHEMY_ORM_RAW_SQL_LOGS
