@@ -107,7 +107,7 @@ class PACT_API_CONFIG_NAMES:
 
 pact_api_ini_normal_path = get_full_file_normal_path(
     all_dir_str_parts=[BASE_DIR],
-    file_name_with_ext=".configs_pact_ext_api.ini")
+    file_name_with_ext=".configs_pact_api.ini")
 pact_api_conf_parser = ConfigParser()
 pact_api_conf_parser.read(filenames=pact_api_ini_normal_path)
 
@@ -184,7 +184,7 @@ class ALCHEMY_OPTIONS:
 
 
 @dataclass(frozen=True)
-class API_OPTIONS:
+class PACT_API_OPTIONS:
     LOG_PYDANTIC_OK_VALIDATION: bool = False
     LOG_CONVERSATION_DATA_REQ_RESPONSE: bool = False
     LOG_MESSAGE_DATA_REQ_RESPONSE: bool = False
@@ -194,7 +194,7 @@ class API_OPTIONS:
 
 
 @dataclass(frozen=True)
-class WEBHOOKS_OPTIONS:
+class PACT_WEBHOOKS_OPTIONS:
     WEBHOOKS_API_URL_BASE_NAME: str = "aggregator_api"
     DEBUG_SKIP_COMPANY_IDS_LIST: tuple[str] = (123456789,)  # (100179,)
     OUTGOING_EXT_API_REQ_TIMEOUT: float = 120
@@ -209,7 +209,7 @@ class WEBHOOKS_OPTIONS:
 
 
 @dataclass(frozen=True)
-class SQLADMIN_OPTIONS:
+class PACT_SQLADMIN_OPTIONS:
     SQLADMIN_PANEL_BASE_URL: str = "/admin_panel"
     SQLADMIN_CUSTOM_TEMPLATES_DIR: str = "admin_panel/custom_templates"
     CREATE_DEFAULT_ADMIN_SUPERADMIN: bool = True
@@ -225,7 +225,7 @@ class SQLADMIN_OPTIONS:
 
 
 @dataclass(frozen=True)
-class EMERGENCY_CALL_OPTIONS:
+class PACT_EMERGENCY_CALL_OPTIONS:
     EMERGENCY_CALL_URL = "https://samara.softats.ru/account/pact/emergency_call"
     EMERGENCY_CALL_REQUEST_TIMEOUT: float = 120
     LOG_EMERGENCY_CALL_REQ_RESPONSE: bool = True
