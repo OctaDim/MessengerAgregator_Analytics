@@ -9,7 +9,5 @@ async def main_run_telethon_process():
     print(telethon_configs)
     await telethon_manager.create_authorise_tlt_clients(telethon_configs)
     await telethon_manager.run_all_tlt_clients_tasks()
-    await telethon_manager.disconnect_all_tlt_clients()
-
 
 asyncio.run(main_run_telethon_process(), debug=True)
