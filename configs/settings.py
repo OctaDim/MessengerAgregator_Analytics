@@ -92,8 +92,8 @@ if cur_external_ip == "176.124.136.22":  # Just example
 else:
     telegram_api_conf_name = TELEGRAM_API_CONFIG_NAMES.TG_OFFICIAL_API_TEST_375296085622
 
-TELEGRAM_OFFICIAL_APP_API_ID = int(telegram_api_conf_parser.get(
-    section=telegram_api_conf_name, option="TG_OFFICIAL_APP_API_ID"))
+TELEGRAM_OFFICIAL_APP_API_ID = telegram_api_conf_parser.get(
+    section=telegram_api_conf_name, option="TG_OFFICIAL_APP_API_ID")
 TELEGRAM_OFFICIAL_APP_API_HASH = telegram_api_conf_parser.get(
     section=telegram_api_conf_name, option="TG_OFFICIAL_APP_API_HASH")
 
@@ -282,5 +282,3 @@ class EMERGENCY_CALL_OPTIONS:
 class TELETHON_OPTIONS:
     TERMINATE_PROCESS_TIMEOUT = 15
     KILL_PROCESS_TIMEOUT = 10
-    EACH_CLIENT_STARTUP_DELAY_SEC = 30
-    NEW_SESSION_FILE_PREFIX = "sess_"
