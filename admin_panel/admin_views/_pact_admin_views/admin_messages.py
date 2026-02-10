@@ -5,16 +5,16 @@ from starlette.requests import Request
 
 from admin_panel.admin_views.mixin_set_new_data_old_pk import (
     OldPrimKeyNewDataMixin)
-from admin_panel.custom_actions_mixins.mix_cancel_all_filters import (
+from admin_panel.custom_actions_mixins._pact_custom_actions.mix_cancel_all_filters import (
     CanceAllFiltersSortsMixin)
-from admin_panel.custom_classes.custom_filter_classes import (
+from admin_panel.custom_classes._pact_custom_classes.custom_filter_classes import (
     CustomBooleanFilter, CustomAttachedMediaTypeFilter,
     CustomStaticNumbersFilter, CustomInviteUrlsFilter)
-from configs.labels_messages import LABELS
-from configs.settings import SQLADMIN_OPTIONS
-from db_postgres.postgres_models.webhook_message_model import (
+from configs.labels_messages import PACT_LABELS
+from configs.settings import PACT_SQLADMIN_OPTIONS
+from db_postgres.postgres_models._pact_pgs_models.webhook_message_model import (
     WebhookMessageModel)
-from db_postgres.postgres_queries.qry_sync_get_messages_filter_values import (
+from db_postgres.postgres_queries._pact_pgs_queries.qry_sync_get_messages_filter_values import (
     get_sync_message_filters_values_qry)
 
 
@@ -22,11 +22,11 @@ class MessagesAdmin(ModelView,
                     CanceAllFiltersSortsMixin,
                     OldPrimKeyNewDataMixin,  # Update mixin
                     model=WebhookMessageModel):
-    name = LABELS.MESSAGE_PANEL_TITLE
-    name_plural = LABELS.MESSAGES_PANEL_TITLE
-    icon = LABELS.ICON
-    category = LABELS.MESSAGES_CATEGORY_TITLE
-    category_icon = LABELS.MESSAGES_CATEGORY_ICON
+    name = PACT_LABELS.MESSAGE_PANEL_TITLE
+    name_plural = PACT_LABELS.MESSAGES_PANEL_TITLE
+    icon = PACT_LABELS.ICON
+    category = PACT_LABELS.MESSAGES_CATEGORY_TITLE
+    category_icon = PACT_LABELS.MESSAGES_CATEGORY_ICON
     is_async = True  # Default False
     page_size = 200
     page_size_options = [25, 50, 100, 200, 500, 1000]
@@ -72,37 +72,37 @@ class MessagesAdmin(ModelView,
     ]
 
     column_labels = {  # Human labels instead of table fields names
-        WebhookMessageModel.local_id: LABELS.LOCAL_ID,
-        WebhookMessageModel.conversation_local_id: LABELS.CONVERSATION_LOCAL_ID,
-        WebhookMessageModel.event: LABELS.EVENT,
-        WebhookMessageModel.type: LABELS.TYPE,
-        WebhookMessageModel.id: LABELS.ID,
-        WebhookMessageModel.provider: LABELS.PROVIDER,
-        WebhookMessageModel.sender_name: LABELS.SENDER_NAME,
-        WebhookMessageModel.emoji_count: LABELS.EMOJI_COUNT,
-        WebhookMessageModel.webp_count: LABELS.WEBP_COUNT,
-        WebhookMessageModel.external_id: LABELS.EXTERNAL_ID,
-        WebhookMessageModel.company_id: LABELS.COMPANY_ID,
-        WebhookMessageModel.conversation_id: LABELS.CONVERSATION_ID,
-        WebhookMessageModel.contact_id: LABELS.CONTACT_ID,
-        WebhookMessageModel.replied_to_id: LABELS.REPLIED_TO_ID,
-        WebhookMessageModel.income: LABELS.INCOME,
-        WebhookMessageModel.status: LABELS.STATUS,
-        WebhookMessageModel.message: LABELS.MESSAGE,
-        WebhookMessageModel.reactions: LABELS.REACTIONS,
-        WebhookMessageModel.details: LABELS.DETAILS,
-        WebhookMessageModel.attachments: LABELS.ATTACHMENTS,
-        WebhookMessageModel.attachment_url: LABELS.ATTACHMENT_URL,
-        WebhookMessageModel.file_name: LABELS.FILE_NAME,
-        WebhookMessageModel.mime_type: LABELS.MIME_TYPE,
-        WebhookMessageModel.push_to_talk: LABELS.PUSH_TO_TALK,
-        WebhookMessageModel.created_at: LABELS.CREATED_AT,
-        WebhookMessageModel.external_created_at: LABELS.UPDATED_AT,
-        WebhookMessageModel.local_created_at: LABELS.LOCAL_CREATED,
-        WebhookMessageModel.local_updated_at: LABELS.LOCAL_UPDATED,
-        WebhookMessageModel.delivery: LABELS.DELIVERY,
-        WebhookMessageModel.deleted: LABELS.DELETED,
-        WebhookMessageModel.active: LABELS.ACTIVE,
+        WebhookMessageModel.local_id: PACT_LABELS.LOCAL_ID,
+        WebhookMessageModel.conversation_local_id: PACT_LABELS.CONVERSATION_LOCAL_ID,
+        WebhookMessageModel.event: PACT_LABELS.EVENT,
+        WebhookMessageModel.type: PACT_LABELS.TYPE,
+        WebhookMessageModel.id: PACT_LABELS.ID,
+        WebhookMessageModel.provider: PACT_LABELS.PROVIDER,
+        WebhookMessageModel.sender_name: PACT_LABELS.SENDER_NAME,
+        WebhookMessageModel.emoji_count: PACT_LABELS.EMOJI_COUNT,
+        WebhookMessageModel.webp_count: PACT_LABELS.WEBP_COUNT,
+        WebhookMessageModel.external_id: PACT_LABELS.EXTERNAL_ID,
+        WebhookMessageModel.company_id: PACT_LABELS.COMPANY_ID,
+        WebhookMessageModel.conversation_id: PACT_LABELS.CONVERSATION_ID,
+        WebhookMessageModel.contact_id: PACT_LABELS.CONTACT_ID,
+        WebhookMessageModel.replied_to_id: PACT_LABELS.REPLIED_TO_ID,
+        WebhookMessageModel.income: PACT_LABELS.INCOME,
+        WebhookMessageModel.status: PACT_LABELS.STATUS,
+        WebhookMessageModel.message: PACT_LABELS.MESSAGE,
+        WebhookMessageModel.reactions: PACT_LABELS.REACTIONS,
+        WebhookMessageModel.details: PACT_LABELS.DETAILS,
+        WebhookMessageModel.attachments: PACT_LABELS.ATTACHMENTS,
+        WebhookMessageModel.attachment_url: PACT_LABELS.ATTACHMENT_URL,
+        WebhookMessageModel.file_name: PACT_LABELS.FILE_NAME,
+        WebhookMessageModel.mime_type: PACT_LABELS.MIME_TYPE,
+        WebhookMessageModel.push_to_talk: PACT_LABELS.PUSH_TO_TALK,
+        WebhookMessageModel.created_at: PACT_LABELS.CREATED_AT,
+        WebhookMessageModel.external_created_at: PACT_LABELS.UPDATED_AT,
+        WebhookMessageModel.local_created_at: PACT_LABELS.LOCAL_CREATED,
+        WebhookMessageModel.local_updated_at: PACT_LABELS.LOCAL_UPDATED,
+        WebhookMessageModel.delivery: PACT_LABELS.DELIVERY,
+        WebhookMessageModel.deleted: PACT_LABELS.DELETED,
+        WebhookMessageModel.active: PACT_LABELS.ACTIVE,
     }
 
     column_searchable_list = [  # Search included fields
@@ -152,97 +152,97 @@ class MessagesAdmin(ModelView,
             # Filter using custom overridden filter class for boolean field
             CustomBooleanFilter(  # field: WebhookMessageModel.group
                 column=WebhookMessageModel.income,
-                title=LABELS.INCOME_FILTER_TITLE),
+                title=PACT_LABELS.INCOME_FILTER_TITLE),
 
             CustomStaticNumbersFilter(  # field: WebhookMessageModel.company_id
                 # Filter using custom overridden filter class for int(number) field
                 column=WebhookMessageModel.company_id,
                 values=company_id_keys,
-                title=LABELS.COMPANY_ID_FILTER_TITLE),
+                title=PACT_LABELS.COMPANY_ID_FILTER_TITLE),
 
             CustomAttachedMediaTypeFilter(  # combined fields: WebhookMessageModel.file_name and mime_type
                 # Filter using custom overridden filter class for string field
                 column=WebhookMessageModel.mime_type,  # Used by parent to define Model class, but not in overridden
                 values=[],  # Defined in overridden CustomRepliedStateFilter (def lookups), but can be defined here
-                title=LABELS.FILE_TYPE_FILTER_TITLE),
+                title=PACT_LABELS.FILE_TYPE_FILTER_TITLE),
 
             CustomBooleanFilter(  # field: WebhookMessageModel.push_to_talk
                 # Filter using custom overridden filter class for boolean field
                 column=WebhookMessageModel.push_to_talk,
-                title=LABELS.VOICE_MESSAGE_FILTER_TITLE),
+                title=PACT_LABELS.VOICE_MESSAGE_FILTER_TITLE),
 
             # TODO: Settle a question of not displaying provider
             # CustomUniqueProviderForeig1nKeyFilter(  # foreign key field: customer_id (display field: account_id)
             #     foreign_key=WebhookMessageModel.conversation_local_id,
             #     foreign_display_field=WebhookConversationModel.provider,
             #     foreign_model=WebhookConversationModel,
-            #     title=LABELS.PROVIDER),
+            #     title=PACT_LABELS.PROVIDER),
 
             CustomStaticNumbersFilter(  # field: WebhookMessageModel.conversation_local_id
                 # Filter using custom overridden filter class for int(number) field
                 column=WebhookMessageModel.provider,
                 values=provider_keys,
-                title=LABELS.PROVIDER_FILTER_TITLE),
+                title=PACT_LABELS.PROVIDER_FILTER_TITLE),
 
             CustomInviteUrlsFilter(  # field: WebhookMessageModel.conversation_local_id
                 # Filter using custom overridden filter class for int(number) field
                 column=WebhookMessageModel.message,
                 values=[],
-                title=LABELS.INVITES_FILTER_TITLE),
+                title=PACT_LABELS.INVITES_FILTER_TITLE),
 
             CustomStaticNumbersFilter(  # field: WebhookMessageModel.conversation_local_id
                 # Filter using custom overridden filter class for int(number) field
                 column=WebhookMessageModel.sender_name,
                 values=sender_name_keys,
-                title=LABELS.SENDER_NAME_FILTER_TITLE),
+                title=PACT_LABELS.SENDER_NAME_FILTER_TITLE),
 
             # CustomStaticNumbersFilter(  # field: WebhookMessageModel.conversation_local_id
             #     # Filter using custom overridden filter class for int(number) field
             #     column=WebhookMessageModel.conversation_local_id,
             #     values=convers_local_id_keys,
-            #     title=LABELS.CONVERS_LOCAL_ID_FILTER_TITLE),
+            #     title=PACT_LABELS.CONVERS_LOCAL_ID_FILTER_TITLE),
 
             # CustomRepliedStateFilter(  # field: WebhookMessageModel.replied_state
             # # Filter using custom overridden filter class for string field
             #     column=WebhookMessageModel.replied_state,
             #     values=[],  # Defined in overridden CustomRepliedStateFilter and 'def lookups', can be defined here
-            #     title=LABELS.REPLIED_FILTER_TITLE),
+            #     title=PACT_LABELS.REPLIED_FILTER_TITLE),
 
             # Filter using custom overridden filter class for property model field
             # CustAccountDataFilter(  # combine fields: account_username, account_id
             #     column=WebhookMessageModel.account_data,
             #     values=acc_data_values,
-            #     title=LABELS.FILTER_ACCOUNT_DATA),
+            #     title=PACT_LABELS.FILTER_ACCOUNT_DATA),
 
             # CustomNewCategoryTextFilter(  # combine fields: new_category, new_text
             #     column=WebhookMessageModel.new_category,
-            #     values=[("all", LABELS.ALL_RECS),
-            #             ("new_category", LABELS.NEW_CLASS_ONLY),
-            #             ("new_text", LABELS.NEW_TEXT_ONLY),
-            #             ("new_category_text", LABELS.NEW_CLASS_AND_TEXT)],
-            #     title=LABELS.FILTER_NEW_DRAFT),
+            #     values=[("all", PACT_LABELS.ALL_RECS),
+            #             ("new_category", PACT_LABELS.NEW_CLASS_ONLY),
+            #             ("new_text", PACT_LABELS.NEW_TEXT_ONLY),
+            #             ("new_category_text", PACT_LABELS.NEW_CLASS_AND_TEXT)],
+            #     title=PACT_LABELS.FILTER_NEW_DRAFT),
 
             # CustomStaticValuesFilter(  # field: account_username
             #     column=WebhookMessageModel.account_username,
             #     values=username_values,
-            #     title=LABELS.FILTER_ACCOUNT_USERNAME),
+            #     title=PACT_LABELS.FILTER_ACCOUNT_USERNAME),
 
             # CustomStaticValuesFilter(  # field: account_id
             #     column=WebhookMessageModel.account_id,
             #     values=acc_id_values,
-            #     title=LABELS.ACCOUNT_ID),
+            #     title=PACT_LABELS.ACCOUNT_ID),
 
             # CustomForeignKeyFilter(  # foreign key field: customer_id (display field: account_id)
             #     foreign_key=WebhookMessageModel.conversation_local_id,
             #     foreign_display_field=WebhookConversationModel.provider,
             #     foreign_model=WebhookConversationModel,
-            #     title=LABELS.PROVIDER),
+            #     title=PACT_LABELS.PROVIDER),
 
             # CustomForeignKeyFilter(  # foreign key field: customer_id (display field: account_id)
             #     foreign_key=WebhookMessageModel.customer_id,
             #     foreign_display_field=CustomerModel.account_id,
             #     foreign_model=CustomerModel,
-            #     title=LABELS.FILTER_ACCOUNT_ID),
+            #     title=PACT_LABELS.FILTER_ACCOUNT_ID),
 
         ]  # <== Do not remove or comment!!! It's used!!!
         return column_filters_list
@@ -402,7 +402,7 @@ class MessagesAdmin(ModelView,
     def format_sender_name_field(model_obj, attribute):
         field_value = getattr(model_obj, attribute)
         if field_value and isinstance(field_value, str):
-            truncation_limit = SQLADMIN_OPTIONS.SENDER_NAME_FILTER_TRUNC_LIMIT
+            truncation_limit = PACT_SQLADMIN_OPTIONS.SENDER_NAME_FILTER_TRUNC_LIMIT
             if len(field_value) > truncation_limit:
                 display_value = f"{field_value[:truncation_limit]}..."
             else:
@@ -419,7 +419,7 @@ class MessagesAdmin(ModelView,
     def format_message_field(model_obj, attribute):
         field_value = getattr(model_obj, attribute)
         if field_value and isinstance(field_value, str):
-            truncation_limit = SQLADMIN_OPTIONS.MESSAGE_SYMBOLS_TRUNCATE_LIMIT
+            truncation_limit = PACT_SQLADMIN_OPTIONS.MESSAGE_SYMBOLS_TRUNCATE_LIMIT
             if len(field_value) > truncation_limit:
                 display_value = f"{field_value[:truncation_limit]}..."
             else:

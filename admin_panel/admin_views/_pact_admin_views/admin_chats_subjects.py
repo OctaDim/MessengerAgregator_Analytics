@@ -5,13 +5,13 @@ from starlette.requests import Request
 
 from admin_panel.admin_views.mixin_set_new_data_old_pk import (
     OldPrimKeyNewDataMixin)
-from admin_panel.custom_actions_mixins.mix_cancel_all_filters import (
+from admin_panel.custom_actions_mixins._pact_custom_actions.mix_cancel_all_filters import (
     CanceAllFiltersSortsMixin)
-from admin_panel.custom_classes.custom_filter_classes import (
+from admin_panel.custom_classes._pact_custom_classes.custom_filter_classes import (
     CustomBooleanFilter)
-from configs.labels_messages import LABELS
-from configs.settings import SQLADMIN_OPTIONS
-from db_postgres.postgres_models.chats_subjects_model import (
+from configs.labels_messages import PACT_LABELS
+from configs.settings import PACT_SQLADMIN_OPTIONS
+from db_postgres.postgres_models._pact_pgs_models.chats_subjects_model import (
     ChatsSubjectModel)
 
 
@@ -19,11 +19,11 @@ class ChatSubjectsAdmin(ModelView,
                         CanceAllFiltersSortsMixin,
                         OldPrimKeyNewDataMixin,  # Update mixin
                         model=ChatsSubjectModel):
-    name = LABELS.CHAT_SUBJECT_PANEL_TITLE
-    name_plural = LABELS.CHAT_SUBJECTS_PANEL_TITLE
-    icon = LABELS.ICON
-    category = LABELS.CHAT_SUBJECTS_CATEGORY_TITLE
-    category_icon = LABELS.CHAT_SUBJECTS_CATEGORY_ICON
+    name = PACT_LABELS.CHAT_SUBJECT_PANEL_TITLE
+    name_plural = PACT_LABELS.CHAT_SUBJECTS_PANEL_TITLE
+    icon = PACT_LABELS.ICON
+    category = PACT_LABELS.CHAT_SUBJECTS_CATEGORY_TITLE
+    category_icon = PACT_LABELS.CHAT_SUBJECTS_CATEGORY_ICON
     is_async = True  # Default False
     page_size = 100
     page_size_options = [25, 50, 100, 200, 500, 1000]
@@ -43,12 +43,12 @@ class ChatSubjectsAdmin(ModelView,
     ]
 
     column_labels = {  # Human labels instead of table fields names
-        ChatsSubjectModel.id: LABELS.ID_NUMBER,
-        ChatsSubjectModel.chats_subject_name: LABELS.CHATS_SUBJECT,
-        ChatsSubjectModel.this_subject_conversations: LABELS.SUBJECT_CHATS,
-    ChatsSubjectModel.active: LABELS.ACTIVE,
-        ChatsSubjectModel.local_created_at: LABELS.LOCAL_CREATED,
-        ChatsSubjectModel.local_updated_at: LABELS.LOCAL_UPDATED,
+        ChatsSubjectModel.id: PACT_LABELS.ID_NUMBER,
+        ChatsSubjectModel.chats_subject_name: PACT_LABELS.CHATS_SUBJECT,
+        ChatsSubjectModel.this_subject_conversations: PACT_LABELS.SUBJECT_CHATS,
+    ChatsSubjectModel.active: PACT_LABELS.ACTIVE,
+        ChatsSubjectModel.local_created_at: PACT_LABELS.LOCAL_CREATED,
+        ChatsSubjectModel.local_updated_at: PACT_LABELS.LOCAL_UPDATED,
     }
 
     column_searchable_list = [  # Search included fields
@@ -66,7 +66,7 @@ class ChatSubjectsAdmin(ModelView,
             # Filter using custom overridden filter class for boolean field
             CustomBooleanFilter(  # field: ChatsSubjectModel.active
                 column=ChatsSubjectModel.active,
-                title=LABELS.ACTIVE_FILTER_TITLE),
+                title=PACT_LABELS.ACTIVE_FILTER_TITLE),
         ]  # <== Do not remove or comment!!! It's used!!!
         return column_filters_list
 
@@ -150,7 +150,7 @@ class ChatSubjectsAdmin(ModelView,
     def format_chats_subject_field(model_obj, attribute):
         field_value = getattr(model_obj, attribute)
         if field_value and isinstance(field_value, str):
-            truncation_limit = SQLADMIN_OPTIONS.CHATS_SUBJECT_TRUNCATE_LIMIT
+            truncation_limit = PACT_SQLADMIN_OPTIONS.CHATS_SUBJECT_TRUNCATE_LIMIT
             if len(field_value) > truncation_limit:
                 display_value = f"{field_value[:truncation_limit]}..."
             else:

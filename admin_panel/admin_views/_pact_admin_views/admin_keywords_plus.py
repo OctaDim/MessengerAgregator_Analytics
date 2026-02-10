@@ -5,13 +5,13 @@ from starlette.requests import Request
 
 from admin_panel.admin_views.mixin_set_new_data_old_pk import (
     OldPrimKeyNewDataMixin)
-from admin_panel.custom_actions_mixins.mix_cancel_all_filters import (
+from admin_panel.custom_actions_mixins._pact_custom_actions.mix_cancel_all_filters import (
     CanceAllFiltersSortsMixin)
-from admin_panel.custom_classes.custom_filter_classes import (
+from admin_panel.custom_classes._pact_custom_classes.custom_filter_classes import (
     CustomBooleanFilter)
-from configs.labels_messages import LABELS
-from configs.settings import SQLADMIN_OPTIONS
-from db_postgres.postgres_models.keywords_plus_model import (
+from configs.labels_messages import PACT_LABELS
+from configs.settings import PACT_SQLADMIN_OPTIONS
+from db_postgres.postgres_models._pact_pgs_models.keywords_plus_model import (
     PlusKeywordsModel)
 
 
@@ -19,11 +19,11 @@ class PlusKeywordsAdmin(ModelView,
                         CanceAllFiltersSortsMixin,
                         OldPrimKeyNewDataMixin,  # Update mixin
                         model=PlusKeywordsModel):
-    name = LABELS.PLUS_KEYWORD_PANEL_TITLE
-    name_plural = LABELS.PLUS_KEYWORDS_PANEL_TITLE
-    icon = LABELS.ICON
-    category = LABELS.PLUS_KEYWORDS_CATEGORY_TITLE
-    category_icon = LABELS.PLUS_KEYWORDS_CATEGORY_ICON
+    name = PACT_LABELS.PLUS_KEYWORD_PANEL_TITLE
+    name_plural = PACT_LABELS.PLUS_KEYWORDS_PANEL_TITLE
+    icon = PACT_LABELS.ICON
+    category = PACT_LABELS.PLUS_KEYWORDS_CATEGORY_TITLE
+    category_icon = PACT_LABELS.PLUS_KEYWORDS_CATEGORY_ICON
     is_async = True  # Default False
     page_size = 100
     page_size_options = [25, 50, 100, 200, 500, 1000]
@@ -43,12 +43,12 @@ class PlusKeywordsAdmin(ModelView,
     ]
 
     column_labels = {  # Human labels instead of table fields names
-        PlusKeywordsModel.id: LABELS.ID_NUMBER,
-        PlusKeywordsModel.plus_subject_id: LABELS.PLUS_KEYWORD,
-        PlusKeywordsModel.plus_keyword: LABELS.PLUS_KEYWORD,
-        PlusKeywordsModel.active: LABELS.ACTIVE,
-        PlusKeywordsModel.local_created_at: LABELS.LOCAL_CREATED,
-        PlusKeywordsModel.local_updated_at: LABELS.LOCAL_UPDATED,
+        PlusKeywordsModel.id: PACT_LABELS.ID_NUMBER,
+        PlusKeywordsModel.plus_subject_id: PACT_LABELS.PLUS_KEYWORD,
+        PlusKeywordsModel.plus_keyword: PACT_LABELS.PLUS_KEYWORD,
+        PlusKeywordsModel.active: PACT_LABELS.ACTIVE,
+        PlusKeywordsModel.local_created_at: PACT_LABELS.LOCAL_CREATED,
+        PlusKeywordsModel.local_updated_at: PACT_LABELS.LOCAL_UPDATED,
     }
 
     column_searchable_list = [  # Search included fields
@@ -66,7 +66,7 @@ class PlusKeywordsAdmin(ModelView,
             # Filter using custom overridden filter class for boolean field
             CustomBooleanFilter(  # field: WebhookMessageModel.group
                 column=PlusKeywordsModel.active,
-                title=LABELS.ACTIVE_FILTER_TITLE),
+                title=PACT_LABELS.ACTIVE_FILTER_TITLE),
         ]  # <== Do not remove or comment!!! It's used!!!
         return column_filters_list
 
@@ -151,7 +151,7 @@ class PlusKeywordsAdmin(ModelView,
     def format_plus_keyword_field(model_obj, attribute):
         field_value = getattr(model_obj, attribute)
         if field_value and isinstance(field_value, str):
-            truncation_limit = SQLADMIN_OPTIONS.PLUS_MINUS_WORDS_TRUNCATE_LIMIT
+            truncation_limit = PACT_SQLADMIN_OPTIONS.PLUS_MINUS_WORDS_TRUNCATE_LIMIT
             if len(field_value) > truncation_limit:
                 display_value = f"{field_value[:truncation_limit]}..."
             else:

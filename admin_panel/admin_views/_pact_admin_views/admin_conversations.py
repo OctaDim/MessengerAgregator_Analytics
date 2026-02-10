@@ -5,19 +5,19 @@ from starlette.requests import Request
 
 from admin_panel.admin_views.mixin_set_new_data_old_pk import (
     OldPrimKeyNewDataMixin)
-from admin_panel.custom_actions_mixins.mix_cancel_all_filters import (
+from admin_panel.custom_actions_mixins._pact_custom_actions.mix_cancel_all_filters import (
     CanceAllFiltersSortsMixin)
-from admin_panel.custom_classes.custom_filter_classes import (
+from admin_panel.custom_classes._pact_custom_classes.custom_filter_classes import (
     CustomBooleanFilter, CustomRepliedStateFilter,
     CustomStaticStringsFilter, CustomStaticNumbersFilter,
     CustomForeignKeyFilter)
-from configs.labels_messages import LABELS
-from configs.settings import SQLADMIN_OPTIONS
-from db_postgres.postgres_models.chats_subjects_model import (
+from configs.labels_messages import PACT_LABELS
+from configs.settings import PACT_SQLADMIN_OPTIONS
+from db_postgres.postgres_models._pact_pgs_models.chats_subjects_model import (
     ChatsSubjectModel)
-from db_postgres.postgres_models.webhook_conversation_model import (
+from db_postgres.postgres_models._pact_pgs_models.webhook_conversation_model import (
     WebhookConversationModel)
-from db_postgres.postgres_queries.qry_sync_get_conversations_filter_values import (
+from db_postgres.postgres_queries._pact_pgs_queries.qry_sync_get_conversations_filter_values import (
     get_sync_conversation_filters_values_qry)
 
 
@@ -25,11 +25,11 @@ class ConversationsAdmin(ModelView,
                          CanceAllFiltersSortsMixin,
                          OldPrimKeyNewDataMixin,  # Update mixin
                          model=WebhookConversationModel):
-    name = LABELS.CONVERSATION_PANEL_TITLE
-    name_plural = LABELS.CONVERSATIONS_PANEL_TITLE
-    icon = LABELS.ICON
-    category = LABELS.CONVERSATIONS_CATEGORY_TITLE
-    category_icon = LABELS.CONVERSATIONS_CATEGORY_ICON
+    name = PACT_LABELS.CONVERSATION_PANEL_TITLE
+    name_plural = PACT_LABELS.CONVERSATIONS_PANEL_TITLE
+    icon = PACT_LABELS.ICON
+    category = PACT_LABELS.CONVERSATIONS_CATEGORY_TITLE
+    category_icon = PACT_LABELS.CONVERSATIONS_CATEGORY_ICON
     is_async = True  # Default False
     page_size = 200
     page_size_options = [25, 50, 100, 200, 500, 1000]
@@ -65,28 +65,28 @@ class ConversationsAdmin(ModelView,
     ]
 
     column_labels = {  # Human labels instead of table fields names
-        WebhookConversationModel.local_id: LABELS.LOCAL_ID,
-        WebhookConversationModel.chats_subject_id: LABELS.CHATS_SUBJECT_NAME_BY_ID,
-        WebhookConversationModel.this_conversation_subject: LABELS.CHATS_SUBJECT_LINK,
-        WebhookConversationModel.event: LABELS.EVENT,
-        WebhookConversationModel.type: LABELS.TYPE,
-        WebhookConversationModel.id: LABELS.ID,
-        WebhookConversationModel.company_id: LABELS.COMPANY_ID,
-        WebhookConversationModel.sender_name: LABELS.SENDER_NAME,
-        WebhookConversationModel.sender_phone: LABELS.SENDER_PHONE,
-        WebhookConversationModel.sender_external_id: LABELS.SENDER_EXTERNAL_ID,
-        WebhookConversationModel.sender_external_public_id: LABELS.SENDER_EXTERNAL_PUBLIC_ID,
-        WebhookConversationModel.provider: LABELS.PROVIDER,
-        WebhookConversationModel.avatar_url: LABELS.AVATAR_URL,
-        WebhookConversationModel.last_message_id: LABELS.LAST_MESSAGE_ID,
-        WebhookConversationModel.operational_state: LABELS.OPERATIONAL_STATE,
-        WebhookConversationModel.replied_state: LABELS.REPLIED_STATE,
-        WebhookConversationModel.group: LABELS.GROUP,
-        WebhookConversationModel.created_at: LABELS.CREATED_AT,
-        WebhookConversationModel.last_updated_at: LABELS.UPDATED_AT,
-        WebhookConversationModel.active: LABELS.ACTIVE,
-        WebhookConversationModel.local_created_at: LABELS.LOCAL_CREATED,
-        WebhookConversationModel.local_updated_at: LABELS.LOCAL_UPDATED,
+        WebhookConversationModel.local_id: PACT_LABELS.LOCAL_ID,
+        WebhookConversationModel.chats_subject_id: PACT_LABELS.CHATS_SUBJECT_NAME_BY_ID,
+        WebhookConversationModel.this_conversation_subject: PACT_LABELS.CHATS_SUBJECT_LINK,
+        WebhookConversationModel.event: PACT_LABELS.EVENT,
+        WebhookConversationModel.type: PACT_LABELS.TYPE,
+        WebhookConversationModel.id: PACT_LABELS.ID,
+        WebhookConversationModel.company_id: PACT_LABELS.COMPANY_ID,
+        WebhookConversationModel.sender_name: PACT_LABELS.SENDER_NAME,
+        WebhookConversationModel.sender_phone: PACT_LABELS.SENDER_PHONE,
+        WebhookConversationModel.sender_external_id: PACT_LABELS.SENDER_EXTERNAL_ID,
+        WebhookConversationModel.sender_external_public_id: PACT_LABELS.SENDER_EXTERNAL_PUBLIC_ID,
+        WebhookConversationModel.provider: PACT_LABELS.PROVIDER,
+        WebhookConversationModel.avatar_url: PACT_LABELS.AVATAR_URL,
+        WebhookConversationModel.last_message_id: PACT_LABELS.LAST_MESSAGE_ID,
+        WebhookConversationModel.operational_state: PACT_LABELS.OPERATIONAL_STATE,
+        WebhookConversationModel.replied_state: PACT_LABELS.REPLIED_STATE,
+        WebhookConversationModel.group: PACT_LABELS.GROUP,
+        WebhookConversationModel.created_at: PACT_LABELS.CREATED_AT,
+        WebhookConversationModel.last_updated_at: PACT_LABELS.UPDATED_AT,
+        WebhookConversationModel.active: PACT_LABELS.ACTIVE,
+        WebhookConversationModel.local_created_at: PACT_LABELS.LOCAL_CREATED,
+        WebhookConversationModel.local_updated_at: PACT_LABELS.LOCAL_UPDATED,
     }
 
     column_searchable_list = [  # Search included fields
@@ -124,67 +124,67 @@ class ConversationsAdmin(ModelView,
             # Filter using custom overridden filter class for boolean field
             CustomBooleanFilter(  # field: WebhookConversationModel.group
                 column=WebhookConversationModel.group,
-                title=LABELS.GROUP),
+                title=PACT_LABELS.GROUP),
 
             # Filter using custom overridden filter class for string field
             CustomRepliedStateFilter(  # field: WebhookConversationModel.replied_state
                 column=WebhookConversationModel.replied_state,
                 values=[],  # Defined in overridden CustomRepliedStateFilter and 'def lookups', can be defined here
-                title=LABELS.REPLIED_FILTER_TITLE),
+                title=PACT_LABELS.REPLIED_FILTER_TITLE),
 
             # Filter using custom overridden filter class for string field
             CustomStaticStringsFilter(  # field: WebhookConversationModel.provider
                 column=WebhookConversationModel.provider,
                 values=providers_values,
-                title=LABELS.PROVIDER_FILTER_TITLE),
+                title=PACT_LABELS.PROVIDER_FILTER_TITLE),
 
             # Filter using custom overridden filter class for string field
             CustomStaticNumbersFilter(  # field: draft_category
                 column=WebhookConversationModel.company_id,
                 values=company_id_values,
-                title=LABELS.COMPANY_ID_FILTER_TITLE),
+                title=PACT_LABELS.COMPANY_ID_FILTER_TITLE),
 
             CustomForeignKeyFilter(  # foreign key field: customer_id (display field: account_id)
                 foreign_key=WebhookConversationModel.chats_subject_id,
                 foreign_display_field=ChatsSubjectModel.chats_subject_name,
                 foreign_model=ChatsSubjectModel,
-                title=LABELS.CHATS_SUBJECT_NAME_BY_ID),
+                title=PACT_LABELS.CHATS_SUBJECT_NAME_BY_ID),
 
             # Filter using custom overridden filter class for property model field
             # CustAccountDataFilter(  # combine fields: account_username, account_id
             #     column=WebhookConversationModel.account_data,
             #     values=acc_data_values,
-            #     title=LABELS.FILTER_ACCOUNT_DATA),
+            #     title=PACT_LABELS.FILTER_ACCOUNT_DATA),
 
             # CustomNewCategoryTextFilter(  # combine fields: new_category, new_text
             #     column=WebhookConversationModel.new_category,
-            #     values=[("all", LABELS.ALL_RECS),
-            #             ("new_category", LABELS.NEW_CLASS_ONLY),
-            #             ("new_text", LABELS.NEW_TEXT_ONLY),
-            #             ("new_category_text", LABELS.NEW_CLASS_AND_TEXT)],
-            #     title=LABELS.FILTER_NEW_DRAFT),
+            #     values=[("all", PACT_LABELS.ALL_RECS),
+            #             ("new_category", PACT_LABELS.NEW_CLASS_ONLY),
+            #             ("new_text", PACT_LABELS.NEW_TEXT_ONLY),
+            #             ("new_category_text", PACT_LABELS.NEW_CLASS_AND_TEXT)],
+            #     title=PACT_LABELS.FILTER_NEW_DRAFT),
 
             # CustomStaticValuesFilter(  # field: account_username
             #     column=WebhookConversationModel.account_username,
             #     values=username_values,
-            #     title=LABELS.FILTER_ACCOUNT_USERNAME),
+            #     title=PACT_LABELS.FILTER_ACCOUNT_USERNAME),
 
             # CustomStaticValuesFilter(  # field: account_id
             #     column=WebhookConversationModel.account_id,
             #     values=acc_id_values,
-            #     title=LABELS.ACCOUNT_ID),
+            #     title=PACT_LABELS.ACCOUNT_ID),
 
             # CustomForeignKeyFilter(  # foreign key field: customer_id (display field: account_id)
             #     foreign_key=WebhookConversationModel.customer_id,
             #     foreign_display_field=CustomerModel.account_username,
             #     foreign_model=CustomerModel,
-            #     title=LABELS.FILTER_ACCOUNT_USERNAME),
+            #     title=PACT_LABELS.FILTER_ACCOUNT_USERNAME),
 
             # CustomForeignKeyFilter(  # foreign key field: customer_id (display field: account_id)
             #     foreign_key=WebhookConversationModel.customer_id,
             #     foreign_display_field=CustomerModel.account_id,
             #     foreign_model=CustomerModel,
-            #     title=LABELS.FILTER_ACCOUNT_ID),
+            #     title=PACT_LABELS.FILTER_ACCOUNT_ID),
 
         ]  # <== Do not remove or comment!!! It's used!!!
         return column_filters_list
@@ -346,8 +346,8 @@ class ConversationsAdmin(ModelView,
     # model_obj = cur record, attribute = field string name
     def format_replied_state_field(model_obj, attribute):
         replied_states_labels = {
-            "replied": LABELS.REPLIED_FILTER_LABEL,
-            "unreplied": LABELS.UNREPLIED_FILTER_LABEL}
+            "replied": PACT_LABELS.REPLIED_FILTER_LABEL,
+            "unreplied": PACT_LABELS.UNREPLIED_FILTER_LABEL}
         field_value = getattr(model_obj, attribute)
         display_value = replied_states_labels.get(field_value)
         if display_value:
@@ -373,7 +373,7 @@ class ConversationsAdmin(ModelView,
     def format_this_convers_subj_field(model_obj, attribute):
         parent_model_obj = getattr(model_obj, attribute)
         if parent_model_obj and parent_model_obj.chats_subject_name:
-            if SQLADMIN_OPTIONS.DISPLAY_SUBJECT_AS_ARROW:
+            if PACT_SQLADMIN_OPTIONS.DISPLAY_SUBJECT_AS_ARROW:
                 return "<=="
             display_value = parent_model_obj.chats_subject_name
             return display_value
