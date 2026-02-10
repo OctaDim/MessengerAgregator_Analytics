@@ -2,7 +2,7 @@ if __name__ == "__main__":
     import asyncio
     from db_postgres.postgres_conn.pgs_connection import PgsAsyncConnection
     from db_postgres.postgres_conn.postgres_session import PgsAsyncSession
-    from db_postgres.postgres_queries.qry_find_conversation_obj_by_id import (
+    from db_postgres.postgres_queries._pact_pgs_queries.qry_find_conversation_obj_by_id import (
         find_convers_obj_by_id_qry)
 
     company_id = 100179

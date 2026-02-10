@@ -11,19 +11,19 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from admin_panel.admin_views.admin_auth_role_backend import (
     AdminAuthRoleAuthBackend)
-from admin_panel.admin_views.admin_chats_subjects import (
+from admin_panel.admin_views._pact_admin_views.admin_chats_subjects import (
     ChatSubjectsAdmin)
-from admin_panel.admin_views.admin_conversations import (
+from admin_panel.admin_views._pact_admin_views.admin_conversations import (
     ConversationsAdmin)
-from admin_panel.admin_views.admin_keywords_minus import (
+from admin_panel.admin_views._pact_admin_views.admin_keywords_minus import (
     MinusKeywordsAdmin)
-from admin_panel.admin_views.admin_keywords_plus import (
+from admin_panel.admin_views._pact_admin_views.admin_keywords_plus import (
     PlusKeywordsAdmin)
-from admin_panel.admin_views.admin_messages import MessagesAdmin
-from configs.labels_messages import LABELS
+from admin_panel.admin_views._pact_admin_views.admin_messages import MessagesAdmin
+from configs.pact_labels_messages import PACT_LABELS
 from configs.settings import (
     API_HOST, API_PORT, FASTAPI_OPTIONS, FASTAPI_SESSION_KEY,
-    SQLADMIN_OPTIONS)
+    PACT_SQLADMIN_OPTIONS)
 from db_postgres.postgres_conn.pgs_connection import (
     close_all_async_pgs_connections, close_all_sync_pgs_connections,
     PgsAsyncConnection)
@@ -31,13 +31,13 @@ from db_postgres.postgres_init.db_create_sqladmin_users import (
     create_default_sqladmin_users)
 from db_postgres.postgres_init.db_tables_initialization import (
     sync_initialize_db_tables)
-from fast_api.app_pact_all_conversations.router_pact_all_conversations import (
+from fast_api._pact_fastapi_aps.app_pact_all_conversations.router_pact_all_conversations import (
     router_pact_get_all_conversations)
-from fast_api.app_pact_message_data_by_id.router_pact_message_data import (
+from fast_api._pact_fastapi_aps.app_pact_message_data_by_id.router_pact_message_data import (
     router_pact_get_message_data)
-from fast_api.app_pact_messages_by_conversation.router_messages_by_conversation import (
+from fast_api._pact_fastapi_aps.app_pact_messages_by_conversation.router_messages_by_conversation import (
     router_pact_get_messages_by_convers)
-from fast_api.app_pact_webhooks.router_pact_webhooks import (
+from fast_api._pact_fastapi_aps.app_pact_webhooks.router_pact_webhooks import (
     router_pact_receive_webhooks)
 from fast_api.app_root_url.router_main import router_root_url
 from fast_api.app_test_endpoint.router_test_endpoint import (
@@ -112,13 +112,13 @@ def setup_admin_panel(
         engine=PgsAsyncConnection().engine,
         authentication_backend=authentication_backend,
         session_maker=None,
-        base_url=SQLADMIN_OPTIONS.SQLADMIN_PANEL_BASE_URL,
-        title=LABELS.ADMIN_PANEL_TITLE,
+        base_url=PACT_SQLADMIN_OPTIONS.SQLADMIN_PANEL_BASE_URL,
+        title=PACT_LABELS.ADMIN_PANEL_TITLE,
         logo_url=None,
         favicon_url=None,
         middlewares=None,
         debug=False,
-        templates_dir=SQLADMIN_OPTIONS.SQLADMIN_CUSTOM_TEMPLATES_DIR, )  # Origin SQLAdmin value = "templates"
+        templates_dir=PACT_SQLADMIN_OPTIONS.SQLADMIN_CUSTOM_TEMPLATES_DIR, )  # Origin SQLAdmin value = "templates"
     for cur_admin_view in admin_panel_views:
         admin.add_view(cur_admin_view)
     return admin

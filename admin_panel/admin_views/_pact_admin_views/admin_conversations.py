@@ -11,7 +11,7 @@ from admin_panel.custom_classes._pact_custom_classes.custom_filter_classes impor
     CustomBooleanFilter, CustomRepliedStateFilter,
     CustomStaticStringsFilter, CustomStaticNumbersFilter,
     CustomForeignKeyFilter)
-from configs.labels_messages import PACT_LABELS
+from configs.pact_labels_messages import PACT_LABELS
 from configs.settings import PACT_SQLADMIN_OPTIONS
 from db_postgres.postgres_models._pact_pgs_models.chats_subjects_model import (
     ChatsSubjectModel)

@@ -2,7 +2,7 @@ if __name__ == "__main__":
     import asyncio
     from db_postgres.postgres_conn.pgs_connection import PgsAsyncConnection
     from db_postgres.postgres_conn.postgres_session import PgsAsyncSession
-    from db_postgres.postgres_models.webhook_conversation_model import (
+    from db_postgres.postgres_models.__temp.webhook_conversation_model import (
         WebhookConversationModel)
     from db_postgres.postgres_queries_utils.get_model_records_flex_query import (
         get_model_rows_flex_query)

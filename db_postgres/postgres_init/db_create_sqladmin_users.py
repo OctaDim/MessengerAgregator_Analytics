@@ -1,6 +1,6 @@
 from configs.enums import USER_ROLE
 from configs.settings import (
-    ALCHEMY_OPTIONS, SQLADMIN_SUPERADMIN_PASSWORD, SQLADMIN_OPTIONS,
+    ALCHEMY_OPTIONS, SQLADMIN_SUPERADMIN_PASSWORD, PACT_SQLADMIN_OPTIONS,
     SQLADMIN_ADMIN_PASSWORD, SQLADMIN_ADMIN_USERNAME,
     SQLADMIN_SUPERADMIN_USERNAME)
 from db_postgres.postgres_conn.pgs_connection import PgsAsyncConnection
@@ -11,8 +11,8 @@ from db_postgres.postgres_queries_utils.save_new_model_object import save_new_mo
 
 
 async def create_default_sqladmin_users() -> bool | None:
-    if not (SQLADMIN_OPTIONS.CREATE_DEFAULT_ADMIN_SUPERADMIN
-            or SQLADMIN_OPTIONS.CREATE_DEBUG_ADMIN_SUPERADMIN):
+    if not (PACT_SQLADMIN_OPTIONS.CREATE_DEFAULT_ADMIN_SUPERADMIN
+            or PACT_SQLADMIN_OPTIONS.CREATE_DEBUG_ADMIN_SUPERADMIN):
         return None
 
     pgs_async_conn = PgsAsyncConnection()
@@ -32,7 +32,7 @@ async def create_default_sqladmin_users() -> bool | None:
             return None
 
         sqladmin_initial_users = []
-        if SQLADMIN_OPTIONS.CREATE_DEFAULT_ADMIN_SUPERADMIN:
+        if PACT_SQLADMIN_OPTIONS.CREATE_DEFAULT_ADMIN_SUPERADMIN:
             sqladmin_default_users = [
                 {"auth_username": SQLADMIN_SUPERADMIN_USERNAME,
                  "auth_hashed_password": SQLADMIN_SUPERADMIN_PASSWORD,
@@ -42,7 +42,7 @@ async def create_default_sqladmin_users() -> bool | None:
                  "auth_role": USER_ROLE.ADMIN.value}, ]
             sqladmin_initial_users.extend(sqladmin_default_users)
 
-        if SQLADMIN_OPTIONS.CREATE_DEBUG_ADMIN_SUPERADMIN:
+        if PACT_SQLADMIN_OPTIONS.CREATE_DEBUG_ADMIN_SUPERADMIN:
             sqladmin_debug_users = [
                 {"auth_username": "1",
                  "auth_hashed_password": "1",

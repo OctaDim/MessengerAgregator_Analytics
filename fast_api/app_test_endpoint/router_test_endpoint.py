@@ -5,10 +5,10 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from configs.settings import WEBHOOKS_OPTIONS
+from configs.settings import PACT_WEBHOOKS_OPTIONS
 
 
-base_url_name = WEBHOOKS_OPTIONS.WEBHOOKS_API_URL_BASE_NAME
+base_url_name = PACT_WEBHOOKS_OPTIONS.WEBHOOKS_API_URL_BASE_NAME
 router_develop_test_endpoint = APIRouter(prefix=f"/{base_url_name}",
                                          tags=["DEVELOP TEST ENDPOINT"])
 

@@ -10,7 +10,7 @@ from admin_panel.custom_actions_mixins._pact_custom_actions.mix_cancel_all_filte
 from admin_panel.custom_classes._pact_custom_classes.custom_filter_classes import (
     CustomBooleanFilter, CustomAttachedMediaTypeFilter,
     CustomStaticNumbersFilter, CustomInviteUrlsFilter)
-from configs.labels_messages import PACT_LABELS
+from configs.pact_labels_messages import PACT_LABELS
 from configs.settings import PACT_SQLADMIN_OPTIONS
 from db_postgres.postgres_models._pact_pgs_models.webhook_message_model import (
     WebhookMessageModel)
