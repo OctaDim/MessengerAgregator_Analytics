@@ -107,8 +107,7 @@ class TelethonManager(metaclass=SingletonMeta):
             self, telethon_configs: List[TelethonConfig]
     ) -> None:
         print(f"\nRunning all telethon telegram clients by list:")
-        prev_is_bot_flag = False
-        prev_is_acc_flag = False
+        previous_is_bot_flag = False
         for cur_config in telethon_configs:
             account_type = cur_config.account_type
             telethon_config_id = cur_config.telethon_config_id
@@ -118,25 +117,15 @@ class TelethonManager(metaclass=SingletonMeta):
             bot_token_info = f"{bot_token[:10]}..." if bot_token else None
 
             if account_type == TELEGRAM_ACCOUNT_TYPE.ACCOUNT:
-                if prev_is_acc_flag:
-                    delay_seconds = TELETHON_OPTIONS.EACH_ACCOUNT_CLIENT_START_DELAY_SEC
-                    print(f"Waiting to start next account client right after account client...\n"
-                          f"delay_seconds: {delay_seconds}\n"
-                          f"prev_is_acc_flag: {prev_is_acc_flag}\n"
-                          f"prev_is_bot_flag: {prev_is_bot_flag}\n")
-                    await asyncio.sleep(delay_seconds)
-                prev_is_bot_flag = False
-                prev_is_acc_flag = True
+                previous_is_bot_flag = False
             elif account_type == TELEGRAM_ACCOUNT_TYPE.BOT:
-                if prev_is_bot_flag:
+                if previous_is_bot_flag:
                     delay_seconds = TELETHON_OPTIONS.EACH_BOT_CLIENT_START_DELAY_SEC
-                    print(f"Waiting to start next bot client right after bot client...\n"
+                    print(f"Waiting before starting next bot client...\n"
                           f"delay_seconds: {delay_seconds}\n"
-                          f"prev_is_acc_flag: {prev_is_acc_flag}\n"
-                          f"prev_is_bot_flag: {prev_is_bot_flag}\n")
+                          f"previous_is_bot_flag: {previous_is_bot_flag}\n")
                     await asyncio.sleep(delay_seconds)
-                prev_is_bot_flag = True
-                prev_is_acc_flag = False
+                previous_is_bot_flag = True
             else:  # Telethon account type not defined
                 print(f"Telethon client with empty account_type skipped [ERROR]\n"
                       f"telethon_config_id: {telethon_config_id}\n"
