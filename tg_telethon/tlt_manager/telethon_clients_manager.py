@@ -350,14 +350,12 @@ class TelethonManager(metaclass=SingletonMeta):
         session_str = None
         session_str_info = f"...{session_str[-15:]}" if session_str else None
         try:
-            input_text = (f"Choose authorisation type for "
-                          f"phone: {telegram_phone}, config name: {config_name}:\n"
-                          f"1 - by telephone \n"
-                          f"2 - by QR code \n"
-                          f"3 - skip client\n"
-                          f"Enter your choice: ")
-            auth_type_choice = await asyncio.to_thread(
-                input, input_text)
+            auth_type_choice = input(f"Choose authorisation type for "
+                                     f"phone: {telegram_phone}, config name: {config_name}:\n"
+                                     f"1 - по телефону \n"
+                                     f"2 - QR code \n"
+                                     f"3 - пропустить клиента\n"
+                                     f"Введите ваш выбор: ")
 
             if auth_type_choice == "1" and telegram_phone:
                 print("Telethon user client authorising via phone")
@@ -368,9 +366,7 @@ class TelethonManager(metaclass=SingletonMeta):
                 print(f"Phone authorisation code sent to phone [OK]:\n"
                       f"request_sent_code: {request_sent_code}\n")
 
-                input_text = "Enter Telegram code: "
-                phone_auth_code = await asyncio.to_thread(
-                    input, input_text)
+                phone_auth_code = input("Введите код из Telegram: ")
                 phone_signed_in_user = await user_client.sign_in(
                     phone=telegram_phone,
                     code=phone_auth_code,
@@ -397,7 +393,7 @@ class TelethonManager(metaclass=SingletonMeta):
                     image_factory=None,
                     mask_pattern=None, )
                 qr_code.add_data(qr_code_login.url, optimize=20)
-                await asyncio.to_thread(qr_code.print_ascii)
+                qr_code.print_ascii()
                 qrcode_signed_in_user = await qr_code_login.wait()
                 print(f"QR Code user client authorised successfully [OK]:\n"
                       f"qr_code_login: {qr_code_login}\n"
@@ -431,6 +427,8 @@ class TelethonManager(metaclass=SingletonMeta):
         session_full_file_path = get_full_file_normal_path(
             all_dir_str_parts=[BASE_DIR, telethon_sessions_dir],
             file_name_with_ext=new_session_id)
+
+        # session = SQLiteSession(session_id=session_full_file_path)
 
         bot_client = TelegramClient(
             session=session_full_file_path,
