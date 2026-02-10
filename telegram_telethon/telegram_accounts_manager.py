@@ -1,36 +1,44 @@
-import asyncio
-import copy
-import weakref
-from datetime import datetime
-from typing import Dict, List, Literal
+from typing import Dict, Optional, List, Literal
 
 import qrcode
-from telethon import TelegramClient, events
+from pydantic import BaseModel
+from telethon import TelegramClient
 from telethon.sessions import StringSession, SQLiteSession
 
 from configs.enums import (
     TELEGRAM_ACCOUNT_TYPE, QR_CODE_ERROR_CORRECTION)
-from configs.settings import (
-    ALCHEMY_OPTIONS, TELETHON_OPTIONS, BASE_DIR)
+from configs.settings import ALCHEMY_OPTIONS, TELETHON_OPTIONS, BASE_DIR
 from db_postgres.postgres_conn.pgs_connection import PgsAsyncConnection
 from db_postgres.postgres_conn.postgres_session import PgsAsyncSession
 from db_postgres.postgres_queries.qry_get_telethon_configs_objs import (
     get_telethon_configs_objs_qry)
-from db_postgres.postgres_queries.qry_update_telethon_session_data import (
-    update_telethon_session_data_qry)
-from telegram_telethon.event_handlers.hpr_handle_new_message import (
-    handle_new_message_helper)
-from telegram_telethon.telethon_client_config import TelethonConfig
+from db_postgres.postgres_queries.qry_update_telethon_session_data import update_telethon_session_data_qry
 from utils_common.normalized_path import get_full_file_normal_path
+
+
+class TelethonConfig(BaseModel):
+    web_account_id: str
+    web_account_username: str
+    telethon_config_id: int
+    name: str = None
+    account_type: TELEGRAM_ACCOUNT_TYPE
+    api_id: Optional[int] = None
+    api_hash: Optional[str] = None
+    session_string: Optional[str] = None
+    bot_token: Optional[str] = None
+    phone: Optional[str] = None
+    proxy: Optional[dict] = None
+    is_active: bool = True
 
 
 class TelethonManager:
     def __init__(self):
         self.clients: Dict[str, TelegramClient] = {}
+        # self.clients_configs: List[Dict[str, any]] = []
         self.event_handlers: list[str] = []
-        self.running_state = False
+        self.running = False
 
-    async def get_postgres_db_tlt_configs(self) -> List[TelethonConfig]:
+    async def get_db_telethon_configs(self) -> List[TelethonConfig]:
         log_pgs_good_ops = ALCHEMY_OPTIONS.ALCHEMY_SESSION_OK_ACTIONS_LOGS
         pgs_conn = PgsAsyncConnection()
         async with PgsAsyncSession(engine=pgs_conn.engine,
@@ -43,7 +51,7 @@ class TelethonManager:
         for cur_config_obj in pgs_telethon_configs_objs:
             telethon_account_type = cur_config_obj.tg_account_type
 
-            new_config_name = await self.create_session_name(
+            new_config_name = await self.create_new_session_name(
                 telethon_db_config_id=cur_config_obj.id,
                 web_account_id=cur_config_obj.web_account_id,
                 web_account_username=cur_config_obj.web_account_username,
@@ -65,7 +73,7 @@ class TelethonManager:
             pgs_telethon_configs_list.append(cur_telethon_config)
         return pgs_telethon_configs_list
 
-    async def create_session_name(
+    async def create_new_session_name(
             self,
             telethon_db_config_id: int,
             web_account_id: str,
@@ -83,7 +91,7 @@ class TelethonManager:
                                 f"{web_account_id}_{web_account_username}")
         return new_session_name
 
-    async def create_authorise_tlt_clients(
+    async def run_all_telethon_clients(
             self, telethon_configs: List[TelethonConfig]
     ) -> None:
         print(f"\nRunning all telethon telegram clients by list:")
@@ -102,7 +110,7 @@ class TelethonManager:
                           f"account_type: {account_type}\n"
                           f"telegram_phone: {telegram_phone}\n"
                           f"config_name: {config_name}\n")
-                    cur_client = await self.start_tlt_user_client(
+                    cur_client = await self.create_telethon_user_client(
                         telethon_config=cur_config)
                     previous_is_bot_flag = False
                 elif account_type == TELEGRAM_ACCOUNT_TYPE.BOT:
@@ -114,13 +122,13 @@ class TelethonManager:
                           f"config_name: {config_name}\n")
 
                     if previous_is_bot_flag:
-                        delay_seconds = TELETHON_OPTIONS.EACH_BOT_CLIENT_START_DELAY_SEC
+                        delay_seconds = TELETHON_OPTIONS.EACH_CLIENT_STARTUP_DELAY_SEC
                         print(f"Waiting before starting next bot client...\n"
                               f"delay_seconds: {delay_seconds}\n"
                               f"previous_is_bot_flag: {previous_is_bot_flag}\n")
                         await asyncio.sleep(delay_seconds)
 
-                    cur_client = await self.start_tlt_bot_client(
+                    cur_client = await self.create_telethon_bot_client(
                         telethon_config=cur_config)
                     previous_is_bot_flag = True
                 else:  # Telethon account type not defined
@@ -131,28 +139,17 @@ class TelethonManager:
                           f"config_name: {config_name}\n")
                     continue
 
-                if not cur_client:
+                if cur_client:
+                    await self.pgs_db_save_telethon_session(
+                        telethon_client=cur_client,
+                        telethon_config=cur_config)
+
+                    self.clients[config_name] = cur_client
+
+                else:
                     print(f"Not authorised and skipped Telethon client [ERROR]\n"
                           f"cur_client: {cur_client}\n")
                     continue
-
-                print("Postgres-SQLite Telethon session saving:")
-                await self.postgres_db_save_tlt_session(
-                    telethon_client=cur_client,
-                    telethon_config=cur_config)
-                self.clients[config_name] = cur_client
-
-                print(f"{'>' * 50}\n{'>' * 50}\n"
-                      "Registering all events handlers per telethon client:\n"
-                      f"cur_client: {cur_client}\n"
-                      f"telethon_config_id: {telethon_config_id}\n"
-                      f"account_type: {account_type}\n"
-                      f"telegram_phone: {telegram_phone}\n"
-                      f"config_name: {config_name}\n")
-                await self.register_tlt_client_handlers(
-                    telethon_client=cur_client,
-                    telethon_config=cur_config)
-
             except Exception as error:
                 error_log = (f"Run multiple Telethon clients [ERROR]: \n"
                              f"error: {error}\n")
@@ -162,7 +159,7 @@ class TelethonManager:
         for cur_config, cur_client in self.clients.items():
             print(f"cur_config: {cur_config}, cur_client: {cur_client}")
 
-    async def start_tlt_user_client(
+    async def create_telethon_user_client(
             self,
             telethon_config: TelethonConfig
     ) -> TelegramClient | None:
@@ -196,9 +193,9 @@ class TelethonManager:
             api_id=telethon_config.api_id,
             api_hash=telethon_config.api_hash,
             proxy=telethon_config.proxy,
-            connection_retries=TELETHON_OPTIONS.TELEGRAM_CLIENT_CONNECT_RETRIES,
-            request_retries=TELETHON_OPTIONS.TELEGRAM_CLIENT_REQUEST_RETRIES,
-            flood_sleep_threshold=TELETHON_OPTIONS.FLOOD_SLEEP_THRESHOLD, )
+            connection_retries=5,
+            request_retries=5,
+            flood_sleep_threshold=120, )
 
         before_connect_is_connected = user_client.is_connected()
         print(f"Telethon User client state before connect():\n"
@@ -214,12 +211,12 @@ class TelethonManager:
               f"after_connect_is_authorised: {after_connect_is_authorised}\n")
 
         if not after_connect_is_authorised:
-            await self.authorise_tlt_user_client(
+            await self.authorise_telethon_user_client(
                 telethon_user_client=user_client,
                 telethon_config=telethon_config)
             after_auth_is_connected = user_client.is_connected()
             after_auth_is_authorised = await user_client.is_user_authorized()
-            print(f"Telethon User client state after authorise_tlt_user_client():\n"
+            print(f"Telethon User client state after authorise_telethon_user_client():\n"
                   f"after_auth_is_connected: {after_auth_is_connected}\n"
                   f"after_auth_is_authorised: {after_auth_is_authorised}\n")
             if after_auth_is_authorised:
@@ -231,7 +228,7 @@ class TelethonManager:
             return user_client
         # return None  # Not necessary
 
-    async def postgres_db_save_tlt_session(
+    async def pgs_db_save_telethon_session(
             self,
             telethon_config: TelethonConfig,
             telethon_client: TelegramClient
@@ -254,7 +251,7 @@ class TelethonManager:
               f"session_string: {session_string}\n")
         return session_string
 
-    async def authorise_tlt_user_client(
+    async def authorise_telethon_user_client(
             self,
             telethon_user_client: TelegramClient,
             telethon_config: TelethonConfig
@@ -341,7 +338,7 @@ class TelethonManager:
             return False
 
     @staticmethod
-    async def start_tlt_bot_client(
+    async def create_telethon_bot_client(
             telethon_config: TelethonConfig
     ) -> TelegramClient | None:
         session_prefix = TELETHON_OPTIONS.BOT_SESSION_FILE_PREFIX
@@ -358,10 +355,7 @@ class TelethonManager:
             session=session_full_file_path,
             api_id=telethon_config.api_id,
             api_hash=telethon_config.api_hash,
-            proxy=telethon_config.proxy,
-            connection_retries=TELETHON_OPTIONS.TELEGRAM_CLIENT_CONNECT_RETRIES,
-            request_retries=TELETHON_OPTIONS.TELEGRAM_CLIENT_REQUEST_RETRIES,
-            flood_sleep_threshold=TELETHON_OPTIONS.FLOOD_SLEEP_THRESHOLD, )
+            proxy=telethon_config.proxy, )
 
         before_connect_is_connected = bot_client.is_connected()
         print(f"Telethon Bot client state before start():\n"
@@ -404,111 +398,15 @@ class TelethonManager:
             return bot_client
         # return None  # Not necessary
 
-    async def register_tlt_client_handlers(
-            self,
-            telethon_client: TelegramClient,
-            telethon_config: TelethonConfig
-    ) -> None:
-        telethon_client_weak_ref = weakref.ref(telethon_client)
-        telethon_config_weak_ref = weakref.ref(telethon_config)
 
-        # New Message Handler
-        @telethon_client.on(events.NewMessage())
-        async def new_message_handler(event):
-            tlt_client = telethon_client_weak_ref()
-            tlt_config = telethon_config_weak_ref()
-            await handle_new_message_helper(event=event,
-                                            telethon_client=tlt_client,
-                                            telethon_config=tlt_config)
+import asyncio
 
 
-        # @telethon_client.on(events.ChatAction())
-        # async def chat_action_handler(event):
-        #     # await self._handle_chat_action(config_name, event)
-        #     pass
-        #
-        # @telethon_client.on(events.MessageEdited())
-        # async def message_edited_handler(event):
-        #     # await self._handle_message_edited(config_name, event)
-        #     pass
-        #
-        # @telethon_client.on(events.MessageDeleted())
-        # async def message_edited_handler(event):
-        #     # await self._handle_message_edited(config_name, event)
-        #     pass
-        #
-        # @telethon_client.on(events.MessageRead())
-        # async def message_edited_handler(event):
-        #     # await self._handle_message_edited(config_name, event)
-        #     pass
-        #
-        # @telethon_client.on(events.UserUpdate())
-        # async def message_edited_handler(event):
-        #     # await self._handle_message_edited(config_name, event)
-        #     pass
-        #
-        # @telethon_client.on(events.CallbackQuery())
-        # async def message_edited_handler(event):
-        #     # await self._handle_message_edited(config_name, event)
-        #     pass
-        #
-        # @telethon_client.on(events.InlineQuery())
-        # async def message_edited_handler(event):
-        #     # await self._handle_message_edited(config_name, event)
-        #     pass
-        #
-        # @telethon_client.on(events.Raw())
-        # async def message_edited_handler(event):
-        #     # await self._handle_message_edited(config_name, event)
-        #     pass
-        #
-        # @telethon_client.on(events.Album())
-        # async def message_edited_handler(event):
-        #     # await self._handle_message_edited(config_name, event)
-        #     pass
+async def main_telethon_process():
+    telethon_manager = TelethonManager()
+    telethon_configs = await telethon_manager.get_db_telethon_configs()
+    print(telethon_configs)
+    await telethon_manager.run_all_telethon_clients(telethon_configs)
 
-    async def run_all_tlt_clients_tasks(self):
-        self.running_state = True
 
-        asyncio_tasks = []
-        for cur_config, cur_client in self.clients.items():
-            cur_task = asyncio.create_task(
-                coro=cur_client.run_until_disconnected(),
-                name=None,  # Human comfortable name
-                context=None  # Context variables can be passed: var = contextvars.ContextVar("var"); var.set("value")
-            )
-            asyncio_tasks.append(cur_task)
-
-        try:
-            await asyncio.gather(*asyncio_tasks)
-            print("Async tasks gathered and started successfully [OK]")
-        except KeyboardInterrupt as keyboard_stop_error:
-            error_log = (f"Keyboard stop signal error [ERROR]:\n"
-                         f"keyboard_stop_error: {keyboard_stop_error}\n")
-            print(error_log)
-        except Exception as error:
-            error_log = (f"Running up asyncio tasks [ERROR]:\n"
-                         f"error: {error}")
-            print(error_log)
-        finally:
-            await self.disconnect_all_tlt_clients()
-
-    async def disconnect_all_tlt_clients(self):
-        self.running_state = False
-        for cur_config, cur_client in self.clients.items():
-            try:
-                if cur_client.is_connected():
-                    await cur_client.disconnect()
-            except Exception as error:
-                error_log = (f"Telethon client disconnection [ERROR]:\n"
-                             f"error: {error}\n"
-                             f"cur_config: {cur_config}\n")
-                print(error_log)
-        print("All Telethon clients disconnected successfully [OK]")
-
-    async def stop_tlt_client(
-            self, telethon_config: TelethonConfig):
-        config_name = telethon_config.name
-        if config_name in self.clients:
-            await self.clients[config_name].disconnect()
-            self.clients.pop(config_name)
+asyncio.run(main_telethon_process(), debug=True)
