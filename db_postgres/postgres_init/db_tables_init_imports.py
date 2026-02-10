@@ -16,7 +16,7 @@ from db_postgres.postgres_models.keywords_subjects_model import PlusKeywordsSubj
 from db_postgres.postgres_models.keywords_subjects_model import MinusKeywordsSubjectModel
 from db_postgres.postgres_models.chats_subjects_model import ChatsSubjectModel
 from db_postgres.postgres_models.telethon_configs_model import TelethonConfigModel
-# from db_postgres.postgres_models.customer_model import CustomerModel
+from db_postgres.postgres_models.customer_model import CustomerModel
 
 # ######################################################################
 # ############ DON'T AUTO FORMAT, COMMIT OR REMOVE IMPORTS #############
