@@ -43,6 +43,8 @@ async def start_new_tlt_client_helper(
         account_type = TELEGRAM_ACCOUNT_TYPE.BOT
     account_type_str = account_type.value
 
+    new_tlt_config_obj: TelethonConfigModel  # just to fix Pycharm annotation warning bug
+
     new_tlt_config_data = {
         "web_account_id": web_account_id,
         "web_account_username": web_account_username,
@@ -53,7 +55,6 @@ async def start_new_tlt_client_helper(
         "tg_bot_token": bot_token_id_str,
         "telethon_is_active": True}
 
-    new_tlt_config_obj: TelethonConfigModel  # just to fix Pycharm annotation warning bug
     new_tlt_config_obj = await cache_new_telethon_config_qry(
         new_telethon_config_data=new_tlt_config_data)
     new_tlt_config_id = new_tlt_config_obj.id
@@ -106,7 +107,7 @@ async def start_new_tlt_client_helper(
                     "config_name": config_name,
                     "telegram_phone": telegram_phone,
                     "bot_token_id_str": bot_token_id_str},
-                status_code=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+                status_code=status.AUTHHTTP_203_NON_AUTHORITATIVE_INFORMATION)
             return json_response
         print(f"{'>' * 55}\n{'>' * 55}\n"
               "New Telethon client created and authorised[OK]:\n"
