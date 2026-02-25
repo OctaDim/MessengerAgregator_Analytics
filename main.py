@@ -9,8 +9,6 @@ from sqladmin import Admin
 from starlette.applications import Starlette
 from starlette.middleware.sessions import SessionMiddleware
 
-from admin_panel.admin_views.admin_auth_role_backend import (
-    AdminAuthRoleAuthBackend)
 from admin_panel.admin_views._pact_admin_views.admin_chats_subjects import (
     ChatSubjectsAdmin)
 from admin_panel.admin_views._pact_admin_views.admin_conversations import (
@@ -19,7 +17,10 @@ from admin_panel.admin_views._pact_admin_views.admin_keywords_minus import (
     MinusKeywordsAdmin)
 from admin_panel.admin_views._pact_admin_views.admin_keywords_plus import (
     PlusKeywordsAdmin)
-from admin_panel.admin_views._pact_admin_views.admin_messages import MessagesAdmin
+from admin_panel.admin_views._pact_admin_views.admin_messages import (
+    MessagesAdmin)
+from admin_panel.admin_views.admin_auth_role_backend import (
+    AdminAuthRoleAuthBackend)
 from configs.pact_labels_messages import PACT_LABELS
 from configs.settings import (
     API_HOST, API_PORT, FASTAPI_OPTIONS, FASTAPI_SESSION_KEY,
@@ -39,16 +40,21 @@ from fast_api._pact_fastapi_aps.app_pact_messages_by_conversation.router_message
     router_pact_get_messages_by_convers)
 from fast_api._pact_fastapi_aps.app_pact_webhooks.router_pact_webhooks import (
     router_pact_receive_webhooks)
+from fast_api.app_global_api_webhooks.router_global_api_webhooks import (
+    router_global_api_receive_webhooks)
 from fast_api.app_root_url.router_main import router_root_url
 from fast_api.app_test_endpoint.router_test_endpoint import (
     router_develop_test_endpoint)
 
 routers_list = [
     router_root_url,
+    # PACT
     router_pact_get_all_conversations,
     router_pact_get_messages_by_convers,
     router_pact_get_message_data,
     router_pact_receive_webhooks,
+    # GLOBAL API
+    router_global_api_receive_webhooks,
 
     # Test end-point (debug time)
     router_develop_test_endpoint,
