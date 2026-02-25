@@ -15,6 +15,7 @@ async def create_cache_new_model_obj_qry(
         ModelClassORM: Type[Base] | DeclarativeMeta,
         ongoing_session: AsyncSession,
         new_data: dict,
+        skip_invalid_attrs: bool = False,
         log_new_data: bool = False
 ) -> Row[tuple[Any, ...]] | None:
     if not new_data:
@@ -24,6 +25,7 @@ async def create_cache_new_model_obj_qry(
         new_model_obj = ModelClassORM()
         update_model_obj_no_commit(orm_model_object=new_model_obj,
                                    new_update_data=new_data,
+                                   skip_invalid_attrs=skip_invalid_attrs,
                                    log_update_data=log_new_data)
         ongoing_session.add(new_model_obj)
         await ongoing_session.flush()
