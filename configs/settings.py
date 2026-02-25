@@ -72,6 +72,7 @@ API_USERNAME: str = api_conf_parser.get(section=api_conf_name, option="API_USERN
 API_PASSWORD: str = api_conf_parser.get(section=api_conf_name, option="API_PASSWORD")
 FASTAPI_SESSION_KEY: str = api_conf_parser.get(section=api_conf_name, option="FASTAPI_SESSION_KEY")
 
+
 # GETTING SQLADMIN INI CONFIGS #########################################
 @dataclass(frozen=True)
 class SQLADMIN_CONFIG_NAMES:
@@ -229,3 +230,22 @@ class PACT_EMERGENCY_CALL_OPTIONS:
     EMERGENCY_CALL_URL = "https://samara.softats.ru/account/pact/emergency_call"
     EMERGENCY_CALL_REQUEST_TIMEOUT: float = 120
     LOG_EMERGENCY_CALL_REQ_RESPONSE: bool = True
+
+
+@dataclass(frozen=True)
+class GLOBAL_API_OPTIONS:
+    WEBHOOKS_GLOBAL_API_URL_BASE_NAME: str = "global_msg_aggregator"
+    LOG_PYDANTIC_OK_VALIDATION: bool = False
+
+
+@dataclass(frozen=True)
+class GLOBAL_API_WEBHOOKS_OPTIONS:
+    DEBUG_SKIP_EVENT_TYPES_LIST: tuple[str] = ("MessageRead", "MessageEdited", "MessageDeleted", "ChatAction")
+    LOG_WEBHOOK_INCOMING_REQ_DATA: bool = True
+    LOG_WEBHOOK_INCOMING_OBJ_DATA: bool = True
+    LOG_WEBHOOK_NEW_MSG_DATA: bool = False
+    LOG_WEBHOOK_EDITED_MSG_DATA: bool = False
+    LOG_WEBHOOK_READ_MSG_DATA: bool = False
+    LOG_WEBHOOK_DELETED_MSG_DATA: bool = False
+
+    # LOG_WEBHOOK_INCOMING_EXTRA_DATA: bool = False
