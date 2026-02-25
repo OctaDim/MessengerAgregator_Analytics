@@ -48,7 +48,7 @@ from utils_common.validate_log_pydantic_errors import (
 
 base_url_name = PACT_WEBHOOKS_OPTIONS.WEBHOOKS_API_URL_BASE_NAME
 router_pact_receive_webhooks = APIRouter(prefix=f"/{base_url_name}",
-                                         tags=["PCT ENDPOINTS"])
+                                         tags=["PACT API ENDPOINTS"])
 
 
 @router_pact_receive_webhooks.post(path="/webhooks_1/",

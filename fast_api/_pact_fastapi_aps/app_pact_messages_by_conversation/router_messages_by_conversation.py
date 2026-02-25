@@ -9,7 +9,7 @@ from fast_api._pact_fastapi_aps.app_pact_messages_by_conversation.scheme_message
 
 base_url_name = PACT_WEBHOOKS_OPTIONS.WEBHOOKS_API_URL_BASE_NAME
 router_pact_get_messages_by_convers = APIRouter(prefix=f"/{base_url_name}",
-                                                tags=["PCT ENDPOINTS"])
+                                                tags=["PACT API ENDPOINTS"])
 
 
 @router_pact_get_messages_by_convers.post(path="/conversation_messages/",
