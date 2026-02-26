@@ -7,8 +7,8 @@ from db_postgres.postgres_conn.pgs_connection import (
     PgsAsyncConnection)
 from db_postgres.postgres_conn.postgres_session import (
     PgsAsyncSession)
-from db_postgres.postgres_models.webhook_global_api_model import (
-    GlobalWebhookMsgModel)
+from db_postgres.postgres_models.webhook_global_model import (
+    GlobalWebhookModel)
 from db_postgres.postgres_queries_utils.save_new_model_object import (
     save_new_model_object_qry)
 from fast_api.app_auth.funcs_auth import verify_prod_username_password
@@ -43,30 +43,52 @@ async def receive_global_api_webhooks(
         request_json=req_json,
         log_success_validation=GLOBAL_API_OPTIONS.LOG_PYDANTIC_OK_VALIDATION)
 
+    if not webhook_data:
+        error_log = "Pydantic validation [ERROR]"
+        print(error_log)
+        json_response = JSONResponse(
+            content=error_log,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT)
+        return json_response
+
     source = webhook_data.source
     operation = webhook_data.operation
     event_data = webhook_data.event_data
-    event_type = event_data.event_type
+    event_type = webhook_data.event_data.event_type
 
-    if hasattr(event_data, "ev_views"):
-        ev_views = event_data.ev_views
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ev_views", ev_views)
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ type(ev_views)", type(ev_views))
+    if hasattr(event_data, "reactions_total_custom"):
+        reactions_total_custom = event_data.reactions_total_custom
+        print("@@@@@@@@@@@@@@@@@@@@@@ reactions_total_custom", reactions_total_custom)
+        print("@@@@@@@@@@@@@@@@@@@@@@ type(reactions_total_custom)", type(reactions_total_custom))
         print()
-    if hasattr(event_data, "ev_reactions"):
-        ev_reactions = event_data.ev_reactions
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ev_reactions", ev_reactions)
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ type(ev_reactions)", type(ev_reactions))
+    if hasattr(event_data, "reactions_total_count_custom"):
+        reactions_total_count_custom = event_data.reactions_total_count_custom
+        print("@@@@@@@@@@@@@@@@@@@@@@ reactions_total_count_custom", reactions_total_count_custom)
+        print("@@@@@@@@@@@@@@@@@@@@@@ type(reactions_total_count_custom)", type(reactions_total_count_custom))
         print()
-    if hasattr(event_data, "ev_replies"):
-        ev_replies = event_data.ev_replies
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ev_replies", ev_replies)
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ type(ev_replies)", type(ev_replies))
+    if hasattr(event_data, "reactions_emoticon_custom"):
+        reactions_emoticon_custom = event_data.reactions_emoticon_custom
+        print("@@@@@@@@@@@@@@@@@@@@@@ reactions_emoticon_custom", reactions_emoticon_custom)
+        print("@@@@@@@@@@@@@@@@@@@@@@ type(reactions_emoticon_custom)", type(reactions_emoticon_custom))
         print()
-    if hasattr(event_data, "ev_forwards"):
-        ev_forwards = event_data.ev_forwards
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ev_forwards", ev_forwards)
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ type(ev_forwards)", type(ev_forwards))
+    if hasattr(event_data, "reactions_emoticon_count_custom"):
+        reactions_emoticon_count_custom = event_data.reactions_emoticon_count_custom
+        print("@@@@@@@@@@@@@@@@@@@@@@ reactions_emoticon_count_custom", reactions_emoticon_count_custom)
+        print("@@@@@@@@@@@@@@@@@@@@@@ type(reactions_emoticon_count_custom)", type(reactions_emoticon_count_custom))
+        print()
+    if hasattr(event_data, "reactions_doc_id_custom"):
+        reactions_doc_id_custom = event_data.reactions_doc_id_custom
+        print("@@@@@@@@@@@@@@@@@@@@@@ reactions_doc_id_custom", reactions_doc_id_custom)
+        print("@@@@@@@@@@@@@@@@@@@@@@ type(reactions_doc_id_custom)", type(reactions_doc_id_custom))
+        print()
+    if hasattr(event_data, "reactions_doc_id_count_custom"):
+        reactions_doc_id_count_custom = event_data.reactions_doc_id_count_custom
+        print("@@@@@@@@@@@@@@@@@@@@@@ reactions_doc_id_count_custom", reactions_doc_id_count_custom)
+        print("@@@@@@@@@@@@@@@@@@@@@@ type(reactions_doc_id_count_custom)", type(reactions_doc_id_count_custom))
+        print()
+
+        print("@@@@@@@@@@@@@@@@@@@@@@ webhook_data", webhook_data)
+        print("@@@@@@@@@@@@@@@@@@@@@@ type(webhook_data)", type(webhook_data))
         print()
 
     # DEBUG FUNCTIONALITY ONLY TO SKIP UNNECESSARY WEBHOOKS
@@ -96,14 +118,15 @@ async def receive_global_api_webhooks(
                                 log_good_ops=log_pgs_good_ops
                                 ) as pgs_session):
         await save_new_model_object_qry(
-            ModelClassORM=GlobalWebhookMsgModel,
+            ModelClassORM=GlobalWebhookModel,
             ongoing_session=pgs_session,
             new_data=event_data.model_dump(),
             skip_invalid_attrs=True,
-            log_new_data=GLOBAL_API_WEBHOOKS_OPTIONS.LOG_WEBHOOK_NEW_MSG_DATA)
+            log_new_data=GLOBAL_API_WEBHOOKS_OPTIONS.LOG_WEBHOOK_POSTGRES_SAVE_DATA)
 
-    json_content = {"Message": "Webhook saved successfully [OK]"}
+    log_txt = "Webhook saved successfully [OK]"
+    print(log_txt)
     json_response = JSONResponse(
-        content=json_content,
+        content=log_txt,
         status_code=status.HTTP_200_OK)
     return json_response
