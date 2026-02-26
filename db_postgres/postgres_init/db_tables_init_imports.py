@@ -20,7 +20,7 @@ from db_postgres.postgres_models._pact_pgs_models.chats_subjects_model import Ch
 from db_postgres.postgres_models.auth_role_model import AuthRoleModel
 from db_postgres.postgres_models.auth_role_model import AuthRoleModel
 from db_postgres.postgres_models.customer_model import CustomerModel
-from db_postgres.postgres_models.webhook_global_api_model import GlobalWebhookMsgModel
+from db_postgres.postgres_models.webhook_global_model import GlobalWebhookModel
 
 # ######################################################################
 # ############ DON'T AUTO FORMAT, COMMIT OR REMOVE IMPORTS #############

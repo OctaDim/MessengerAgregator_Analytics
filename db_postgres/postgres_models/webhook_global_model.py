@@ -10,7 +10,7 @@ from db_postgres.postgres_models.orm_models_fields_mixins import (
     ActiveMix, CreateUpdateMix)
 
 
-class GlobalWebhookMsgModel(Base, ActiveMix, CreateUpdateMix):
+class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     __tablename__ = "webhook_global_api"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
@@ -66,7 +66,7 @@ class GlobalWebhookMsgModel(Base, ActiveMix, CreateUpdateMix):
     ev_replies: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # obj
     ev_post_author: Mapped[Optional[str]]
     ev_grouped_id: Mapped[Optional[int]]
-    ev_reactions: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  #   # obj
+    # ev_reactions: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # list(objs)  >> custom
     ev_restriction_reason: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # obj
     ev_ttl_period: Mapped[Optional[int]]
     ev_quick_reply_shortcut_id: Mapped[Optional[int]]
@@ -221,3 +221,10 @@ class GlobalWebhookMsgModel(Base, ActiveMix, CreateUpdateMix):
     ev_sender_first_name: Mapped[Optional[str]]
     ev_sender_last_name: Mapped[Optional[str]]
     ev_sender_bot: Mapped[Optional[bool]] = mapped_column(default=False)
+
+    reactions_total_custom: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    reactions_total_count_custom: Mapped[Optional[int]]
+    reactions_emoticon_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    reactions_emoticon_count_custom: Mapped[Optional[int]]
+    reactions_doc_id_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    reactions_doc_id_count_custom: Mapped[Optional[int]]
