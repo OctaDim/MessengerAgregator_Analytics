@@ -1,5 +1,5 @@
-from db_postgres.postgres_models.webhook_global_api_model import (
-    GlobalWebhookMsgModel)
+from db_postgres.postgres_models.webhook_global_model import (
+    GlobalWebhookModel)
 
 if __name__ == "__main__":
     import asyncio
@@ -8,7 +8,7 @@ if __name__ == "__main__":
     from db_postgres.postgres_queries_utils.get_model_records_flex_query import (
         get_model_rows_flex_query)
 
-    ModelClassORM = GlobalWebhookMsgModel
+    ModelClassORM = GlobalWebhookModel
     filter_fields = {"id": [3]}
     # selected_fields = None
     selected_fields = ["ev_views"]
