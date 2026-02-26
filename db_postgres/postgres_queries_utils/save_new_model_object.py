@@ -26,10 +26,10 @@ async def save_new_model_object_qry(
             new_update_data=new_data,
             skip_invalid_attrs=skip_invalid_attrs,
             log_new_data=log_new_data)
-        print(f"DB Postgres saving new model object data [OK]")
+        print(f"DB Postgres saving new model object data [OK]\n")
         return True
     except Exception as error:
-        error_log = (f"DB Postgres saving new model object data [ERROR]: "
+        error_log = (f"DB Postgres saving new model object data [ERROR]:\n"
                      f"error: {error}\n"
                      f"ModelClassORM: {ModelClassORM}\n"
                      f"new_data: {new_data}\n")
