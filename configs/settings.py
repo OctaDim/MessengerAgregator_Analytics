@@ -235,17 +235,13 @@ class PACT_EMERGENCY_CALL_OPTIONS:
 @dataclass(frozen=True)
 class GLOBAL_API_OPTIONS:
     WEBHOOKS_GLOBAL_API_URL_BASE_NAME: str = "global_msg_aggregator"
-    LOG_PYDANTIC_OK_VALIDATION: bool = False
+    LOG_PYDANTIC_OK_VALIDATION: bool = True
 
 
 @dataclass(frozen=True)
 class GLOBAL_API_WEBHOOKS_OPTIONS:
-    DEBUG_SKIP_EVENT_TYPES_LIST: tuple[str] = ("MessageRead", "MessageEdited", "MessageDeleted", "ChatAction")
+    DEBUG_SKIP_EVENT_TYPES_LIST: tuple[str] = ("MessageRead", "MessageDeleted", "ChatAction")
     LOG_WEBHOOK_INCOMING_REQ_DATA: bool = True
     LOG_WEBHOOK_INCOMING_OBJ_DATA: bool = True
-    LOG_WEBHOOK_NEW_MSG_DATA: bool = False
-    LOG_WEBHOOK_EDITED_MSG_DATA: bool = False
-    LOG_WEBHOOK_READ_MSG_DATA: bool = False
-    LOG_WEBHOOK_DELETED_MSG_DATA: bool = False
-
+    LOG_WEBHOOK_POSTGRES_SAVE_DATA: bool = True
     # LOG_WEBHOOK_INCOMING_EXTRA_DATA: bool = False
