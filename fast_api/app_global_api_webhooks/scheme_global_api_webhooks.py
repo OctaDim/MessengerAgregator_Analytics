@@ -1,10 +1,13 @@
 from datetime import datetime
 from typing import Optional, Union, Literal, Self, Any
 
-from pydantic import BaseModel, model_validator, field_validator
+from pydantic import (
+    BaseModel, model_validator, field_validator, ConfigDict)
 
 
 class BaseEventData(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     event_type: str
     web_account_id: str
     web_account_username: str
@@ -13,7 +16,7 @@ class BaseEventData(BaseModel):
     tlt_bot_token: Optional[str]
 
 
-class MewMessageData(BaseEventData):
+class NewMessageData(BaseEventData):
     ev_message_message: Optional[str]
     ev_message_text: Optional[str]
     ev_message_raw_text: Optional[str]
@@ -23,10 +26,8 @@ class MewMessageData(BaseEventData):
     # ev__client:  # obj
 
     ev_id: Optional[int]
-
     # ev_peer_id: obj:
     ev_date: Optional[datetime]
-    # ev_edit_date: Optional[datetime]
     ev_out: Optional[bool]
     ev_mentioned: Optional[bool]
     ev_media_unread: Optional[bool]
@@ -57,7 +58,7 @@ class MewMessageData(BaseEventData):
     ev_replies: Optional[list]  # = Field(default_factory=list)
     ev_post_author: Optional[str]
     ev_grouped_id: Optional[int]
-    ev_reactions: Optional[list]  # = Field(default_factory=list)
+    # ev_reactions:  # list(objs)
     ev_restriction_reason: Optional[list]  # = Field(default_factory=list)
     ev_ttl_period: Optional[int]
     ev_quick_reply_shortcut_id: Optional[int]
@@ -195,7 +196,7 @@ class MewMessageData(BaseEventData):
     ev_replies_max_id: Optional[int]
     ev_replies_read_max_id: Optional[int]
 
-    ev_reactions_results: Optional[list]  # = Field(default_factory=list)
+    # ev_reactions_results: Optional[list]  # list(objs)
     ev_reactions_min: Optional[bool]
     ev_reactions_can_see_list: Optional[bool]
     ev_reactions_reactions_as_tags: Optional[bool]
@@ -223,8 +224,15 @@ class MewMessageData(BaseEventData):
         return datetime.fromisoformat(value)
 
 
-class MessageEditedData(MewMessageData):  # Basically nested from MewMessageData
+class MessageEditedData(NewMessageData):
     ev_edit_date: Optional[datetime]
+
+    reactions_total_custom: Optional[dict]
+    reactions_total_count_custom: Optional[int]
+    reactions_emoticon_custom: Optional[list]
+    reactions_emoticon_count_custom: Optional[int]
+    reactions_doc_id_custom: Optional[list]
+    reactions_doc_id_count_custom: Optional[int]
 
     @field_validator("ev_edit_date", mode="before")
     @classmethod
@@ -236,23 +244,14 @@ class MessageEditedData(MewMessageData):  # Basically nested from MewMessageData
         return datetime.fromisoformat(value)
 
 
-class MessageReadData(BaseEventData):
-    pass
-
-
-class MessageDeletedData(BaseEventData):
-    pass
-
-
-class ChatActionData(BaseEventData):
-    pass
-
+# class MessageReadData(BaseEventData):
+# class MessageDeletedData(BaseEventData):
+# class ChatActionData(BaseEventData):
 
 class GlobalApiWebhookData(BaseModel):
-    event_data: Optional[Union[
-        MewMessageData, MessageEditedData, MessageReadData,
-        MessageDeletedData, ChatActionData]]
-    source: Optional[Union[str, Literal["tlt_tg_aggr"]]]
+    event_data: Optional[
+        Union[NewMessageData, MessageEditedData]]  # MessageReadData, MessageDeletedData, ChatActionData
+    source: Optional[Union[str, Literal["telegram_tlt"]]]
     operation: Optional[Union[str, Literal["test"]]]
 
     # # Validation in router to fix recursion error
