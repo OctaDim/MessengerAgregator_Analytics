@@ -85,7 +85,7 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     # ev_entities:   # list(objs)
     ev_views: Mapped[Optional[int]]
     ev_forwards: Mapped[Optional[int]]
-    ev_replies: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # obj
+    # ev_replies:  # obj
     ev_post_author: Mapped[Optional[str]]
     ev_grouped_id: Mapped[Optional[int]] = mapped_column(BigInteger)
     # ev_reactions: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # list(objs)  >> custom
