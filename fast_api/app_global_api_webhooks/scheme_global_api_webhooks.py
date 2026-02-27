@@ -2,13 +2,16 @@ from datetime import datetime
 from typing import Optional, Union, Literal, Self, Any
 
 from pydantic import (
-    BaseModel, model_validator, field_validator, ConfigDict)
+    BaseModel, model_validator, field_validator, ConfigDict, Field)
 
 
 class BaseEventData(BaseModel):
     model_config = ConfigDict(frozen=True)
 
-    event_type: str
+    event_type: Literal[
+        "NewMessage", "MessageEdited", "MessageRead",
+        "MessageDeleted", "ChatAction", "UserUpdate",
+        "CallbackQuery", "InlineQuery", "Raw"]
     web_account_id: str
     web_account_username: str
     tlt_account_type: str
@@ -17,6 +20,8 @@ class BaseEventData(BaseModel):
 
 
 class NewMessageData(BaseEventData):
+    event_type: Literal["NewMessage"]
+
     ev_message_message: Optional[str]
     ev_message_text: Optional[str]
     ev_message_raw_text: Optional[str]
@@ -55,7 +60,7 @@ class NewMessageData(BaseEventData):
     # ev_entities:   # list(objs)
     ev_views: Optional[int]
     ev_forwards: Optional[int]  # = Field(default_factory=list)
-    ev_replies: Optional[list]  # = Field(default_factory=list)
+    # ev_replies:  # obj
     ev_post_author: Optional[str]
     ev_grouped_id: Optional[int]
     # ev_reactions:  # list(objs)
@@ -227,6 +232,8 @@ class NewMessageData(BaseEventData):
 
 
 class MessageEditedData(NewMessageData):
+    event_type: Literal["MessageEdited"]
+
     ev_edit_date: Optional[datetime]
 
     reactions_total_custom: Optional[dict]
@@ -246,13 +253,32 @@ class MessageEditedData(NewMessageData):
         return datetime.fromisoformat(value)
 
 
-# class MessageReadData(BaseEventData):
-# class MessageDeletedData(BaseEventData):
-# class ChatActionData(BaseEventData):
+class MessageReadData(BaseEventData):
+    event_type: Literal["MessageRead"]
+
+class MessageDeletedData(BaseEventData):
+    event_type: Literal["MessageDeleted"]
+
+class ChatActionData(BaseEventData):
+    event_type: Literal["ChatAction"]
+
+class UserUpdateData(BaseEventData):
+    event_type: Literal["UserUpdate"]
+
+class CallbackQueryData(BaseEventData):
+    event_type: Literal["CallbackQuery"]
+
+class InlineQueryData(BaseEventData):
+    event_type: Literal["InlineQuery"]
+
+class RawData(BaseEventData):
+    event_type: Literal["Raw"]
 
 class GlobalApiWebhookData(BaseModel):
     event_data: Optional[
-        Union[NewMessageData, MessageEditedData]]  # MessageReadData, MessageDeletedData, ChatActionData
+        Union[NewMessageData, MessageEditedData, MessageReadData,
+        MessageDeletedData, ChatActionData, UserUpdateData,
+        CallbackQueryData, InlineQueryData, RawData]] = Field(discriminator="event_type")
     source: Optional[Union[str, Literal["telegram_tlt"]]]
     operation: Optional[Union[str, Literal["test"]]]
 
