@@ -15,14 +15,26 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
 
-    event_type: Mapped[Optional[str]] = mapped_column(String(15))
+    # TEMPORARY DEBUG FIELDS
+    event_type: Mapped[Optional[str]] = mapped_column(String(15))  # TEMP
+    ev_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # TEMP
+    ev_edit_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # TEMP
+    ev_message_message: Mapped[Optional[str]] = mapped_column(Text)  # TEMP
+    reactions_total_custom: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)  # TEMP
+    reactions_total_count_custom: Mapped[Optional[int]]  # TEMP
+    reactions_emoticon_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # TEMP
+    reactions_emoticon_count_custom: Mapped[Optional[int]]  # TEMP
+    reactions_doc_id_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # TEMP
+    reactions_doc_id_count_custom: Mapped[Optional[int]]  # TEMP
+
+    # event_type: Mapped[Optional[str]] = mapped_column(String(15))  # Temp commented
     web_account_id: Mapped[Optional[str]] = mapped_column(String(10))
     web_account_username: Mapped[Optional[str]] = mapped_column(String(30))
     tlt_account_type: Mapped[Optional[str]] = mapped_column(String(10))
     tlt_phone: Mapped[Optional[str]] = mapped_column(String(30))
     tlt_bot_token: Mapped[Optional[str]] = mapped_column(String(15))
 
-    ev_message_message: Mapped[Optional[str]] = mapped_column(Text)
+    # ev_message_message: Mapped[Optional[str]] = mapped_column(Text)  # Temp commented
     ev_message_text: Mapped[Optional[str]] = mapped_column(Text)
     ev_message_raw_text: Mapped[Optional[str]] = mapped_column(Text)
 
@@ -30,58 +42,58 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     ev_original_update_pts_count: Mapped[Optional[int]]
     # ev__client:  # obj
 
-    ev_id: Mapped[Optional[int]]
+    ev_id: Mapped[Optional[int]] = mapped_column(BigInteger)
 
     # ev_peer_id: object:
-    ev_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
-    ev_edit_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    # ev_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # Temp commented
+    # ev_edit_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # Temp commented
 
-    ev_out: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_mentioned: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_media_unread: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_silent: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_post: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_from_scheduled: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_legacy: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_edit_hide: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_pinned: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_noforwards: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_invert_media: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_offline: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_video_processing_pending: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_paid_suggested_post_stars: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_paid_suggested_post_ton: Mapped[Optional[bool]] = mapped_column(default=False)
+    ev_out: Mapped[Optional[bool]]
+    ev_mentioned: Mapped[Optional[bool]]
+    ev_media_unread: Mapped[Optional[bool]]
+    ev_silent: Mapped[Optional[bool]]
+    ev_post: Mapped[Optional[bool]]
+    ev_from_scheduled: Mapped[Optional[bool]]
+    ev_legacy: Mapped[Optional[bool]]
+    ev_edit_hide: Mapped[Optional[bool]]
+    ev_pinned: Mapped[Optional[bool]]
+    ev_noforwards: Mapped[Optional[bool]]
+    ev_invert_media: Mapped[Optional[bool]]
+    ev_offline: Mapped[Optional[bool]]
+    ev_video_processing_pending: Mapped[Optional[bool]]
+    ev_paid_suggested_post_stars: Mapped[Optional[bool]]
+    ev_paid_suggested_post_ton: Mapped[Optional[bool]]
     # ev_from_id:  # obj
     ev_from_boosts_applied: Mapped[Optional[int]]
     # ev_saved_peer_id:  # obj
     # ev_fwd_from: # obj
-    ev_via_bot_id: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_via_business_bot_id: Mapped[Optional[bool]] = mapped_column(default=False)
+    ev_via_bot_id: Mapped[Optional[bool]] = mapped_column(BigInteger)
+    ev_via_business_bot_id: Mapped[Optional[bool]] = mapped_column(BigInteger)
     # ev_reply_to:  # obj
     # ev_media:   # obj
     # ev_reply_markup:   # obj
     # ev_entities:   # list(objs)
-    ev_views: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # obj
-    ev_forwards: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # obj
+    ev_views: Mapped[Optional[int]]
+    ev_forwards: Mapped[Optional[int]]
     ev_replies: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # obj
     ev_post_author: Mapped[Optional[str]]
-    ev_grouped_id: Mapped[Optional[int]]
+    ev_grouped_id: Mapped[Optional[int]] = mapped_column(BigInteger)
     # ev_reactions: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # list(objs)  >> custom
     ev_restriction_reason: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # obj
-    ev_ttl_period: Mapped[Optional[int]]
-    ev_quick_reply_shortcut_id: Mapped[Optional[int]]
+    ev_ttl_period: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_quick_reply_shortcut_id: Mapped[Optional[int]] = mapped_column(BigInteger)
     ev_effect: Mapped[Optional[int]]
     # ev_factcheck:   # obj
-    ev_report_delivery_until_date: Mapped[Optional[datetime]]
+    ev_report_delivery_until_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     # ev_paid_stars:   # obj
     # ev_suggested_post:   # obj
 
     # ev_file:   # obj
-    ev_broadcast: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_is_reply: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_is_private: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_is_group: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_is_channel: Mapped[Optional[bool]] = mapped_column(default=False)
+    ev_broadcast: Mapped[Optional[bool]]
+    ev_is_reply: Mapped[Optional[bool]]
+    ev_is_private: Mapped[Optional[bool]]
+    ev_is_group: Mapped[Optional[bool]]
+    ev_is_channel: Mapped[Optional[bool]]
     # ev_chat:  # obj
     ev_chat_id: Mapped[Optional[int]] = mapped_column(BigInteger)
     # ev_chat__client:  # obj
@@ -102,10 +114,10 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     # ev_invoice  # obj
     # ev_web_preview  # obj
     # ev_action  # obj
-    ev_changed_media: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_changed_text: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_changed_markup: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_changed_entities: Mapped[Optional[bool]] = mapped_column(default=False)
+    ev_changed_media: Mapped[Optional[bool]]
+    ev_changed_text: Mapped[Optional[bool]]
+    ev_changed_markup: Mapped[Optional[bool]]
+    ev_changed_entities: Mapped[Optional[bool]]
 
     # peer_id options:
     ev_peer_id_channel_id: Mapped[Optional[int]] = mapped_column(BigInteger)  # opt.1
@@ -117,7 +129,7 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     ev_from_id_chat_id: Mapped[Optional[int]] = mapped_column(BigInteger)  # opt.2
     ev_from_id_user_id: Mapped[Optional[int]] = mapped_column(BigInteger)  # opt.3
 
-    ev_fwd_from_date: Mapped[Optional[datetime]]
+    ev_fwd_from_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     # ev_fwd_from_from_id:  # obj
     ev_fwd_from_from_name: Mapped[Optional[str]]
     ev_fwd_from_channel_post: Mapped[Optional[int]]
@@ -133,13 +145,13 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     ev_reply_to_reply_to_msg_id: Mapped[Optional[int]] = mapped_column(BigInteger)
     # ev_reply_to_reply_to_peer_id:  # obj
 
-    ev_reply_to_reply_to_top_id: Mapped[Optional[int]]
-    ev_reply_to_reply_to_scheduled: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_reply_to_forum_topic: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_reply_to_quote: Mapped[Optional[bool]] = mapped_column(default=False)
+    ev_reply_to_reply_to_top_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_reply_to_reply_to_scheduled: Mapped[Optional[bool]]
+    ev_reply_to_forum_topic: Mapped[Optional[bool]]
+    ev_reply_to_quote: Mapped[Optional[bool]]
     ev_reply_to_quote_text: Mapped[Optional[str]]
     # ev_reply_to_reply_media:  # obj
-    ev_reply_to_todo_item_id: Mapped[Optional[int]]
+    ev_reply_to_todo_item_id: Mapped[Optional[int]] = mapped_column(BigInteger)
 
     ev_reply_to_reply_to_peer_id_channel_id: Mapped[Optional[int]] = mapped_column(BigInteger)  # opt.1
     ev_reply_to_reply_to_peer_id_chat_id: Mapped[Optional[int]] = mapped_column(BigInteger)  # opt.2
@@ -147,20 +159,20 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
 
     # ev_media_photo:  # obj
     ev_media_photo_ttl_seconds: Mapped[Optional[int]]
-    ev_media_photo_id: Mapped[Optional[int]]
-    ev_media_photo_access_hash: Mapped[Optional[int]]
+    ev_media_photo_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_media_photo_access_hash: Mapped[Optional[int]] = mapped_column(BigInteger)
     ev_media_photo_file_reference: Mapped[Optional[bytes]] = mapped_column(LargeBinary())
-    ev_media_photo_date: Mapped[Optional[datetime]]
+    ev_media_photo_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     # ev_media_photo_sizes:  # objs
     # ev_media_video_sizes:  # objs
-    ev_media_photo_has_stickers: Mapped[Optional[bool]] = mapped_column(default=False)
+    ev_media_photo_has_stickers: Mapped[Optional[bool]]
 
     # ev_media_document:  # obj
-    ev_media_document_ttl_seconds: Mapped[Optional[int]]
+    ev_media_document_ttl_seconds: Mapped[Optional[int]] = mapped_column(BigInteger)
     ev_media_document_id: Mapped[Optional[int]] = mapped_column(BigInteger)
-    ev_media_document_access_hash: Mapped[Optional[int]]
+    ev_media_document_access_hash: Mapped[Optional[int]] = mapped_column(BigInteger)
     ev_media_document_file_reference: Mapped[Optional[bytes]] = mapped_column(LargeBinary())
-    ev_media_document_date: Mapped[Optional[datetime]]
+    ev_media_document_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     ev_media_document_mime_type: Mapped[Optional[str]]
     ev_media_document_size: Mapped[Optional[int]]
     # ev_media_document_thumbs:  # objs
@@ -198,33 +210,33 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
 
     ev_replies_replies: Mapped[Optional[int]]
     ev_replies_replies_pts: Mapped[Optional[int]]
-    ev_replies_comments: Mapped[Optional[bool]] = mapped_column(default=False)
+    ev_replies_comments: Mapped[Optional[bool]]
     # ev_replies_recent_repliers:  # objs
     ev_replies_channel_id: Mapped[Optional[int]] = mapped_column(BigInteger)  # opt.1
-    ev_replies_max_id: Mapped[Optional[int]]
-    ev_replies_read_max_id: Mapped[Optional[int]]
+    ev_replies_max_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_replies_read_max_id: Mapped[Optional[int]] = mapped_column(BigInteger)
 
     ev_reactions_results: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # objs
-    ev_reactions_min: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_reactions_can_see_list: Mapped[Optional[bool]] = mapped_column(default=False)
-    ev_reactions_reactions_as_tags: Mapped[Optional[bool]] = mapped_column(default=False)
+    ev_reactions_min: Mapped[Optional[bool]]
+    ev_reactions_can_see_list: Mapped[Optional[bool]]
+    ev_reactions_reactions_as_tags: Mapped[Optional[bool]]
     # ev_reactions_recent_reactions:  # objs
     # ev_reactions_top_reactors:  # objs
 
     ev_file_id: Mapped[Optional[str]]
     ev_file_name: Mapped[Optional[str]]
     ev_file_size: Mapped[Optional[int]]
-    ev_file_date: Mapped[Optional[datetime]]
+    ev_file_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     ev_file_mime_type: Mapped[Optional[str]]
 
     ev_sender_username: Mapped[Optional[str]]
     ev_sender_first_name: Mapped[Optional[str]]
     ev_sender_last_name: Mapped[Optional[str]]
-    ev_sender_bot: Mapped[Optional[bool]] = mapped_column(default=False)
+    ev_sender_bot: Mapped[Optional[bool]]
 
-    reactions_total_custom: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
-    reactions_total_count_custom: Mapped[Optional[int]]
-    reactions_emoticon_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
-    reactions_emoticon_count_custom: Mapped[Optional[int]]
-    reactions_doc_id_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
-    reactions_doc_id_count_custom: Mapped[Optional[int]]
+    # reactions_total_custom: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)  # Temp commented
+    # reactions_total_count_custom: Mapped[Optional[int]]  # Temp commented
+    # reactions_emoticon_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temp commented
+    # reactions_emoticon_count_custom: Mapped[Optional[int]]  # Temp commented
+    # reactions_doc_id_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temp commented
+    # reactions_doc_id_count_custom: Mapped[Optional[int]]  # Temp commented
