@@ -38,14 +38,15 @@ async def receive_global_api_webhooks(
 
     log_pgs_good_ops = ALCHEMY_OPTIONS.ALCHEMY_SESSION_OK_ACTIONS_LOGS
 
-    webhook_data = validate_log_pydantic_obj_errors(
+    validation_res = validate_log_pydantic_obj_errors(
         PydanticBaseModel=GlobalApiWebhookData,
         request_json=req_json,
         log_success_validation=GLOBAL_API_OPTIONS.LOG_PYDANTIC_OK_VALIDATION)
-
+    webhook_data = validation_res["validated_obj"]
     if not webhook_data:
-        error_log = "Pydantic validation [ERROR]"
-        print(error_log)
+        validation_log = validation_res["validation_log"]
+        error_log = (f"Pydantic validation [ERROR]: \n"
+                     f"validation_log: {validation_log}\n")
         json_response = JSONResponse(
             content=error_log,
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT)
@@ -55,41 +56,6 @@ async def receive_global_api_webhooks(
     operation = webhook_data.operation
     event_data = webhook_data.event_data
     event_type = webhook_data.event_data.event_type
-
-    if hasattr(event_data, "reactions_total_custom"):
-        reactions_total_custom = event_data.reactions_total_custom
-        print("@@@@@@@@@@@@@@@@@@@@@@ reactions_total_custom", reactions_total_custom)
-        print("@@@@@@@@@@@@@@@@@@@@@@ type(reactions_total_custom)", type(reactions_total_custom))
-        print()
-    if hasattr(event_data, "reactions_total_count_custom"):
-        reactions_total_count_custom = event_data.reactions_total_count_custom
-        print("@@@@@@@@@@@@@@@@@@@@@@ reactions_total_count_custom", reactions_total_count_custom)
-        print("@@@@@@@@@@@@@@@@@@@@@@ type(reactions_total_count_custom)", type(reactions_total_count_custom))
-        print()
-    if hasattr(event_data, "reactions_emoticon_custom"):
-        reactions_emoticon_custom = event_data.reactions_emoticon_custom
-        print("@@@@@@@@@@@@@@@@@@@@@@ reactions_emoticon_custom", reactions_emoticon_custom)
-        print("@@@@@@@@@@@@@@@@@@@@@@ type(reactions_emoticon_custom)", type(reactions_emoticon_custom))
-        print()
-    if hasattr(event_data, "reactions_emoticon_count_custom"):
-        reactions_emoticon_count_custom = event_data.reactions_emoticon_count_custom
-        print("@@@@@@@@@@@@@@@@@@@@@@ reactions_emoticon_count_custom", reactions_emoticon_count_custom)
-        print("@@@@@@@@@@@@@@@@@@@@@@ type(reactions_emoticon_count_custom)", type(reactions_emoticon_count_custom))
-        print()
-    if hasattr(event_data, "reactions_doc_id_custom"):
-        reactions_doc_id_custom = event_data.reactions_doc_id_custom
-        print("@@@@@@@@@@@@@@@@@@@@@@ reactions_doc_id_custom", reactions_doc_id_custom)
-        print("@@@@@@@@@@@@@@@@@@@@@@ type(reactions_doc_id_custom)", type(reactions_doc_id_custom))
-        print()
-    if hasattr(event_data, "reactions_doc_id_count_custom"):
-        reactions_doc_id_count_custom = event_data.reactions_doc_id_count_custom
-        print("@@@@@@@@@@@@@@@@@@@@@@ reactions_doc_id_count_custom", reactions_doc_id_count_custom)
-        print("@@@@@@@@@@@@@@@@@@@@@@ type(reactions_doc_id_count_custom)", type(reactions_doc_id_count_custom))
-        print()
-
-        print("@@@@@@@@@@@@@@@@@@@@@@ webhook_data", webhook_data)
-        print("@@@@@@@@@@@@@@@@@@@@@@ type(webhook_data)", type(webhook_data))
-        print()
 
     # DEBUG FUNCTIONALITY ONLY TO SKIP UNNECESSARY WEBHOOKS
     if GLOBAL_API_WEBHOOKS_OPTIONS.DEBUG_SKIP_EVENT_TYPES_LIST:
