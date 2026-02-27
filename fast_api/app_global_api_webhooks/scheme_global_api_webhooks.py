@@ -214,6 +214,8 @@ class NewMessageData(BaseEventData):
     ev_sender_last_name: Optional[str]
     ev_sender_bot: Optional[bool]
 
+    ev_chat_title: Optional[str]
+
     @field_validator("ev_date", mode="before")
     @classmethod
     def parse_ev_date(cls, value: Any) -> datetime | None:
