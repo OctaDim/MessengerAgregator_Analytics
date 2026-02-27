@@ -52,47 +52,56 @@ async def receive_global_api_webhooks(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT)
         return json_response
 
-    source = webhook_data.source
-    operation = webhook_data.operation
-    event_data = webhook_data.event_data
-    event_type = webhook_data.event_data.event_type
+    try:
+        source = webhook_data.source
+        operation = webhook_data.operation
+        event_data = webhook_data.event_data
+        event_type = webhook_data.event_data.event_type
 
-    # DEBUG FUNCTIONALITY ONLY TO SKIP UNNECESSARY WEBHOOKS
-    if GLOBAL_API_WEBHOOKS_OPTIONS.DEBUG_SKIP_EVENT_TYPES_LIST:
-        if event_type in GLOBAL_API_WEBHOOKS_OPTIONS.DEBUG_SKIP_EVENT_TYPES_LIST:
-            log_txt = (f"WEBHOOK SKIPPED [OK]: event_type: {event_type}\n"
-                       f"operation: {operation}, source: {source}\n")
-            print(log_txt)
-            json_response = JSONResponse(
-                content={"Message": log_txt},
-                status_code=status.HTTP_200_OK)
-            return json_response
+        # DEBUG FUNCTIONALITY ONLY TO SKIP UNNECESSARY WEBHOOKS
+        if GLOBAL_API_WEBHOOKS_OPTIONS.DEBUG_SKIP_EVENT_TYPES_LIST:
+            if event_type in GLOBAL_API_WEBHOOKS_OPTIONS.DEBUG_SKIP_EVENT_TYPES_LIST:
+                log_txt = (f"WEBHOOK SKIPPED [OK]: event_type: {event_type}\n"
+                           f"operation: {operation}, source: {source}\n")
+                print(log_txt)
+                json_response = JSONResponse(
+                    content={"Message": log_txt},
+                    status_code=status.HTTP_200_OK)
+                return json_response
 
-    print(f"\n{'>' * 75}")
-    if GLOBAL_API_WEBHOOKS_OPTIONS.LOG_WEBHOOK_INCOMING_REQ_DATA:
-        await log_all_request_data(request=request)
+        print(f"\n{'>' * 75}")
+        if GLOBAL_API_WEBHOOKS_OPTIONS.LOG_WEBHOOK_INCOMING_REQ_DATA:
+            await log_all_request_data(request=request)
 
-    if GLOBAL_API_WEBHOOKS_OPTIONS.LOG_WEBHOOK_INCOMING_OBJ_DATA:
-        print(f"\nWEBHOOK INCOMING DATA:\n"
-              f"\tevent_type: {event_type}\n"
-              f"\toperation: {operation}\n"
-              f"\tsource: {source}\n"
-              f"\tevent_data: {event_data}\n")
+        if GLOBAL_API_WEBHOOKS_OPTIONS.LOG_WEBHOOK_INCOMING_OBJ_DATA:
+            print(f"\nWEBHOOK INCOMING DATA:\n"
+                  f"\tevent_type: {event_type}\n"
+                  f"\toperation: {operation}\n"
+                  f"\tsource: {source}\n"
+                  f"\tevent_data: {event_data}\n")
 
-    pgs_conn = PgsAsyncConnection()
-    async with (PgsAsyncSession(engine=pgs_conn.engine,
-                                log_good_ops=log_pgs_good_ops
-                                ) as pgs_session):
-        await save_new_model_object_qry(
-            ModelClassORM=GlobalWebhookModel,
-            ongoing_session=pgs_session,
-            new_data=event_data.model_dump(),
-            skip_invalid_attrs=True,
-            log_new_data=GLOBAL_API_WEBHOOKS_OPTIONS.LOG_WEBHOOK_POSTGRES_SAVE_DATA)
+        pgs_conn = PgsAsyncConnection()
+        async with (PgsAsyncSession(engine=pgs_conn.engine,
+                                    log_good_ops=log_pgs_good_ops
+                                    ) as pgs_session):
+            await save_new_model_object_qry(
+                ModelClassORM=GlobalWebhookModel,
+                ongoing_session=pgs_session,
+                new_data=event_data.model_dump(),
+                skip_invalid_attrs=True,
+                log_new_data=GLOBAL_API_WEBHOOKS_OPTIONS.LOG_WEBHOOK_POSTGRES_SAVE_DATA)
 
-    log_txt = "Webhook saved successfully [OK]"
-    print(log_txt)
-    json_response = JSONResponse(
-        content=log_txt,
-        status_code=status.HTTP_200_OK)
-    return json_response
+        log_txt = "Webhook saved successfully [OK]"
+        print(log_txt)
+        json_response = JSONResponse(
+            content=log_txt,
+            status_code=status.HTTP_200_OK)
+        return json_response
+    except Exception as error:
+        error_log = (f"Global API webhooks router [ERROR]: \n"
+                     f"error: {error}\n")
+        print(error_log)
+        json_response = JSONResponse(
+            content=error_log,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return json_response
