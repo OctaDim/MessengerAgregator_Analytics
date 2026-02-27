@@ -53,8 +53,8 @@ class NewMessageData(BaseEventData):
     # ev_media:   # obj
     # ev_reply_markup:   # obj
     # ev_entities:   # list(objs)
-    ev_views: Optional[list]  # = Field(default_factory=list)
-    ev_forwards: Optional[list]  # = Field(default_factory=list)
+    ev_views: Optional[int]
+    ev_forwards: Optional[int]  # = Field(default_factory=list)
     ev_replies: Optional[list]  # = Field(default_factory=list)
     ev_post_author: Optional[str]
     ev_grouped_id: Optional[int]
