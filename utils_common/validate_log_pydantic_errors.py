@@ -11,7 +11,7 @@ def validate_log_pydantic_obj_errors(
     try:
         validated_obj = PydanticBaseModel(**request_json)
         validated_dict = validated_obj.model_dump()
-        log_txt = (f"PYDANTIC VALIDATION [OK]:\n"
+        log_txt = (f"\nPYDANTIC VALIDATION [OK]:\n"
                    f"validated_obj: '{validated_obj}\n"
                    f"validated_dict: {validated_dict}\n")
         validation_result = {"validated_obj": validated_obj,
@@ -19,7 +19,7 @@ def validate_log_pydantic_obj_errors(
         if log_success_validation:
             print(log_txt)
         return validation_result
-    except ValidationError as error:
+    except (ValidationError, Exception) as error:
         errors_list = []
         for error in error.errors():
             field_name = ".".join(str(loc) for loc in error["loc"])
@@ -33,13 +33,13 @@ def validate_log_pydantic_obj_errors(
                           "input_value": input_value}
             errors_list.append(error_info)
 
-            error_log = (f"PYDANTIC VALIDATION [ERROR]:\n"
+            error_log = (f"\nPYDANTIC VALIDATION [ERROR]:\n"
                          f"field_name: '{field_name}'\n"
                          f"error_type: {error_type}\n"
                          f"error_message: {error_message}\n"
                          f"input_value: {input_value}\n")
             print(error_log)
-        error_txt = (f"PYDANTIC VALIDATION ERRORS LIST [ERROR]: \n"
+        error_txt = (f"\nPYDANTIC VALIDATION ERRORS LIST [ERROR]: \n"
                      f"errors_list: {errors_list}\n")
         print(error_txt)
         validation_result = {"validated_obj": None,

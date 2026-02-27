@@ -45,7 +45,7 @@ async def receive_global_api_webhooks(
     webhook_data = validation_res["validated_obj"]
     if not webhook_data:
         validation_log = validation_res["validation_log"]
-        error_log = (f"Pydantic validation [ERROR]: \n"
+        error_log = (f"\nPydantic validation [ERROR]: \n"
                      f"validation_log: {validation_log}\n")
         json_response = JSONResponse(
             content=error_log,
