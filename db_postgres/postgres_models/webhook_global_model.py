@@ -17,6 +17,7 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
 
     # TEMPORARY DEBUG FIELDS
     event_type: Mapped[Optional[str]] = mapped_column(String(15))  # TEMP
+    ev_chat_title: Mapped[Optional[str]]  # TEMP
     ev_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # TEMP
     ev_edit_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # TEMP
     ev_message_message: Mapped[Optional[str]] = mapped_column(Text)  # TEMP
@@ -233,6 +234,8 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     ev_sender_first_name: Mapped[Optional[str]]
     ev_sender_last_name: Mapped[Optional[str]]
     ev_sender_bot: Mapped[Optional[bool]]
+
+    # ev_chat_title: Mapped[Optional[str]]  # Temp commented
 
     # reactions_total_custom: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)  # Temp commented
     # reactions_total_count_custom: Mapped[Optional[int]]  # Temp commented
