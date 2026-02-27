@@ -15,27 +15,36 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
 
-    # TEMPORARY DEBUG FIELDS
-    event_type: Mapped[Optional[str]] = mapped_column(String(15))  # TEMP
-    ev_chat_title: Mapped[Optional[str]]  # TEMP
-    ev_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # TEMP
-    ev_edit_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # TEMP
-    ev_message_message: Mapped[Optional[str]] = mapped_column(Text)  # TEMP
-    reactions_total_custom: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)  # TEMP
-    reactions_total_count_custom: Mapped[Optional[int]]  # TEMP
-    reactions_emoticon_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # TEMP
-    reactions_emoticon_count_custom: Mapped[Optional[int]]  # TEMP
-    reactions_doc_id_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # TEMP
-    reactions_doc_id_count_custom: Mapped[Optional[int]]  # TEMP
+    # ##################################################################
+    # ######### COMFORTABLE VIEW FIELDS ORDER (start) ##################
+    # ##################################################################
+    event_type: Mapped[Optional[str]] = mapped_column(String(15))
+    ev_chat_title: Mapped[Optional[str]]
+    ev_message_message: Mapped[Optional[str]] = mapped_column(Text)
+    ev_sender_username: Mapped[Optional[str]]
+    ev_sender_first_name: Mapped[Optional[str]]
+    ev_sender_last_name: Mapped[Optional[str]]
+    ev_sender_bot: Mapped[Optional[bool]]
+    ev_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    ev_edit_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    reactions_total_custom: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    reactions_total_count_custom: Mapped[Optional[int]]
+    reactions_emoticon_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    reactions_emoticon_count_custom: Mapped[Optional[int]]
+    reactions_doc_id_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    reactions_doc_id_count_custom: Mapped[Optional[int]]
+    # ##################################################################
+    # ########## COMFORTABLE VIEW FIELDS ORDER (end) ###################
+    # ##################################################################
 
-    # event_type: Mapped[Optional[str]] = mapped_column(String(15))  # Temp commented
+    # event_type: Mapped[Optional[str]] = mapped_column(String(15))  # Temporary changed order
     web_account_id: Mapped[Optional[str]] = mapped_column(String(10))
     web_account_username: Mapped[Optional[str]] = mapped_column(String(30))
     tlt_account_type: Mapped[Optional[str]] = mapped_column(String(10))
     tlt_phone: Mapped[Optional[str]] = mapped_column(String(30))
     tlt_bot_token: Mapped[Optional[str]] = mapped_column(String(15))
 
-    # ev_message_message: Mapped[Optional[str]] = mapped_column(Text)  # Temp commented
+    # ev_message_message: Mapped[Optional[str]] = mapped_column(Text)  # Temporary changed order
     ev_message_text: Mapped[Optional[str]] = mapped_column(Text)
     ev_message_raw_text: Mapped[Optional[str]] = mapped_column(Text)
 
@@ -46,8 +55,8 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     ev_id: Mapped[Optional[int]] = mapped_column(BigInteger)
 
     # ev_peer_id: object:
-    # ev_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # Temp commented
-    # ev_edit_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # Temp commented
+    # ev_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # Temporary changed order
+    # ev_edit_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # Temporary changed order
 
     ev_out: Mapped[Optional[bool]]
     ev_mentioned: Mapped[Optional[bool]]
@@ -230,16 +239,16 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     ev_file_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     ev_file_mime_type: Mapped[Optional[str]]
 
-    ev_sender_username: Mapped[Optional[str]]
-    ev_sender_first_name: Mapped[Optional[str]]
-    ev_sender_last_name: Mapped[Optional[str]]
-    ev_sender_bot: Mapped[Optional[bool]]
+    # ev_sender_username: Mapped[Optional[str]]  # Temporary changed order
+    # ev_sender_first_name: Mapped[Optional[str]]  # Temporary changed order
+    # ev_sender_last_name: Mapped[Optional[str]]  # Temporary changed order
+    # ev_sender_bot: Mapped[Optional[bool]]  # Temporary changed order
 
-    # ev_chat_title: Mapped[Optional[str]]  # Temp commented
+    # ev_chat_title: Mapped[Optional[str]]  # Temporary changed order
 
-    # reactions_total_custom: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)  # Temp commented
-    # reactions_total_count_custom: Mapped[Optional[int]]  # Temp commented
-    # reactions_emoticon_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temp commented
-    # reactions_emoticon_count_custom: Mapped[Optional[int]]  # Temp commented
-    # reactions_doc_id_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temp commented
-    # reactions_doc_id_count_custom: Mapped[Optional[int]]  # Temp commented
+    # reactions_total_custom: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)  # Temporary changed order
+    # reactions_total_count_custom: Mapped[Optional[int]]  # Temporary changed order
+    # reactions_emoticon_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temporary changed order
+    # reactions_emoticon_count_custom: Mapped[Optional[int]]  # Temporary changed order
+    # reactions_doc_id_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temporary changed order
+    # reactions_doc_id_count_custom: Mapped[Optional[int]]  # Temporary changed order
