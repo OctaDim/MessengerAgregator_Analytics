@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Type, Dict
 
 from pydantic import ValidationError, BaseModel
 
@@ -7,17 +7,18 @@ def validate_log_pydantic_obj_errors(
         PydanticBaseModel: Type[BaseModel],
         request_json: dict,
         log_success_validation: bool = False
-) -> BaseModel | None:
-    # TODO: Return validated obj and errors info by field
+) -> Dict[str, BaseModel | str]:
     try:
         validated_obj = PydanticBaseModel(**request_json)
         validated_dict = validated_obj.model_dump()
+        log_txt = (f"PYDANTIC VALIDATION [OK]:\n"
+                   f"validated_obj: '{validated_obj}\n"
+                   f"validated_dict: {validated_dict}\n")
+        validation_result = {"validated_obj": validated_obj,
+                             "validation_log": log_txt}
         if log_success_validation:
-            log_txt = (f"PYDANTIC VALIDATION [OK]:\n"
-                       f"validated_obj: '{validated_obj}\n"
-                       f"validated_dict: {validated_dict}\n")
             print(log_txt)
-        return validated_obj
+        return validation_result
     except ValidationError as error:
         errors_list = []
         for error in error.errors():
@@ -38,6 +39,9 @@ def validate_log_pydantic_obj_errors(
                          f"error_message: {error_message}\n"
                          f"input_value: {input_value}\n")
             print(error_log)
-        print(f"PYDANTIC VALIDATION ERRORS LIST [ERROR]:\n"
-              f"errors_list: {errors_list}\n")
-        return None
+        error_txt = (f"PYDANTIC VALIDATION ERRORS LIST [ERROR]: \n"
+                     f"errors_list: {errors_list}\n")
+        print(error_txt)
+        validation_result = {"validated_obj": None,
+                             "validation_log": error_txt}
+        return validation_result
