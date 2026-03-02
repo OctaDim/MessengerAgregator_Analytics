@@ -1,4 +1,4 @@
-from typing import Any, List, Sequence
+from typing import Any
 
 from fastapi import HTTPException
 from sqlalchemy import Row
@@ -11,27 +11,28 @@ from db_postgres.postgres_queries_utils.get_model_records_flex_query import (
     get_model_rows_flex_query)
 
 
-async def find_msgs_objs_by_ev_ids_qry(
+async def find_msg_obj_by_ev_id_qry(
         ongoing_session: AsyncSession,
-        messages_ids: List[int],
-) -> Sequence[Row[tuple[Any, ...]]] | None:
-    if not messages_ids:
+        message_event_id: int,
+) -> Row[tuple[Any, ...]] | None:
+    if not message_event_id:
         return None
 
-    filter_fields = {"ev_id": messages_ids}
+    filter_fields = {"ev_id": message_event_id}
 
     messages_objs = await get_model_rows_flex_query(
         orm_model_class=GlobalWebhookModel,
         ongoing_session=ongoing_session,
         selected_fields=None,
         fields_values_filter=filter_fields,
-        order_by_fields=GlobalWebhookModel.ev_id,
-        # order_by_fields=GlobalWebhookModel.ev_id.desc(),
+        order_by_fields=GlobalWebhookModel.id.desc(),
         return_scalars=True)
     try:
-        return messages_objs
+        if messages_objs:
+            message_obj = messages_objs[0]
+            return message_obj
     except Exception as error:
-        log_text = (f"Finding event messages data by event ids [ERROR]:\n"
+        log_text = (f"Finding message obj by ev_id [ERROR]:\n"
                     f"error: {error}\n"
                     f"orm_model_class: {GlobalWebhookModel}\n"
                     f"filter_fields: {filter_fields}\n")
