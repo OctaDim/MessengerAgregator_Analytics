@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Sequence
 
 from fastapi import HTTPException
 from sqlalchemy import Row
@@ -11,10 +11,10 @@ from db_postgres.postgres_queries_utils.get_model_records_flex_query import (
     get_model_rows_flex_query)
 
 
-async def find_messages_objs_by_ev_ids_qry(
+async def find_msgs_objs_by_ev_ids_qry(
         ongoing_session: AsyncSession,
         messages_ids: List[int],
-) -> Row[tuple[Any, ...]] | None:
+) -> Sequence[Row[tuple[Any, ...]]] | None:
     if not messages_ids:
         return None
 

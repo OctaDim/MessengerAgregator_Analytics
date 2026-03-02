@@ -1,5 +1,5 @@
 from db_postgres.postgres_queries.qry_get_messages_list_by_ev_ids import (
-    find_messages_objs_by_ev_ids_qry)
+    find_msgs_objs_by_ev_ids_qry)
 
 if __name__ == "__main__":
     import asyncio
@@ -16,7 +16,7 @@ if __name__ == "__main__":
         async with PgsAsyncSession(engine=pgs_async_conn.engine,
                                    log_good_ops=True,
                                    ) as pgs_async_session:
-            result = await find_messages_objs_by_ev_ids_qry(
+            result = await find_msgs_objs_by_ev_ids_qry(
                 ongoing_session=pgs_async_session,
                 messages_ids=messages_ids)
             return result
