@@ -8,10 +8,11 @@ from pydantic import (
 class BaseEventData(BaseModel):
     model_config = ConfigDict(frozen=True)
 
-    event_type: Literal[
-        "NewMessage", "MessageEdited", "MessageRead",
-        "MessageDeleted", "ChatAction", "UserUpdate",
-        "CallbackQuery", "InlineQuery", "Raw"]
+    # event_type: Literal[
+    #     "NewMessage", "MessageEdited", "MessageRead",
+    #     "MessageDeleted", "ChatAction", "UserUpdate",
+    #     "CallbackQuery", "InlineQuery", "Raw"]
+    event_type: str
     web_account_id: str
     web_account_username: str
     tlt_account_type: str
@@ -256,9 +257,30 @@ class MessageEditedData(NewMessageData):
 class MessageReadData(BaseEventData):
     event_type: Literal["MessageRead"]  # discriminator="MessageRead"
 
+    ev_orig_upd_pts: Optional[int]
+    ev_orig_upd_pts_count: Optional[int]
+    # ev__client:  # obj
+
+    ev_outbox: Optional[bool]
+    ev_contents: Optional[bool]
+    ev_max_id: Optional[int]
+
+    ev_is_private: Optional[bool]
+    ev_is_group: Optional[bool]
+    ev_is_channel: Optional[bool]
+    # ev_chat:  # obj
+    ev_chat_id: Optional[int]
+    # ev_chat__client:  # obj
+
+    ev_orig_upd_peer_channel_id: Optional[int]
+    ev_orig_upd_peer_chat_id: Optional[int]
+    ev_orig_upd_peer_user_id: Optional[int]
+
 
 class MessageDeletedData(BaseEventData):
     event_type: Literal["MessageDeleted"]  # discriminator="MessageDeleted"
+
+    ev_delete_date: Optional[datetime]
 
     ev_orig_upd_messages: Optional[list]  # = Field(default_factory=list)
     ev_orig_upd_pts: Optional[int]
@@ -274,6 +296,8 @@ class MessageDeletedData(BaseEventData):
     # ev_chat:  # obj
     ev_chat_id: Optional[int]
     # ev_chat__client:  # obj
+
+
 
 
 class ChatActionData(BaseEventData):
