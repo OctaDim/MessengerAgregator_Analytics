@@ -240,8 +240,9 @@ class GLOBAL_API_OPTIONS:
 
 @dataclass(frozen=True)
 class GLOBAL_API_WEBHOOKS_OPTIONS:
-    DEBUG_SKIP_EVENT_TYPES_LIST: tuple[str] = ("MessageRead", "MessageDeleted", "ChatAction")
+    DEBUG_EVENT_TYPES_SKIP_LIST: tuple[str] = ("MessageRead", "ChatAction")
     LOG_WEBHOOK_INCOMING_REQ_DATA: bool = True
     LOG_WEBHOOK_INCOMING_OBJ_DATA: bool = True
     LOG_WEBHOOK_POSTGRES_SAVE_DATA: bool = True
+    DELETED_MESSAGE_PREFIX = "[X]"
     # LOG_WEBHOOK_INCOMING_EXTRA_DATA: bool = False
