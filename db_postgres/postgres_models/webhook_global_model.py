@@ -27,6 +27,7 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     ev_sender_bot: Mapped[Optional[bool]]
     ev_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     ev_edit_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    ev_delete_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     reactions_total_custom: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     reactions_total_count_custom: Mapped[Optional[int]]
     reactions_emoticon_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
@@ -37,27 +38,29 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     # ########## COMFORTABLE VIEW FIELDS ORDER (end) ###################
     # ##################################################################
 
-    # event_type: Mapped[Optional[str]] = mapped_column(String(15))  # Temporary changed order
+    # ##################################################################
+    # ############### NEW MESSAGE FIELDS (start) #######################
+    # ##################################################################
+    # event_type: Mapped[Optional[str]] = mapped_column(String(15))  # Temp reordered
     web_account_id: Mapped[Optional[str]] = mapped_column(String(10))
     web_account_username: Mapped[Optional[str]] = mapped_column(String(30))
     tlt_account_type: Mapped[Optional[str]] = mapped_column(String(10))
     tlt_phone: Mapped[Optional[str]] = mapped_column(String(30))
     tlt_bot_token: Mapped[Optional[str]] = mapped_column(String(15))
 
-    # ev_message_message: Mapped[Optional[str]] = mapped_column(Text)  # Temporary changed order
+    # ev_message_message: Mapped[Optional[str]] = mapped_column(Text)  # Temp reordered
     ev_message_text: Mapped[Optional[str]] = mapped_column(Text)
     ev_message_raw_text: Mapped[Optional[str]] = mapped_column(Text)
 
-    ev_original_update_pts: Mapped[Optional[int]] = mapped_column(BigInteger)
-    ev_original_update_pts_count: Mapped[Optional[int]]
+    ev_orig_upd_pts: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_orig_upd_pts_count: Mapped[Optional[int]]
     # ev__client:  # obj
 
     ev_id: Mapped[Optional[int]] = mapped_column(BigInteger)
-
     # ev_peer_id: object:
-    # ev_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # Temporary changed order
-    # ev_edit_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # Temporary changed order
-
+    # ev_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # Temp reordered
+    # ev_edit_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # Temp reordered
+    # ev_delete_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)  # Temp reordered
     ev_out: Mapped[Optional[bool]]
     ev_mentioned: Mapped[Optional[bool]]
     ev_media_unread: Mapped[Optional[bool]]
@@ -239,16 +242,35 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     ev_file_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     ev_file_mime_type: Mapped[Optional[str]]
 
-    # ev_sender_username: Mapped[Optional[str]]  # Temporary changed order
-    # ev_sender_first_name: Mapped[Optional[str]]  # Temporary changed order
-    # ev_sender_last_name: Mapped[Optional[str]]  # Temporary changed order
-    # ev_sender_bot: Mapped[Optional[bool]]  # Temporary changed order
+    # ev_sender_username: Mapped[Optional[str]]  # Temp reordered
+    # ev_sender_first_name: Mapped[Optional[str]]  # Temp reordered
+    # ev_sender_last_name: Mapped[Optional[str]]  # Temp reordered
+    # ev_sender_bot: Mapped[Optional[bool]]  # Temp reordered
 
-    # ev_chat_title: Mapped[Optional[str]]  # Temporary changed order
+    # ev_chat_title: Mapped[Optional[str]]  # Temp reordered
+    # ##################################################################
+    # ################# NEW MESSAGE FIELDS (end) #######################
+    # ##################################################################
 
-    # reactions_total_custom: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)  # Temporary changed order
-    # reactions_total_count_custom: Mapped[Optional[int]]  # Temporary changed order
-    # reactions_emoticon_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temporary changed order
-    # reactions_emoticon_count_custom: Mapped[Optional[int]]  # Temporary changed order
-    # reactions_doc_id_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temporary changed order
-    # reactions_doc_id_count_custom: Mapped[Optional[int]]  # Temporary changed order
+    # ##################################################################
+    # ########### ADDITIONAL: MESSAGE EDITED FIELDS (start) ############
+    # ##################################################################
+    # reactions_total_custom: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)  # Temp reordered
+    # reactions_total_count_custom: Mapped[Optional[int]]  # Temp reordered
+    # reactions_emoticon_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temp reordered
+    # reactions_emoticon_count_custom: Mapped[Optional[int]]  # Temp reordered
+    # reactions_doc_id_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temp reordered
+    # reactions_doc_id_count_custom: Mapped[Optional[int]]  # Temp reordered
+    # ##################################################################
+    # ############ ADDITIONAL: MESSAGE EDITED FIELDS (end) #############
+    # ##################################################################
+
+    # ##################################################################
+    # ########## ADDITIONAL: MESSAGE DELETED FIELDS (start) ############
+    # ##################################################################
+    ev_orig_upd_messages: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    ev_deleted_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_deleted_ids: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    # ##################################################################
+    # ########### ADDITIONAL: MESSAGE DELETED FIELDS (end) #############
+    # ##################################################################
