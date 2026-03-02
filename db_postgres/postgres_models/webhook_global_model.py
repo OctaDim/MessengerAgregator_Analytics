@@ -14,11 +14,11 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     __tablename__ = "webhook_global_api"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    # action: Mapped[Optional[str]] = mapped_column(String(15))  # Temp reordered
 
-    # ##################################################################
     # ######### COMFORTABLE VIEW FIELDS ORDER (start) ##################
-    # ##################################################################
     event_type: Mapped[Optional[str]] = mapped_column(String(15))
+    action: Mapped[Optional[str]] = mapped_column(String(15))
     ev_chat_title: Mapped[Optional[str]]
     ev_message_message: Mapped[Optional[str]] = mapped_column(Text)
     ev_sender_username: Mapped[Optional[str]]
@@ -34,13 +34,9 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     reactions_emoticon_count_custom: Mapped[Optional[int]]
     reactions_doc_id_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     reactions_doc_id_count_custom: Mapped[Optional[int]]
-    # ##################################################################
     # ########## COMFORTABLE VIEW FIELDS ORDER (end) ###################
-    # ##################################################################
 
-    # ##################################################################
     # ############### NEW MESSAGE FIELDS (start) #######################
-    # ##################################################################
     # event_type: Mapped[Optional[str]] = mapped_column(String(15))  # Temp reordered
     web_account_id: Mapped[Optional[str]] = mapped_column(String(10))
     web_account_username: Mapped[Optional[str]] = mapped_column(String(30))
@@ -248,29 +244,29 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     # ev_sender_bot: Mapped[Optional[bool]]  # Temp reordered
 
     # ev_chat_title: Mapped[Optional[str]]  # Temp reordered
-    # ##################################################################
     # ################# NEW MESSAGE FIELDS (end) #######################
-    # ##################################################################
 
-    # ##################################################################
     # ########### ADDITIONAL: MESSAGE EDITED FIELDS (start) ############
-    # ##################################################################
     # reactions_total_custom: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)  # Temp reordered
     # reactions_total_count_custom: Mapped[Optional[int]]  # Temp reordered
     # reactions_emoticon_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temp reordered
     # reactions_emoticon_count_custom: Mapped[Optional[int]]  # Temp reordered
     # reactions_doc_id_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temp reordered
     # reactions_doc_id_count_custom: Mapped[Optional[int]]  # Temp reordered
-    # ##################################################################
     # ############ ADDITIONAL: MESSAGE EDITED FIELDS (end) #############
-    # ##################################################################
 
-    # ##################################################################
     # ########## ADDITIONAL: MESSAGE DELETED FIELDS (start) ############
-    # ##################################################################
     ev_orig_upd_messages: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     ev_deleted_id: Mapped[Optional[int]] = mapped_column(BigInteger)
     ev_deleted_ids: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
-    # ##################################################################
     # ########### ADDITIONAL: MESSAGE DELETED FIELDS (end) #############
-    # ##################################################################
+
+    # ########## ADDITIONAL: MESSAGE READ FIELDS (start) ############
+    ev_outbox: Mapped[Optional[bool]]
+    ev_contents: Mapped[Optional[bool]]
+    ev_max_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+
+    ev_orig_upd_peer_channel_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_orig_upd_peer_chat_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_orig_upd_peer_user_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    # ########### ADDITIONAL: MESSAGE READ FIELDS (end) #############
