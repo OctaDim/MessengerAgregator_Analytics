@@ -20,14 +20,14 @@ class BaseEventData(BaseModel):
 
 
 class NewMessageData(BaseEventData):
-    event_type: Literal["NewMessage"]
+    event_type: Literal["NewMessage"]  # discriminator="NewMessage"
 
     ev_message_message: Optional[str]
     ev_message_text: Optional[str]
     ev_message_raw_text: Optional[str]
 
-    ev_original_update_pts: Optional[int]
-    ev_original_update_pts_count: Optional[int]
+    ev_orig_upd_pts: Optional[int]
+    ev_orig_upd_pts_count: Optional[int]
     # ev__client:  # obj
 
     ev_id: Optional[int]
@@ -232,7 +232,7 @@ class NewMessageData(BaseEventData):
 
 
 class MessageEditedData(NewMessageData):
-    event_type: Literal["MessageEdited"]
+    event_type: Literal["MessageEdited"]  # discriminator="MessageEdited"
 
     ev_edit_date: Optional[datetime]
 
@@ -254,25 +254,47 @@ class MessageEditedData(NewMessageData):
 
 
 class MessageReadData(BaseEventData):
-    event_type: Literal["MessageRead"]
+    event_type: Literal["MessageRead"]  # discriminator="MessageRead"
+
 
 class MessageDeletedData(BaseEventData):
-    event_type: Literal["MessageDeleted"]
+    event_type: Literal["MessageDeleted"]  # discriminator="MessageDeleted"
+
+    ev_orig_upd_messages: Optional[list]  # = Field(default_factory=list)
+    ev_orig_upd_pts: Optional[int]
+    ev_orig_upd_pts_count: Optional[int]
+    # ev__client:  # obj
+
+    ev_deleted_id: Optional[int]
+    ev_deleted_ids: Optional[list]  # = Field(default_factory=list)
+
+    ev_is_private: Optional[bool]
+    ev_is_group: Optional[bool]
+    ev_is_channel: Optional[bool]
+    # ev_chat:  # obj
+    ev_chat_id: Optional[int]
+    # ev_chat__client:  # obj
+
 
 class ChatActionData(BaseEventData):
-    event_type: Literal["ChatAction"]
+    event_type: Literal["ChatAction"]  # discriminator="ChatAction"
+
 
 class UserUpdateData(BaseEventData):
-    event_type: Literal["UserUpdate"]
+    event_type: Literal["UserUpdate"]  # discriminator="UserUpdate"
+
 
 class CallbackQueryData(BaseEventData):
-    event_type: Literal["CallbackQuery"]
+    event_type: Literal["CallbackQuery"]  # discriminator="CallbackQuery"
+
 
 class InlineQueryData(BaseEventData):
-    event_type: Literal["InlineQuery"]
+    event_type: Literal["InlineQuery"]  # discriminator="InlineQuery"
+
 
 class RawData(BaseEventData):
     event_type: Literal["Raw"]
+
 
 class GlobalApiWebhookData(BaseModel):
     event_data: Optional[
@@ -290,7 +312,7 @@ class GlobalApiWebhookData(BaseModel):
 
     @model_validator(mode="after")
     def validate_basemodel_obj(self) -> Self:
-        # Validation in router to fix recursion error
+        # # Validation in router to fix recursion error
         # validate_log_pydantic_obj_errors(PydanticBaseModel=self.__class__,
         #                                  request_json=self.model_dump())
         has_group_1_flag = all([self.event_data, self.source])
