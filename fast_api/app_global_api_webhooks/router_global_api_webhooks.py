@@ -22,7 +22,8 @@ from utils_common.get_log_request_data import (
     log_all_request_data)
 from utils_common.validate_log_pydantic_errors import (
     validate_log_pydantic_obj_errors)
-from utils_specific.get_additional_event_data import get_pgs_msg_event_data
+from utils_specific.get_additional_event_data import (
+    get_pgs_msg_event_data)
 
 base_url_name = GLOBAL_API_OPTIONS.WEBHOOKS_GLOBAL_API_URL_BASE_NAME
 router_global_api_receive_webhooks = APIRouter(prefix=f"/{base_url_name}",
@@ -123,7 +124,7 @@ async def receive_global_api_webhooks(
                         new_events_data_list.append(event_data_dict)
             elif event_type == "MessageRead":
                 # elif isinstance(event_data, MessageReadData):
-                read_msg_ev_delay = GLOBAL_API_WEBHOOKS_OPTIONS.SAVE_MSG_READ_EVENT_DELAY
+                read_msg_ev_delay = GLOBAL_API_WEBHOOKS_OPTIONS.SAVE_READ_EVENT_DELAY_SEC
                 await asyncio.sleep(read_msg_ev_delay)  # Delay to catch new msg id
                 custom_action = GLOBAL_API_WEBHOOKS_OPTIONS.READ_MSG_ACTION_STR
                 pgs_msg_obj = await find_msg_obj_by_ev_id_qry(
