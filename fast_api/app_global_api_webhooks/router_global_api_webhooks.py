@@ -22,6 +22,7 @@ from utils_common.get_log_request_data import (
     log_all_request_data)
 from utils_common.validate_log_pydantic_errors import (
     validate_log_pydantic_obj_errors)
+from utils_specific.get_additional_event_data import get_pgs_msg_event_data
 
 base_url_name = GLOBAL_API_OPTIONS.WEBHOOKS_GLOBAL_API_URL_BASE_NAME
 router_global_api_receive_webhooks = APIRouter(prefix=f"/{base_url_name}",
@@ -114,24 +115,10 @@ async def receive_global_api_webhooks(
                         event_data_dict.update({"action": custom_action})
                         new_events_data_list.append(event_data_dict)
                     else:
-                        pgs_msg_msg = pgs_cur_msg_obj.ev_message_message
-                        pgs_msg_txt = pgs_cur_msg_obj.ev_message_text
-                        pgs_raw_txt = pgs_cur_msg_obj.ev_message_raw_text
-                        pgs_chat_title = pgs_cur_msg_obj.ev_chat_title
-                        pgs_sndr_username = pgs_cur_msg_obj.ev_sender_username
-                        pgs_sndr_first_name = pgs_cur_msg_obj.ev_sender_first_name
-                        pgs_sndr_last_name = pgs_cur_msg_obj.ev_sender_last_name
-                        pgs_sndr_bot = pgs_cur_msg_obj.ev_sender_bot
-                        additional_data = {
-                            "action": custom_action,
-                            "ev_message_message": pgs_msg_msg,
-                            "ev_message_text": pgs_msg_txt,
-                            "ev_message_raw_text": pgs_raw_txt,
-                            "ev_chat_title": pgs_chat_title,
-                            "ev_sender_username": pgs_sndr_username,
-                            "ev_sender_first_name": pgs_sndr_first_name,
-                            "ev_sender_last_name": pgs_sndr_last_name,
-                            "ev_sender_bot": pgs_sndr_bot, }
+                        additional_data = await get_pgs_msg_event_data(
+                            pgs_message_obj=pgs_cur_msg_obj,
+                            event_type=event_type)
+                        additional_data.update({"action": custom_action})
                         event_data_dict.update(additional_data)
                         new_events_data_list.append(event_data_dict)
             elif event_type == "MessageRead":
@@ -146,24 +133,10 @@ async def receive_global_api_webhooks(
                     event_data_dict.update({"action": custom_action})
                     new_events_data_list = [event_data_dict]
                 else:
-                    pgs_msg_msg = pgs_msg_obj.ev_message_message
-                    pgs_msg_txt = pgs_msg_obj.ev_message_text
-                    pgs_raw_txt = pgs_msg_obj.ev_message_raw_text
-                    pgs_chat_title = pgs_msg_obj.ev_chat_title
-                    pgs_sndr_username = pgs_msg_obj.ev_sender_username
-                    pgs_sndr_first_name = pgs_msg_obj.ev_sender_first_name
-                    pgs_sndr_last_name = pgs_msg_obj.ev_sender_last_name
-                    pgs_sndr_bot = pgs_msg_obj.ev_sender_bot
-                    additional_data = {
-                        "action": custom_action,
-                        "ev_message_message": pgs_msg_msg,
-                        "ev_message_text": pgs_msg_txt,
-                        "ev_message_raw_text": pgs_raw_txt,
-                        "ev_chat_title": pgs_chat_title,
-                        "ev_sender_username": pgs_sndr_username,
-                        "ev_sender_first_name": pgs_sndr_first_name,
-                        "ev_sender_last_name": pgs_sndr_last_name,
-                        "ev_sender_bot": pgs_sndr_bot, }
+                    additional_data = await get_pgs_msg_event_data(
+                        pgs_message_obj=pgs_msg_obj,
+                        event_type=event_type)
+                    additional_data.update({"action": custom_action})
                     event_data_dict.update(additional_data)
                     new_events_data_list = [event_data_dict]
 
