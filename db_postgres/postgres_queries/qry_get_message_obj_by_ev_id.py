@@ -13,12 +13,12 @@ from db_postgres.postgres_queries_utils.get_model_records_flex_query import (
 
 async def find_msg_obj_by_ev_id_qry(
         ongoing_session: AsyncSession,
-        message_event_id: int,
+        message_ev_id: int,
 ) -> Row[tuple[Any, ...]] | None:
-    if not message_event_id:
+    if not message_ev_id:
         return None
 
-    filter_fields = {"ev_id": message_event_id}
+    filter_fields = {"ev_id": message_ev_id}
 
     messages_objs = await get_model_rows_flex_query(
         orm_model_class=GlobalWebhookModel,
@@ -32,7 +32,7 @@ async def find_msg_obj_by_ev_id_qry(
             message_obj = messages_objs[0]
             return message_obj
     except Exception as error:
-        log_text = (f"Finding message obj by ev_id [ERROR]:\n"
+        log_text = (f"Finding last message obj by ev_id field [ERROR]:\n"
                     f"error: {error}\n"
                     f"orm_model_class: {GlobalWebhookModel}\n"
                     f"filter_fields: {filter_fields}\n")
