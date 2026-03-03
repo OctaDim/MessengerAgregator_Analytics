@@ -11,19 +11,20 @@ from db_postgres.postgres_conn.postgres_session import (
     PgsAsyncSession)
 from db_postgres.postgres_models.webhook_global_model import (
     GlobalWebhookModel)
-from db_postgres.postgres_queries.qry_get_messages_list_by_ev_ids import (
+from db_postgres.postgres_queries.qry_get_chat_obj_by_chat_id import find_chat_obj_by_chat_id_qry
+from db_postgres.postgres_queries.qry_get_message_obj_by_ev_id import (
     find_msg_obj_by_ev_id_qry)
 from db_postgres.postgres_queries_utils.save_new_model_object import (
     save_new_model_object_qry)
 from fast_api.app_auth.funcs_auth import verify_prod_username_password
-from fast_api.app_global_api_webhooks.scheme_global_api_webhooks import (
+from fast_api.app_global_api_webhooks.router_schemes.scheme_global_api_webhooks import (
     GlobalApiWebhookData)
 from utils_common.get_log_request_data import (
     log_all_request_data)
 from utils_common.validate_log_pydantic_errors import (
     validate_log_pydantic_obj_errors)
 from utils_specific.get_additional_event_data import (
-    get_pgs_msg_event_data)
+    get_msg_deleted_event_add_data, get_msg_read_event_add_data, get_chat_action_event_add_data)
 
 base_url_name = GLOBAL_API_OPTIONS.WEBHOOKS_GLOBAL_API_URL_BASE_NAME
 router_global_api_receive_webhooks = APIRouter(prefix=f"/{base_url_name}",
@@ -111,16 +112,16 @@ async def receive_global_api_webhooks(
                 for cur_id in event_data.ev_deleted_ids:  # Deleted ids
                     pgs_cur_msg_obj = await find_msg_obj_by_ev_id_qry(
                         ongoing_session=pgs_session,
-                        message_event_id=cur_id)
+                        message_ev_id=cur_id)
                     if not pgs_cur_msg_obj:
                         event_data_dict.update({"action": custom_action})
                         new_events_data_list.append(event_data_dict)
                     else:
-                        additional_data = await get_pgs_msg_event_data(
+                        addit_data = await get_msg_deleted_event_add_data(
                             pgs_message_obj=pgs_cur_msg_obj,
                             event_type=event_type)
-                        additional_data.update({"action": custom_action})
-                        event_data_dict.update(additional_data)
+                        addit_data.update({"action": custom_action})
+                        event_data_dict.update(addit_data)
                         new_events_data_list.append(event_data_dict)
             elif event_type == "MessageRead":
                 # elif isinstance(event_data, MessageReadData):
@@ -131,19 +132,36 @@ async def receive_global_api_webhooks(
                     await asyncio.sleep(cur_index * find_old_msg_delay)
                     pgs_msg_obj = await find_msg_obj_by_ev_id_qry(
                         ongoing_session=pgs_session,
-                        message_event_id=event_data.ev_max_id)
+                        message_ev_id=event_data.ev_max_id)
                     if pgs_msg_obj:
                         break
                 if not pgs_msg_obj:
                     event_data_dict.update({"action": custom_action})
                     new_events_data_list = [event_data_dict]
                 else:
-                    additional_data = await get_pgs_msg_event_data(
+                    addit_data = await get_msg_read_event_add_data(
                         pgs_message_obj=pgs_msg_obj,
                         event_type=event_type)
-                    additional_data.update({"action": custom_action})
-                    event_data_dict.update(additional_data)
+                    addit_data.update({"action": custom_action})
+                    event_data_dict.update(addit_data)
                     new_events_data_list = [event_data_dict]
+            elif event_type == "ChatAction":
+                custom_action = GLOBAL_API_WEBHOOKS_OPTIONS.CHAT_ACTION_ACTION_STR
+                pgs_msg_obj = await find_chat_obj_by_chat_id_qry(
+                        ongoing_session=pgs_session,
+                        chat_ev_chat_id=event_data.ev_chat_id)
+                if not pgs_msg_obj:
+                    event_data_dict.update({"action": custom_action})
+                    new_events_data_list = [event_data_dict]
+                else:
+                    addit_data = await get_chat_action_event_add_data(
+                        pgs_message_obj=pgs_msg_obj,
+                        event_type=event_type)
+                    event_data_dict.update({"action": custom_action})
+                    event_data_dict.update(addit_data)
+                    new_events_data_list = [event_data_dict]
+            else:
+                new_events_data_list = []
 
             for cur_event_data in new_events_data_list:
                 await save_new_model_object_qry(

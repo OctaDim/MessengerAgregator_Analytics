@@ -250,7 +250,7 @@ class GLOBAL_API_WEBHOOKS_OPTIONS:
         # "UserUpdate",
         # "InlineQuery",
         # "CallbackQuery",
-        # "Raw"
+        # "Raw",
     )
     LOG_WEBHOOK_INCOMING_REQ_DATA: bool = True
     LOG_WEBHOOK_INCOMING_OBJ_DATA: bool = True
@@ -259,5 +259,6 @@ class GLOBAL_API_WEBHOOKS_OPTIONS:
     EDIT_MSG_ACTION_STR: str = "изменено"
     DELETE_MSG_ACTION_STR: str = "удалено"
     READ_MSG_ACTION_STR: str = "просмотрено"
+    CHAT_ACTION_ACTION_STR: str = "действие чата"
     READ_EVENT_FIND_OLD_MSG_ATTEMPTS: int = 5
     READ_EVENT_FIND_OLD_MSG_DELAY_SEC: float = 1.0

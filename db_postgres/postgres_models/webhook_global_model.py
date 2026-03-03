@@ -17,9 +17,11 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     # action: Mapped[Optional[str]] = mapped_column(String(15))  # Temp reordered
 
     # ######### COMFORTABLE VIEW FIELDS ORDER (start) ##################
+    # ##################################################################
     event_type: Mapped[Optional[str]] = mapped_column(String(15))
     action: Mapped[Optional[str]] = mapped_column(String(15))
     ev_chat_title: Mapped[Optional[str]]
+    old_chat_title_custom: Mapped[Optional[str]]
     ev_message_message: Mapped[Optional[str]] = mapped_column(Text)
     ev_sender_username: Mapped[Optional[str]]
     ev_sender_first_name: Mapped[Optional[str]]
@@ -37,6 +39,7 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     # ########## COMFORTABLE VIEW FIELDS ORDER (end) ###################
 
     # ############### NEW MESSAGE FIELDS (start) #######################
+    # ##################################################################
     # event_type: Mapped[Optional[str]] = mapped_column(String(15))  # Temp reordered
     web_account_id: Mapped[Optional[str]] = mapped_column(String(10))
     web_account_username: Mapped[Optional[str]] = mapped_column(String(30))
@@ -247,6 +250,7 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     # ################# NEW MESSAGE FIELDS (end) #######################
 
     # ########### ADDITIONAL: MESSAGE EDITED FIELDS (start) ############
+    # ##################################################################
     # reactions_total_custom: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)  # Temp reordered
     # reactions_total_count_custom: Mapped[Optional[int]]  # Temp reordered
     # reactions_emoticon_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temp reordered
@@ -256,12 +260,14 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     # ############ ADDITIONAL: MESSAGE EDITED FIELDS (end) #############
 
     # ########## ADDITIONAL: MESSAGE DELETED FIELDS (start) ############
+    # ##################################################################
     ev_orig_upd_messages: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     ev_deleted_id: Mapped[Optional[int]] = mapped_column(BigInteger)
     ev_deleted_ids: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     # ########### ADDITIONAL: MESSAGE DELETED FIELDS (end) #############
 
-    # ########## ADDITIONAL: MESSAGE READ FIELDS (start) ############
+    # ########## ADDITIONAL: MESSAGE READ FIELDS (start) ###############
+    # ##################################################################
     ev_outbox: Mapped[Optional[bool]]
     ev_contents: Mapped[Optional[bool]]
     ev_max_id: Mapped[Optional[int]] = mapped_column(BigInteger)
@@ -270,3 +276,50 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     ev_orig_upd_peer_chat_id: Mapped[Optional[int]] = mapped_column(BigInteger)
     ev_orig_upd_peer_user_id: Mapped[Optional[int]] = mapped_column(BigInteger)
     # ########### ADDITIONAL: MESSAGE READ FIELDS (end) #############
+
+    # ############ ADDITIONAL: CHAT ACTION FIELDS (start) ##############
+    # ##################################################################
+    ev_new_pin: Mapped[Optional[bool]]
+    ev_new_photo: Mapped[Optional[bool]]
+    ev_user_added: Mapped[Optional[bool]]
+    ev_user_joined: Mapped[Optional[bool]]
+    ev_user_left: Mapped[Optional[bool]]
+    ev_user_kicked: Mapped[Optional[bool]]
+    ev_unpin: Mapped[Optional[bool]]
+    ev_created: Mapped[Optional[bool]]
+
+    ev_new_title: Mapped[Optional[str]]
+    ev_new_score: Mapped[Optional[int]]
+
+    ev_act_msg_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_act_msg_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    ev_act_msg_action_users: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    ev_act_msg_action_user_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+
+    ev_act_msg_out: Mapped[Optional[bool]]
+    ev_act_msg_mentioned: Mapped[Optional[bool]]
+    ev_act_msg_media_unread: Mapped[Optional[bool]]
+    ev_act_msg_reactions_are_possible: Mapped[Optional[bool]]
+    ev_act_msg_silent: Mapped[Optional[bool]]
+    ev_act_msg_post: Mapped[Optional[bool]]
+    ev_act_msg_legacy: Mapped[Optional[bool]]
+    ev_act_msg_ttl_period: Mapped[Optional[int]] = mapped_column(BigInteger)
+
+    ev_act_msg_peer_id_channel_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_act_msg_peer_id_chat_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_act_msg_peer_id_user_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+
+    ev_act_msg_from_id_channel_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_act_msg_from_id_chat_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_act_msg_from_id_user_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+
+    ev_act_msg_saved_peer_id_channel_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_act_msg_saved_peer_id_chat_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_act_msg_saved_peer_id_user_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+
+    ev_orig_upd_message_action_users: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    ev_orig_upd_message_action_user_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+
+    # old_chat_title_custom: : Mapped[Optional[str]]  # Temp reordered
+    # ############# ADDITIONAL: CHAT ACTION FIELDS (end) ###############
