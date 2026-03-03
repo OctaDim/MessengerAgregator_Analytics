@@ -242,10 +242,10 @@ class GLOBAL_API_OPTIONS:
 class GLOBAL_API_WEBHOOKS_OPTIONS:
     # EVENT_TYPES_SKIP_LIST: tuple[str] = ("ChatAction",)
     EVENT_TYPES_SKIP_LIST: tuple[str] = (
-        "NewMessage",
-        "MessageRead",
-        "MessageDeleted",
-        "MessageEdited",
+        # "NewMessage",
+        # "MessageRead",
+        # "MessageDeleted",
+        # "MessageEdited",
         # "ChatAction",
         # "UserUpdate",
         # "InlineQuery",
@@ -259,4 +259,5 @@ class GLOBAL_API_WEBHOOKS_OPTIONS:
     EDIT_MSG_ACTION_STR: str = "изменено"
     DELETE_MSG_ACTION_STR: str = "удалено"
     READ_MSG_ACTION_STR: str = "просмотрено"
-    SAVE_READ_EVENT_DELAY_SEC: float = 1.0
+    READ_EVENT_FIND_OLD_MSG_ATTEMPTS: int = 5
+    READ_EVENT_FIND_OLD_MSG_DELAY_SEC: float = 1.0

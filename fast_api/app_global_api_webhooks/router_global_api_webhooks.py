@@ -124,12 +124,16 @@ async def receive_global_api_webhooks(
                         new_events_data_list.append(event_data_dict)
             elif event_type == "MessageRead":
                 # elif isinstance(event_data, MessageReadData):
-                read_msg_ev_delay = GLOBAL_API_WEBHOOKS_OPTIONS.SAVE_READ_EVENT_DELAY_SEC
-                await asyncio.sleep(read_msg_ev_delay)  # Delay to catch new msg id
                 custom_action = GLOBAL_API_WEBHOOKS_OPTIONS.READ_MSG_ACTION_STR
-                pgs_msg_obj = await find_msg_obj_by_ev_id_qry(
-                    ongoing_session=pgs_session,
-                    message_event_id=event_data.ev_max_id)
+                find_old_msg_attempts = GLOBAL_API_WEBHOOKS_OPTIONS.READ_EVENT_FIND_OLD_MSG_ATTEMPTS
+                find_old_msg_delay = GLOBAL_API_WEBHOOKS_OPTIONS.READ_EVENT_FIND_OLD_MSG_DELAY_SEC
+                for cur_index in range(find_old_msg_attempts):
+                    await asyncio.sleep(cur_index * find_old_msg_delay)
+                    pgs_msg_obj = await find_msg_obj_by_ev_id_qry(
+                        ongoing_session=pgs_session,
+                        message_event_id=event_data.ev_max_id)
+                    if pgs_msg_obj:
+                        break
                 if not pgs_msg_obj:
                     event_data_dict.update({"action": custom_action})
                     new_events_data_list = [event_data_dict]
