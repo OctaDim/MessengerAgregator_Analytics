@@ -255,10 +255,12 @@ class GLOBAL_API_WEBHOOKS_OPTIONS:
     LOG_WEBHOOK_INCOMING_REQ_DATA: bool = True
     LOG_WEBHOOK_INCOMING_OBJ_DATA: bool = True
     LOG_WEBHOOK_POSTGRES_SAVE_DATA: bool = True
-    NEW_MSG_ACTION_STR: str = "новое"
-    EDIT_MSG_ACTION_STR: str = "изменено"
-    DELETE_MSG_ACTION_STR: str = "удалено"
-    READ_MSG_ACTION_STR: str = "просмотрено"
-    CHAT_ACTION_ACTION_STR: str = "действие чата"
+    NEW_MSG_ACTION_STR: str = "new"
+    EDIT_MSG_ACTION_STR: str = "edited"
+    DELETE_MSG_ACTION_STR: str = "deleted"
+    READ_MSG_ACTION_STR: str = "read"
+    CHAT_ACTION_ACTION_STR: str = "chat action"
+    USER_UPDATE_ACTION_STR: str = "user action"
     READ_EVENT_FIND_OLD_MSG_ATTEMPTS: int = 5
     READ_EVENT_FIND_OLD_MSG_DELAY_SEC: float = 1.0
+    DELETED_MESSAGE_PREFIX_STR: str = "[XXX]"
