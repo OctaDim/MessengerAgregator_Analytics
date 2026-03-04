@@ -21,21 +21,31 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     event_type: Mapped[Optional[str]] = mapped_column(String(15))
     action: Mapped[Optional[str]] = mapped_column(String(15))
     ev_chat_title: Mapped[Optional[str]]
-    old_chat_title_custom: Mapped[Optional[str]]
+    old_chat_title_cst: Mapped[Optional[str]]
     ev_message_message: Mapped[Optional[str]] = mapped_column(Text)
-    ev_sender_username: Mapped[Optional[str]]
-    ev_sender_first_name: Mapped[Optional[str]]
-    ev_sender_last_name: Mapped[Optional[str]]
-    ev_sender_bot: Mapped[Optional[bool]]
+    old_message_message_cst: Mapped[Optional[str]] = mapped_column(Text)
+
+    username_cst: Mapped[Optional[str]]
+    first_name_cst: Mapped[Optional[str]]
+    last_name_cst: Mapped[Optional[str]]
+    phone_cst: Mapped[Optional[str]]
+    bot_cst: Mapped[Optional[bool]]
+
+    tlt_sender_username: Mapped[Optional[str]]
+    tlt_sender_first_name: Mapped[Optional[str]]
+    tlt_sender_last_name: Mapped[Optional[str]]
+    tlt_sender_phone: Mapped[Optional[str]]
+    tlt_sender_bot: Mapped[Optional[bool]]
+
     ev_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     ev_edit_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     ev_delete_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
-    reactions_total_custom: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
-    reactions_total_count_custom: Mapped[Optional[int]]
-    reactions_emoticon_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
-    reactions_emoticon_count_custom: Mapped[Optional[int]]
-    reactions_doc_id_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
-    reactions_doc_id_count_custom: Mapped[Optional[int]]
+    reactions_total_cst: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    reactions_total_count_cst: Mapped[Optional[int]]
+    reactions_emoticon_cst: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    reactions_emoticon_count_cst: Mapped[Optional[int]]
+    reactions_doc_id_cst: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    reactions_doc_id_count_cst: Mapped[Optional[int]]
     # ########## COMFORTABLE VIEW FIELDS ORDER (end) ###################
 
     # ############### NEW MESSAGE FIELDS (start) #######################
@@ -241,22 +251,23 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     ev_file_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     ev_file_mime_type: Mapped[Optional[str]]
 
-    # ev_sender_username: Mapped[Optional[str]]  # Temp reordered
-    # ev_sender_first_name: Mapped[Optional[str]]  # Temp reordered
-    # ev_sender_last_name: Mapped[Optional[str]]  # Temp reordered
-    # ev_sender_bot: Mapped[Optional[bool]]  # Temp reordered
+    # tlt_sender_username: Mapped[Optional[str]]  # Temp reordered
+    # tlt_sender_first_name: Mapped[Optional[str]]  # Temp reordered
+    # tlt_sender_last_name: Mapped[Optional[str]]  # Temp reordered
+    # tlt_sender_phone: Mapped[Optional[str]]  # Temp reordered
+    # tlt_sender_bot: Mapped[Optional[bool]]  # Temp reordered
 
     # ev_chat_title: Mapped[Optional[str]]  # Temp reordered
     # ################# NEW MESSAGE FIELDS (end) #######################
 
     # ########### ADDITIONAL: MESSAGE EDITED FIELDS (start) ############
     # ##################################################################
-    # reactions_total_custom: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)  # Temp reordered
-    # reactions_total_count_custom: Mapped[Optional[int]]  # Temp reordered
-    # reactions_emoticon_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temp reordered
-    # reactions_emoticon_count_custom: Mapped[Optional[int]]  # Temp reordered
-    # reactions_doc_id_custom: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temp reordered
-    # reactions_doc_id_count_custom: Mapped[Optional[int]]  # Temp reordered
+    # reactions_total_cst: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)  # Temp reordered
+    # reactions_total_count_cst: Mapped[Optional[int]]  # Temp reordered
+    # reactions_emoticon_cst: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temp reordered
+    # reactions_emoticon_count_cst: Mapped[Optional[int]]  # Temp reordered
+    # reactions_doc_id_cst: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Temp reordered
+    # reactions_doc_id_count_cst: Mapped[Optional[int]]  # Temp reordered
     # ############ ADDITIONAL: MESSAGE EDITED FIELDS (end) #############
 
     # ########## ADDITIONAL: MESSAGE DELETED FIELDS (start) ############
@@ -321,5 +332,15 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     ev_orig_upd_message_action_users: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     ev_orig_upd_message_action_user_id: Mapped[Optional[int]] = mapped_column(BigInteger)
 
-    # old_chat_title_custom: : Mapped[Optional[str]]  # Temp reordered
+    # old_chat_title_cst: Mapped[Optional[str]]  # Temp reordered
+
+    # old_message_message_cst: Mapped[Optional[str]] = mapped_column(Text)  # Temp reordered
+    old_message_text_cst: Mapped[Optional[str]] = mapped_column(Text)
+    old_message_raw_text_cst: Mapped[Optional[str]] = mapped_column(Text)
+
+    # username_cst: Mapped[Optional[str]]  # Temp reordered
+    # first_name_cst: Mapped[Optional[str]]  # Temp reordered
+    # last_name_cst: Mapped[Optional[str]]  # Temp reordered
+    # phone_cst: Mapped[Optional[str]]  # Temp reordered
+    # bot_cst: Mapped[Optional[bool]]  # Temp reordered
     # ############# ADDITIONAL: CHAT ACTION FIELDS (end) ###############
