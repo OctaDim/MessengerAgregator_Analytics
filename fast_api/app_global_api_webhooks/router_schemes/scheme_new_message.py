@@ -202,10 +202,11 @@ class NewMessageData(BaseEventData):
     ev_file_date: Optional[datetime]
     ev_file_mime_type: Optional[str]
 
-    ev_sender_username: Optional[str]
-    ev_sender_first_name: Optional[str]
-    ev_sender_last_name: Optional[str]
-    ev_sender_bot: Optional[bool]
+    tlt_sender_username: Optional[str]
+    tlt_sender_first_name: Optional[str]
+    tlt_sender_last_name: Optional[str]
+    tlt_sender_phone: Optional[str]
+    tlt_sender_bot: Optional[bool]
 
     ev_chat_title: Optional[str]
 

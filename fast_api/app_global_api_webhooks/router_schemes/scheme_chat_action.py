@@ -63,6 +63,12 @@ class ChatActionData(BaseEventData):
     ev_chat_id: Optional[int]
     ev_chat_title: Optional[str]
 
+    username_cst: Optional[str]
+    first_name_cst: Optional[str]
+    last_name_cst: Optional[str]
+    phone_cst: Optional[str]
+    bot_cst: Optional[bool]
+
     @field_validator("ev_act_msg_date", mode="before")
     @classmethod
     def parse_ev_act_msg_date(cls, value: Any) -> datetime | None:

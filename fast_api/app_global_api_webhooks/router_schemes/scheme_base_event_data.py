@@ -12,3 +12,5 @@ class BaseEventData(BaseModel):
     tlt_account_type: str
     tlt_phone: Optional[str]
     tlt_bot_token: Optional[str]
+
+    action: Optional[str]
