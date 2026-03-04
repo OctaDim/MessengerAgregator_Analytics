@@ -11,7 +11,8 @@ from db_postgres.postgres_conn.postgres_session import (
     PgsAsyncSession)
 from db_postgres.postgres_models.webhook_global_model import (
     GlobalWebhookModel)
-from db_postgres.postgres_queries.qry_get_chat_obj_by_chat_id import find_chat_obj_by_chat_id_qry
+from db_postgres.postgres_queries.qry_get_chat_obj_by_chat_id import (
+    find_chat_obj_by_chat_id_qry)
 from db_postgres.postgres_queries.qry_get_message_obj_by_ev_id import (
     find_msg_obj_by_ev_id_qry)
 from db_postgres.postgres_queries_utils.save_new_model_object import (
@@ -24,7 +25,8 @@ from utils_common.get_log_request_data import (
 from utils_common.validate_log_pydantic_errors import (
     validate_log_pydantic_obj_errors)
 from utils_specific.get_additional_event_data import (
-    get_msg_deleted_event_add_data, get_msg_read_event_add_data, get_chat_action_event_add_data)
+    get_msg_deleted_addit_data, get_msg_read_addit_data, get_chat_action_addit_data,
+    get_msg_edited_addit_data, get_new_msg_addit_data)
 
 base_url_name = GLOBAL_API_OPTIONS.WEBHOOKS_GLOBAL_API_URL_BASE_NAME
 router_global_api_receive_webhooks = APIRouter(prefix=f"/{base_url_name}",
@@ -95,37 +97,42 @@ async def receive_global_api_webhooks(
                                    log_good_ops=log_pgs_good_ops
                                    ) as pgs_session:
             event_data_dict = event_data.model_dump()
-            if event_type == "NewMessage":
-                # isinstance(event_data, NewMessageData):
-                custom_action = GLOBAL_API_WEBHOOKS_OPTIONS.NEW_MSG_ACTION_STR
-                event_data_dict.update({"action": custom_action})
+            # NEW MESSAGE:
+            if event_type == "NewMessage":  # isinstance(event_data_dict, NewMessageData):
+                addit_data = await get_new_msg_addit_data(
+                    event_data_dict=event_data_dict,
+                    event_type=event_type)
+                event_data_dict.update(addit_data)
                 new_events_data_list = [event_data_dict]
-            elif event_type == "MessageEdited":
-                # elif isinstance(event_data, MessageEditedData):
-                custom_action = GLOBAL_API_WEBHOOKS_OPTIONS.EDIT_MSG_ACTION_STR
-                event_data_dict.update({"action": custom_action})
-                new_events_data_list = [event_data_dict]
-            elif event_type == "MessageDeleted":
-                # elif isinstance(event_data, MessageDeletedData):
-                custom_action = GLOBAL_API_WEBHOOKS_OPTIONS.DELETE_MSG_ACTION_STR
+            # MESSAGE EDITED:
+            elif event_type == "MessageEdited":  # isinstance(event_data_dict, MessageEditedData):
+                pgs_msg_obj = await find_msg_obj_by_ev_id_qry(
+                    ongoing_session=pgs_session,
+                    message_ev_id=event_data.ev_id)
+                if not pgs_msg_obj:
+                    new_events_data_list = [event_data_dict]
+                else:
+                    addit_data = await get_msg_edited_addit_data(
+                        pgs_object=pgs_msg_obj,
+                        event_data_dict=event_data_dict,
+                        event_type=event_type)
+                    event_data_dict.update(addit_data)
+                    new_events_data_list = [event_data_dict]
+            elif event_type == "MessageDeleted":  # isinstance(event_data_dict, MessageDeletedData):
                 new_events_data_list = []
                 for cur_id in event_data.ev_deleted_ids:  # Deleted ids
                     pgs_cur_msg_obj = await find_msg_obj_by_ev_id_qry(
                         ongoing_session=pgs_session,
                         message_ev_id=cur_id)
                     if not pgs_cur_msg_obj:
-                        event_data_dict.update({"action": custom_action})
                         new_events_data_list.append(event_data_dict)
                     else:
-                        addit_data = await get_msg_deleted_event_add_data(
-                            pgs_message_obj=pgs_cur_msg_obj,
+                        addit_data = await get_msg_deleted_addit_data(
+                            pgs_object=pgs_cur_msg_obj,
                             event_type=event_type)
-                        addit_data.update({"action": custom_action})
                         event_data_dict.update(addit_data)
                         new_events_data_list.append(event_data_dict)
-            elif event_type == "MessageRead":
-                # elif isinstance(event_data, MessageReadData):
-                custom_action = GLOBAL_API_WEBHOOKS_OPTIONS.READ_MSG_ACTION_STR
+            elif event_type == "MessageRead":  # elif isinstance(event_data_dict, MessageReadData):
                 find_old_msg_attempts = GLOBAL_API_WEBHOOKS_OPTIONS.READ_EVENT_FIND_OLD_MSG_ATTEMPTS
                 find_old_msg_delay = GLOBAL_API_WEBHOOKS_OPTIONS.READ_EVENT_FIND_OLD_MSG_DELAY_SEC
                 for cur_index in range(find_old_msg_attempts):
@@ -136,30 +143,28 @@ async def receive_global_api_webhooks(
                     if pgs_msg_obj:
                         break
                 if not pgs_msg_obj:
-                    event_data_dict.update({"action": custom_action})
                     new_events_data_list = [event_data_dict]
                 else:
-                    addit_data = await get_msg_read_event_add_data(
-                        pgs_message_obj=pgs_msg_obj,
+                    addit_data = await get_msg_read_addit_data(
+                        pgs_object=pgs_msg_obj,
                         event_type=event_type)
-                    addit_data.update({"action": custom_action})
                     event_data_dict.update(addit_data)
                     new_events_data_list = [event_data_dict]
-            elif event_type == "ChatAction":
-                custom_action = GLOBAL_API_WEBHOOKS_OPTIONS.CHAT_ACTION_ACTION_STR
-                pgs_msg_obj = await find_chat_obj_by_chat_id_qry(
-                        ongoing_session=pgs_session,
-                        chat_ev_chat_id=event_data.ev_chat_id)
-                if not pgs_msg_obj:
-                    event_data_dict.update({"action": custom_action})
+            elif event_type == "ChatAction":  # isinstance(event_data_dict, ChatActionData):
+                pgs_chat_obj = await find_chat_obj_by_chat_id_qry(
+                    ongoing_session=pgs_session,
+                    chat_ev_chat_id=event_data.ev_chat_id)
+                if not pgs_chat_obj:
                     new_events_data_list = [event_data_dict]
                 else:
-                    addit_data = await get_chat_action_event_add_data(
-                        pgs_message_obj=pgs_msg_obj,
+                    addit_data = await get_chat_action_addit_data(
+                        pgs_object=pgs_chat_obj,
+                        event_data_dict=event_data_dict,
                         event_type=event_type)
-                    event_data_dict.update({"action": custom_action})
                     event_data_dict.update(addit_data)
                     new_events_data_list = [event_data_dict]
+            elif event_type == "UserUpdate":  # isinstance(event_data_dict, MessageEditedData):
+                new_events_data_list = [event_data_dict]
             else:
                 new_events_data_list = []
 
