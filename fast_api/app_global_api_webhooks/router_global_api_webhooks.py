@@ -25,8 +25,9 @@ from utils_common.get_log_request_data import (
 from utils_common.validate_log_pydantic_errors import (
     validate_log_pydantic_obj_errors)
 from utils_specific.get_additional_event_data import (
-    get_msg_deleted_addit_data, get_msg_read_addit_data, get_chat_action_addit_data,
-    get_msg_edited_addit_data, get_new_msg_addit_data)
+    get_msg_deleted_addit_data, get_msg_read_addit_data,
+    get_chat_action_addit_data, get_msg_edited_addit_data,
+    get_new_msg_addit_data, get_user_update_addit_data)
 
 base_url_name = GLOBAL_API_OPTIONS.WEBHOOKS_GLOBAL_API_URL_BASE_NAME
 router_global_api_receive_webhooks = APIRouter(prefix=f"/{base_url_name}",
@@ -100,8 +101,7 @@ async def receive_global_api_webhooks(
             # NEW MESSAGE:
             if event_type == "NewMessage":  # isinstance(event_data_dict, NewMessageData):
                 addit_data = await get_new_msg_addit_data(
-                    event_data_dict=event_data_dict,
-                    event_type=event_type)
+                    event_data_dict=event_data_dict)
                 event_data_dict.update(addit_data)
                 new_events_data_list = [event_data_dict]
             # MESSAGE EDITED:
@@ -109,32 +109,26 @@ async def receive_global_api_webhooks(
                 pgs_msg_obj = await find_msg_obj_by_ev_id_qry(
                     ongoing_session=pgs_session,
                     message_ev_id=event_data.ev_id)
-                if not pgs_msg_obj:
-                    new_events_data_list = [event_data_dict]
-                else:
-                    addit_data = await get_msg_edited_addit_data(
-                        pgs_object=pgs_msg_obj,
-                        event_data_dict=event_data_dict,
-                        event_type=event_type)
-                    event_data_dict.update(addit_data)
-                    new_events_data_list = [event_data_dict]
+                addit_data = await get_msg_edited_addit_data(
+                    pgs_object=pgs_msg_obj,
+                    event_data_dict=event_data_dict)
+                event_data_dict.update(addit_data)
+                new_events_data_list = [event_data_dict]
             elif event_type == "MessageDeleted":  # isinstance(event_data_dict, MessageDeletedData):
                 new_events_data_list = []
                 for cur_id in event_data.ev_deleted_ids:  # Deleted ids
                     pgs_cur_msg_obj = await find_msg_obj_by_ev_id_qry(
                         ongoing_session=pgs_session,
                         message_ev_id=cur_id)
-                    if not pgs_cur_msg_obj:
-                        new_events_data_list.append(event_data_dict)
-                    else:
-                        addit_data = await get_msg_deleted_addit_data(
-                            pgs_object=pgs_cur_msg_obj,
-                            event_type=event_type)
-                        event_data_dict.update(addit_data)
-                        new_events_data_list.append(event_data_dict)
+                    addit_data = await get_msg_deleted_addit_data(
+                        pgs_object=pgs_cur_msg_obj,
+                        event_data_dict=event_data_dict)
+                    event_data_dict.update(addit_data)
+                    new_events_data_list.append(event_data_dict)
             elif event_type == "MessageRead":  # elif isinstance(event_data_dict, MessageReadData):
                 find_old_msg_attempts = GLOBAL_API_WEBHOOKS_OPTIONS.READ_EVENT_FIND_OLD_MSG_ATTEMPTS
                 find_old_msg_delay = GLOBAL_API_WEBHOOKS_OPTIONS.READ_EVENT_FIND_OLD_MSG_DELAY_SEC
+                pgs_msg_obj = None
                 for cur_index in range(find_old_msg_attempts):
                     await asyncio.sleep(cur_index * find_old_msg_delay)
                     pgs_msg_obj = await find_msg_obj_by_ev_id_qry(
@@ -142,28 +136,23 @@ async def receive_global_api_webhooks(
                         message_ev_id=event_data.ev_max_id)
                     if pgs_msg_obj:
                         break
-                if not pgs_msg_obj:
-                    new_events_data_list = [event_data_dict]
-                else:
-                    addit_data = await get_msg_read_addit_data(
-                        pgs_object=pgs_msg_obj,
-                        event_type=event_type)
-                    event_data_dict.update(addit_data)
-                    new_events_data_list = [event_data_dict]
+                addit_data = await get_msg_read_addit_data(
+                    pgs_object=pgs_msg_obj)
+                event_data_dict.update(addit_data)
+                new_events_data_list = [event_data_dict]
             elif event_type == "ChatAction":  # isinstance(event_data_dict, ChatActionData):
                 pgs_chat_obj = await find_chat_obj_by_chat_id_qry(
                     ongoing_session=pgs_session,
                     chat_ev_chat_id=event_data.ev_chat_id)
-                if not pgs_chat_obj:
-                    new_events_data_list = [event_data_dict]
-                else:
-                    addit_data = await get_chat_action_addit_data(
-                        pgs_object=pgs_chat_obj,
-                        event_data_dict=event_data_dict,
-                        event_type=event_type)
-                    event_data_dict.update(addit_data)
-                    new_events_data_list = [event_data_dict]
-            elif event_type == "UserUpdate":  # isinstance(event_data_dict, MessageEditedData):
+                addit_data = await get_chat_action_addit_data(
+                    pgs_object=pgs_chat_obj,
+                    event_data_dict=event_data_dict)
+                event_data_dict.update(addit_data)
+                new_events_data_list = [event_data_dict]
+            elif event_type == "UserUpdate":  # isinstance(event_data_dict, UserUpdateData):
+                addit_data = await get_user_update_addit_data(
+                    event_data_dict=event_data_dict)
+                event_data_dict.update(addit_data)
                 new_events_data_list = [event_data_dict]
             else:
                 new_events_data_list = []
