@@ -19,7 +19,7 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     # ######### COMFORTABLE VIEW FIELDS ORDER (start) ##################
     # ##################################################################
     event_type: Mapped[Optional[str]] = mapped_column(String(15))
-    action: Mapped[Optional[str]] = mapped_column(String(15))
+    action: Mapped[Optional[str]] = mapped_column(String(30))
     ev_chat_title: Mapped[Optional[str]]
     old_chat_title_cst: Mapped[Optional[str]]
     ev_message_message: Mapped[Optional[str]] = mapped_column(Text)
@@ -344,3 +344,23 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     # phone_cst: Mapped[Optional[str]]  # Temp reordered
     # bot_cst: Mapped[Optional[bool]]  # Temp reordered
     # ############# ADDITIONAL: CHAT ACTION FIELDS (end) ###############
+
+
+    # ########### ADDITIONAL: USER UPDATE FIELDS (start) ###############
+    # ##################################################################
+    ev_orig_upd_channel_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_orig_upd_chat_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_orig_upd_user_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+    ev_orig_upd_top_msg_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+
+    ev_user_id: Mapped[Optional[int]] = mapped_column(BigInteger)
+
+    ev_status_expires: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    ev_status_was_online: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    user_username: Mapped[Optional[str]]
+    user_first_name: Mapped[Optional[str]]
+    user_last_name: Mapped[Optional[str]]
+    user_phone: Mapped[Optional[str]]
+    user_bot: Mapped[Optional[bool]]
+    # ############# ADDITIONAL: USER UPDATE FIELDS (end) ###############
