@@ -261,6 +261,7 @@ class GLOBAL_API_WEBHOOKS_OPTIONS:
     READ_MSG_ACTION_STR: str = "read"
     CHAT_ACTION_ACTION_STR: str = "chat action"
     USER_UPDATE_ACTION_STR: str = "user action"
+
     READ_EVENT_FIND_OLD_MSG_ATTEMPTS: int = 5
     READ_EVENT_FIND_OLD_MSG_DELAY_SEC: float = 1.0
     DELETED_MESSAGE_PREFIX_STR: str = "[XXX]"
