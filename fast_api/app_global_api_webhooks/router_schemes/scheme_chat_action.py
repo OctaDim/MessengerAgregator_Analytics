@@ -63,11 +63,11 @@ class ChatActionData(BaseEventData):
     ev_chat_id: Optional[int]
     ev_chat_title: Optional[str]
 
-    username_cst: Optional[str]
-    first_name_cst: Optional[str]
-    last_name_cst: Optional[str]
-    phone_cst: Optional[str]
-    bot_cst: Optional[bool]
+    user_username: Optional[str]
+    user_first_name: Optional[str]
+    user_last_name: Optional[str]
+    user_phone: Optional[str]
+    user_bot: Optional[bool]
 
     @field_validator("ev_act_msg_date", mode="before")
     @classmethod
