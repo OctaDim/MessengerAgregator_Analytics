@@ -345,7 +345,6 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     # bot_cst: Mapped[Optional[bool]]  # Temp reordered
     # ############# ADDITIONAL: CHAT ACTION FIELDS (end) ###############
 
-
     # ########### ADDITIONAL: USER UPDATE FIELDS (start) ###############
     # ##################################################################
     ev_orig_upd_channel_id: Mapped[Optional[int]] = mapped_column(BigInteger)
@@ -364,3 +363,23 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     user_phone: Mapped[Optional[str]]
     user_bot: Mapped[Optional[bool]]
     # ############# ADDITIONAL: USER UPDATE FIELDS (end) ###############
+
+    # ######### ADDITIONAL: NEW EDIT MESSAGE FIELDS (start) ############
+    # ##################################################################
+    doc_attr_file_name: Mapped[Optional[str]]
+
+    doc_attr_duration: Mapped[Optional[int]]
+    doc_attr_voice: Mapped[Optional[bool]]
+    doc_attr_title: Mapped[Optional[str]]
+    doc_attr_performer: Mapped[Optional[str]]
+    doc_attr_waveform: Mapped[Optional[bytes]]
+
+    doc_attr_w: Mapped[Optional[int]]
+    doc_attr_h: Mapped[Optional[int]]
+    doc_attr_round_message: Mapped[Optional[bool]]
+    doc_attr_supports_streaming: Mapped[Optional[bool]]
+    doc_attr_nosound: Mapped[Optional[bool]]
+    doc_attr_preload_prefix_size: Mapped[Optional[int]]
+    doc_attr_video_start_ts: Mapped[Optional[float]]
+    doc_attr_video_codec: Mapped[Optional[str]]
+    # ########## ADDITIONAL: NEW EDIT MESSAGE FIELDS (утв) #############
