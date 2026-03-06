@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal, Optional
 
-from fast_api.app_global_api_webhooks.router_schemes.scheme_base_event_data import (
+from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_base_event_data import (
     BaseEventData)
 
 

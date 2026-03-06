@@ -3,7 +3,7 @@ from typing import Literal, Optional, Any
 
 from pydantic import field_validator
 
-from fast_api.app_global_api_webhooks.router_schemes.scheme_new_message import (
+from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_new_message import (
     NewMessageData)
 
 

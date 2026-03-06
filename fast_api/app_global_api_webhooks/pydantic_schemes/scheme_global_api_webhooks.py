@@ -2,23 +2,23 @@ from typing import Optional, Union, Literal, Self
 
 from pydantic import BaseModel, model_validator, Field
 
-from fast_api.app_global_api_webhooks.router_schemes.scheme_callback_query import (
+from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_callback_query import (
     CallbackQueryData)
-from fast_api.app_global_api_webhooks.router_schemes.scheme_chat_action import (
+from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_chat_action import (
     ChatActionData)
-from fast_api.app_global_api_webhooks.router_schemes.scheme_inline_query import (
+from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_inline_query import (
     InlineQueryData)
-from fast_api.app_global_api_webhooks.router_schemes.scheme_message_deleted import (
+from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_message_deleted import (
     MessageDeletedData)
-from fast_api.app_global_api_webhooks.router_schemes.scheme_message_edited import (
+from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_message_edited import (
     MessageEditedData)
-from fast_api.app_global_api_webhooks.router_schemes.scheme_message_read import (
+from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_message_read import (
     MessageReadData)
-from fast_api.app_global_api_webhooks.router_schemes.scheme_new_message import (
+from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_new_message import (
     NewMessageData)
-from fast_api.app_global_api_webhooks.router_schemes.scheme_raw_event import (
+from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_raw_event import (
     RawData)
-from fast_api.app_global_api_webhooks.router_schemes.scheme_user_update import (
+from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_user_update import (
     UserUpdateData)
 
 

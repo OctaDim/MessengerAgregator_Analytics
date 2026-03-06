@@ -18,7 +18,7 @@ from db_postgres.postgres_queries.qry_get_message_obj_by_ev_id import (
 from db_postgres.postgres_queries_utils.save_new_model_object import (
     save_new_model_object_qry)
 from fast_api.app_auth.funcs_auth import verify_prod_username_password
-from fast_api.app_global_api_webhooks.router_schemes.scheme_global_api_webhooks import (
+from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_global_api_webhooks import (
     GlobalApiWebhookData)
 from utils_common.get_log_request_data import (
     log_all_request_data)
