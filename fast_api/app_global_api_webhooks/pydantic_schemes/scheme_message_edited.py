@@ -12,12 +12,12 @@ class MessageEditedData(NewMessageData):
 
     ev_edit_date: Optional[datetime]
 
-    reactions_total_cst: Optional[dict]
-    reactions_total_count_cst: Optional[int]
-    reactions_emoticon_cst: Optional[list]
-    reactions_emoticon_count_cst: Optional[int]
-    reactions_doc_id_cst: Optional[list]
-    reactions_doc_id_count_cst: Optional[int]
+    reactions_total_cst: Optional[dict] = None
+    reactions_total_count_cst: Optional[int] = None
+    reactions_emoticon_cst: Optional[list] = None
+    reactions_emoticon_count_cst: Optional[int] = None
+    reactions_doc_id_cst: Optional[list] = None
+    reactions_doc_id_count_cst: Optional[int] = None
 
     @field_validator("ev_edit_date", mode="before")
     @classmethod

@@ -202,13 +202,30 @@ class NewMessageData(BaseEventData):
     ev_file_date: Optional[datetime]
     ev_file_mime_type: Optional[str]
 
-    tlt_sender_username: Optional[str]
-    tlt_sender_first_name: Optional[str]
-    tlt_sender_last_name: Optional[str]
-    tlt_sender_phone: Optional[str]
-    tlt_sender_bot: Optional[bool]
-
     ev_chat_title: Optional[str]
+
+    tlt_sender_username: Optional[str] = None
+    tlt_sender_first_name: Optional[str] = None
+    tlt_sender_last_name: Optional[str] = None
+    tlt_sender_phone: Optional[str] = None
+    tlt_sender_bot: Optional[bool] = None
+
+    doc_attr_file_name: Optional[str] = None
+
+    doc_attr_duration: Optional[int] = None
+    doc_attr_voice: Optional[bool] = None
+    doc_attr_title: Optional[str] = None
+    doc_attr_performer: Optional[str] = None
+    doc_attr_waveform: Optional[bytes] = None
+
+    doc_attr_w: Optional[int] = None
+    doc_attr_h: Optional[int] = None
+    doc_attr_round_message: Optional[bool] = None
+    doc_attr_supports_streaming: Optional[bool] = None
+    doc_attr_nosound: Optional[bool] = None
+    doc_attr_preload_prefix_size: Optional[int] = None
+    doc_attr_video_start_ts: Optional[float] = None
+    doc_attr_video_codec: Optional[str] = None
 
     @field_validator("ev_date", mode="before")
     @classmethod

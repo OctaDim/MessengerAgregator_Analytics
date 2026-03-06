@@ -26,8 +26,8 @@ class UserUpdateData(BaseEventData):
     # ev__chat:  # ???
     ev_chat_id: Optional[int]
 
-    user_username: Optional[str]
-    user_first_name: Optional[str]
-    user_last_name: Optional[str]
-    user_phone: Optional[str]
-    user_bot: Optional[bool]
+    user_username: Optional[str] = None
+    user_first_name: Optional[str] = None
+    user_last_name: Optional[str] = None
+    user_phone: Optional[str] = None
+    user_bot: Optional[bool] = None
