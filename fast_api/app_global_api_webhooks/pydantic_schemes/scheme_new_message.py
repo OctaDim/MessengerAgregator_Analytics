@@ -136,9 +136,10 @@ class NewMessageData(BaseEventData):
     ev_media_photo_access_hash: Optional[int]
     ev_media_photo_file_reference: Optional[bytes]
     ev_media_photo_date: Optional[datetime]
-    # ev_media_photo_sizes:  # objs
-    # ev_media_video_sizes:  # objs
+    # ev_media_photo_sizes:  # list(objs)
+    ev_media_photo_dc_id: Optional[int]
     ev_media_photo_has_stickers: Optional[bool]
+    # ev_media_photo_video_sizes:  # list(objs)
 
     # ev_media_document:  # obj
     ev_media_document_ttl_seconds: Optional[int]
@@ -211,6 +212,7 @@ class NewMessageData(BaseEventData):
     tlt_sender_bot: Optional[bool] = None
 
     doc_attr_file_name: Optional[str] = None
+    file_name_cst: Optional[str] = None
 
     doc_attr_duration: Optional[int] = None
     doc_attr_voice: Optional[bool] = None

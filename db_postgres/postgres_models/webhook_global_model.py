@@ -31,6 +31,8 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     phone_cst: Mapped[Optional[str]]
     bot_cst: Mapped[Optional[bool]]
 
+    file_name_cst: Mapped[Optional[str]]
+
     tlt_sender_username: Mapped[Optional[str]]
     tlt_sender_first_name: Mapped[Optional[str]]
     tlt_sender_last_name: Mapped[Optional[str]]
@@ -185,9 +187,10 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     ev_media_photo_access_hash: Mapped[Optional[int]] = mapped_column(BigInteger)
     ev_media_photo_file_reference: Mapped[Optional[bytes]] = mapped_column(LargeBinary())
     ev_media_photo_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
-    # ev_media_photo_sizes:  # objs
-    # ev_media_video_sizes:  # objs
+    # ev_media_photo_sizes:  # list(objs)
+    ev_media_photo_dc_id: Mapped[Optional[int]]
     ev_media_photo_has_stickers: Mapped[Optional[bool]]
+    # ev_media_photo_video_sizes:  # list(objs)
 
     # ev_media_document:  # obj
     ev_media_document_ttl_seconds: Mapped[Optional[int]] = mapped_column(BigInteger)
@@ -367,6 +370,7 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     # ######### ADDITIONAL: NEW EDIT MESSAGE FIELDS (start) ############
     # ##################################################################
     doc_attr_file_name: Mapped[Optional[str]]
+    # file_name_cst: Mapped[Optional[str]]  # Temp reordered
 
     doc_attr_duration: Mapped[Optional[int]]
     doc_attr_voice: Mapped[Optional[bool]]
