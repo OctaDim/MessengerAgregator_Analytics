@@ -9,10 +9,10 @@ from fast_api.app_auth.scheme_auth import AuthData
 
 base_url_name = GLOBAL_API_OPTIONS.WEBHOOKS_GLOBAL_API_URL_BASE_NAME
 rtr_fastapi_health_check = APIRouter(prefix=f"/{base_url_name}",
-                                     tags=["TELEGRAM TLT ENDPOINTS"])
+                                     tags=["GLOBAL API ENDPOINTS"])
 
 
-@rtr_fastapi_health_check.post("/fastapi_health_check")
+@rtr_fastapi_health_check.post("/global_api_health_check")
 async def fastapi_health_check_router(
         auth_data: AuthData):
     await verify_auth_username_password(
