@@ -20,7 +20,7 @@ async def fastapi_health_check_router(
         password=auth_data.password)
 
     json_response = JSONResponse(
-        content={"message": "Telethon FastAPI health check [OK]",
+        content={"message": "Global Aggregator API health check [OK]",
                  "username": auth_data.username},
         status_code=status.HTTP_200_OK)
 
@@ -29,7 +29,7 @@ async def fastapi_health_check_router(
     green_clr = CONSOLE_COLORS.BRIGHT_GREEN
     reset_clr = CONSOLE_COLORS.RESET
     print(f"Response.body: {json_response.body}\n"
-          f"Response.status_code: {json_response.status_code}\n"
+          f"Response.status_code: {green_clr}{json_response.status_code}{reset_clr}\n"
           f"username: {auth_data.username}\n"
-          f"message: {yellow_clr}Telethon FastAPI health check [OK]{reset_clr}")
+          f"message: {yellow_clr}Global Aggregator API health check [OK]{reset_clr}")
     return json_response

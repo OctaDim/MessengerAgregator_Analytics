@@ -17,7 +17,7 @@ from db_postgres.postgres_queries.qry_get_message_obj_by_ev_id import (
     find_msg_obj_by_ev_id_qry)
 from db_postgres.postgres_queries_utils.save_new_model_object import (
     save_new_model_object_qry)
-from fast_api.app_auth.funcs_auth import verify_prod_username_password
+from fast_api.app_auth.funcs_auth import verify_auth_username_password
 from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_global_api_webhooks import (
     GlobalApiWebhookData)
 from utils_common.get_log_request_data import (
@@ -38,11 +38,11 @@ router_global_api_receive_webhooks = APIRouter(prefix=f"/{base_url_name}",
                                          response_model=None)
 async def receive_global_api_webhooks(
         request: Request,
-        # auth_data: AuthDataAggregator,
+        # auth_data: AuthData,
         # webhook_data: GlobalApiWebhookData  # validation via func to get errors instead of exception
 ) -> JSONResponse:
     req_json = await request.json()
-    verify_prod_username_password(
+    await verify_auth_username_password(
         username=req_json["auth_data"]["username"],
         password=req_json["auth_data"]["password"])
 

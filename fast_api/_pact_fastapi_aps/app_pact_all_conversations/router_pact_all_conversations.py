@@ -1,11 +1,12 @@
 import httpx
 from fastapi import APIRouter, HTTPException, status
 
-from configs.settings import PACT_WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY, PACT_API_OPTIONS
-from fast_api.app_auth.funcs_auth import verify_prod_username_password
-from fast_api.app_auth.scheme_auth import AuthDataAggregator
+from configs.settings import (
+    PACT_WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY, PACT_API_OPTIONS)
 from fast_api._pact_fastapi_aps.app_pact_all_conversations.scheme_pact_all_conversations import (
     InPactAllConversations)
+from fast_api.app_auth.funcs_auth import verify_auth_username_password
+from fast_api.app_auth.scheme_auth import AuthData
 
 base_url_name = PACT_WEBHOOKS_OPTIONS.WEBHOOKS_API_URL_BASE_NAME
 router_pact_get_all_conversations = APIRouter(prefix=f"/{base_url_name}",
@@ -15,11 +16,11 @@ router_pact_get_all_conversations = APIRouter(prefix=f"/{base_url_name}",
 @router_pact_get_all_conversations.post(path="/pct_all_conversations/",
                                         response_model=None)
 async def get_pact_all_conversations(
-        auth_data: AuthDataAggregator,
+        auth_data: AuthData,
         pact_api_data: InPactAllConversations,
 ) -> dict | None:
-    verify_prod_username_password(username=auth_data.username,
-                                  password=auth_data.password)
+    await verify_auth_username_password(username=auth_data.username,
+                                        password=auth_data.password)
     print(f"{'>' * 75}")
     pact_api_token = pact_api_data.pact_api_token
     pact_api_token = pact_api_token if pact_api_token else PACT_API_TOKEN_KEY

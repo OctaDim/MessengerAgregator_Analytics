@@ -7,7 +7,6 @@ from fastapi.responses import JSONResponse
 
 from configs.settings import PACT_WEBHOOKS_OPTIONS
 
-
 base_url_name = PACT_WEBHOOKS_OPTIONS.WEBHOOKS_API_URL_BASE_NAME
 router_develop_test_endpoint = APIRouter(prefix=f"/{base_url_name}",
                                          tags=["DEVELOP TEST ENDPOINT"])
@@ -16,12 +15,12 @@ router_develop_test_endpoint = APIRouter(prefix=f"/{base_url_name}",
 @router_develop_test_endpoint.post(path="/develop_test_endpoint/",
                                    response_model=None)
 async def develop_test_endpoint(
-        # auth_data: AuthDataAggregator,
+        # auth_data: AuthData,
         # bert_model_inst: Annotated[
         #     ClassifierBERT, Depends(get_bert_model_instance_dep)]
 ) -> JSONResponse | None:
     pass
-    # verify_prod_username_password(username=auth_data.username,
+    # verify_auth_username_password(username=auth_data.username,
     #                               password=auth_data.password)
     # print("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ TEST ENDPOINT [START]")
     # async with RedisAsyncConnection() as redis_conn:

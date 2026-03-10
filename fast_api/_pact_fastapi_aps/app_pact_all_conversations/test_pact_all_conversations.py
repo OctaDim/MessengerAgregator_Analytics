@@ -1,5 +1,5 @@
 if __name__ == "__main__":
-    from fast_api.app_auth.scheme_auth import AuthDataAggregator
+    from fast_api.app_auth.scheme_auth import AuthData
     from fast_api._pact_fastapi_aps.app_pact_all_conversations.router_pact_all_conversations import (
         get_pact_all_conversations)
     from fast_api._pact_fastapi_aps.app_pact_all_conversations.scheme_pact_all_conversations import (
@@ -7,8 +7,8 @@ if __name__ == "__main__":
     import asyncio
     from configs.settings import API_USERNAME, API_PASSWORD
 
-    auth_data = AuthDataAggregator(username=API_USERNAME,
-                                   password=API_PASSWORD)
+    auth_data = AuthData(username=API_USERNAME,
+                         password=API_PASSWORD)
 
     company_id = "100179"
 

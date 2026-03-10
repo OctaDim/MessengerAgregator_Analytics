@@ -1,9 +1,10 @@
 import httpx
 from fastapi import APIRouter, HTTPException, status
 
-from configs.settings import PACT_WEBHOOKS_OPTIONS, PACT_EMERGENCY_CALL_OPTIONS
-from fast_api.app_auth.funcs_auth import verify_prod_username_password
-from fast_api.app_auth.scheme_auth import AuthDataAggregator
+from configs.settings import (
+    PACT_WEBHOOKS_OPTIONS, PACT_EMERGENCY_CALL_OPTIONS)
+from fast_api.app_auth.funcs_auth import verify_auth_username_password
+from fast_api.app_auth.scheme_auth import AuthData
 from fast_api._pact_fastapi_aps.app_pact_send_emergency_call.scheme_request_emergency_call import (
     InWarningCallData)
 
@@ -15,11 +16,11 @@ router_request_emergency_call = APIRouter(prefix=f"/{base_url_name}",
 @router_request_emergency_call.post(path="/request_emergency_call/",
                                     response_model=None)
 async def request_emergency_call(
-        auth_data: AuthDataAggregator,
+        auth_data: AuthData,
         warning_call_data: InWarningCallData,
 ) -> dict | None:
-    verify_prod_username_password(username=auth_data.username,
-                                  password=auth_data.password)
+    await verify_auth_username_password(username=auth_data.username,
+                                        password=auth_data.password)
     print(f"{'>' * 75}")
     company_uuid = warning_call_data.company_uuid
 

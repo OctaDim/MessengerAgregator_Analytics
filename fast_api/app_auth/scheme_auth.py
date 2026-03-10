@@ -1,8 +1,6 @@
 from pydantic import BaseModel
 
 
-class AuthDataAggregator(BaseModel):
+class AuthData(BaseModel):
     username: str
     password: str
-    # username: str = "temp_zxc"  # DEBUG ONLY
-    # password: str = "temp_123"  # DEBUG ONLY

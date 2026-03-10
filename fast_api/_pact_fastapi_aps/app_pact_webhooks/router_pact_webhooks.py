@@ -28,7 +28,7 @@ from db_postgres.postgres_queries_utils.create_cache_new_model_object import (
     create_cache_new_model_obj_qry)
 from db_postgres.postgres_queries_utils.update_existing_model_objects import (
     update_existing_model_objs_qry)
-from fast_api.app_auth.scheme_auth import AuthDataAggregator
+from fast_api.app_auth.scheme_auth import AuthData
 from fast_api._pact_fastapi_aps.app_pact_all_companies.router_pact_all_companies import get_pact_all_companies
 from fast_api._pact_fastapi_aps.app_pact_all_companies.scheme_pact_all_companies import InPactAllCompanies
 from fast_api._pact_fastapi_aps.app_pact_conversation_data_by_id.router_pact_conversation_data import (
@@ -176,7 +176,7 @@ async def receive_pact_webhooks(
                                   f"message: {message.lower()}\n\n")
 
                             try:
-                                auth_data = AuthDataAggregator(
+                                auth_data = AuthData(
                                     username=API_USERNAME,
                                     password=API_PASSWORD)
                                 pact_data = InPactAllCompanies(
@@ -210,8 +210,8 @@ async def receive_pact_webhooks(
                     conversation_id=event_convers_id)
 
                 if not existing_convers_obj:  # Conversation was created earlier (before message event) and not webhooked
-                    req_auth_data = AuthDataAggregator(username=API_USERNAME,
-                                                       password=API_PASSWORD)
+                    req_auth_data = AuthData(username=API_USERNAME,
+                                             password=API_PASSWORD)
                     req_pact_api_data = InConversDataByConversID(
                         pact_api_token=PACT_API_TOKEN_KEY,
                         company_id=company_id,
