@@ -19,7 +19,7 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     # ######### COMFORTABLE VIEW FIELDS ORDER (start) ##################
     # ##################################################################
     event_type: Mapped[Optional[str]] = mapped_column(String(15))
-    action: Mapped[Optional[str]] = mapped_column(String(30))
+    action: Mapped[Optional[str]] = mapped_column(String(50))
     ev_chat_title: Mapped[Optional[str]]
     old_chat_title_cst: Mapped[Optional[str]]
     ev_message_message: Mapped[Optional[str]] = mapped_column(Text)
