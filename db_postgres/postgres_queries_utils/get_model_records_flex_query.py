@@ -30,6 +30,8 @@ async def get_model_rows_flex_query(
                 "field_name", "ModelClass.field_obj", "ModelClass.field_obj.desc()"),
         # TODO: make distinct() partial query
         distinct_on: Optional[Union[Literal["entire_row"], str, List[str], Tuple[str, ...]]] = None,
+        records_limit: int = None,
+        records_offset: int = None,
         return_scalars: bool = True
 ) -> Sequence[Row[tuple[Any, ...]]] | Sequence[Row | RowMapping]:
     """return_scalars: bool: - if True returns scalar values,
@@ -86,6 +88,12 @@ async def get_model_rows_flex_query(
                 orm_model_class=orm_model_class,
                 prior_orm_query=orm_query,
                 order_by_fields=order_by_fields)
+
+        if records_limit is not None:
+            orm_query = orm_query.limit(records_limit)
+
+        if records_offset is not None:
+            orm_query = orm_query.offset(records_offset)
 
         result = await ongoing_session.execute(orm_query)
         if return_scalars:
@@ -117,6 +125,8 @@ def get_sync_model_rows_flex_query(
         UnaryExpression, Tuple[UnaryExpression, ...],
         InstrumentedAttribute, None]] = (
                 "field_name", "ModelClass.field_obj", "ModelClass.field_obj.desc()"),
+        records_limit: int = None,
+        records_offset: int = None,
         return_scalars: bool = True
 ) -> Sequence[Row[tuple[Any, ...]]] | Sequence[Row | RowMapping]:
     """return_scalars: bool: - if True returns scalar values,
@@ -173,6 +183,12 @@ def get_sync_model_rows_flex_query(
                 orm_model_class=orm_model_class,
                 prior_orm_query=orm_query,
                 order_by_fields=order_by_fields)
+
+        if records_limit is not None:
+            orm_query = orm_query.limit(records_limit)
+
+        if records_offset is not None:
+            orm_query = orm_query.offset(records_offset)
 
         result = ongoing_session.execute(orm_query)
         if return_scalars:
