@@ -40,6 +40,10 @@ from fast_api._pact_fastapi_aps.app_pact_messages_by_conversation.router_message
     router_pact_get_messages_by_convers)
 from fast_api._pact_fastapi_aps.app_pact_webhooks.router_pact_webhooks import (
     router_pact_receive_webhooks)
+from fast_api.app_get_paginated_messages.router_get_all_messages import (
+    router_get_all_messages_list)
+from fast_api.app_global_api_health_check.router_global_api_health_check import (
+    router_global_api_health_check_status)
 from fast_api.app_global_api_webhooks.router_global_api_webhooks import (
     router_global_api_receive_webhooks)
 from fast_api.app_root_url.router_main import router_root_url
@@ -55,6 +59,8 @@ routers_list = [
     router_pact_receive_webhooks,
     # GLOBAL API
     router_global_api_receive_webhooks,
+    router_global_api_health_check_status,
+    router_get_all_messages_list,
 
     # Test end-point (debug time)
     router_develop_test_endpoint,

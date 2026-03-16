@@ -236,6 +236,9 @@ class PACT_EMERGENCY_CALL_OPTIONS:
 class GLOBAL_API_OPTIONS:
     WEBHOOKS_GLOBAL_API_URL_BASE_NAME: str = "global_msg_aggregator"
     LOG_PYDANTIC_OK_VALIDATION: bool = True
+    LOG_EXEC_TIME_GET_EACH_ATTR: bool = False  # Not used in this project yet
+    LOG_NON_EXISTING_ATTR_ERROR: bool = False  # Not used in this project yet
+    LOG_NON_JSONABLE_VALUE_ERROR: bool = True
 
 
 @dataclass(frozen=True)
@@ -265,3 +268,6 @@ class GLOBAL_API_WEBHOOKS_OPTIONS:
     READ_EVENT_FIND_OLD_MSG_ATTEMPTS: int = 5
     READ_EVENT_FIND_OLD_MSG_DELAY_SEC: float = 1.0
     DELETED_MESSAGE_PREFIX_STR: str = "[XXX]"
+
+    DEFAULT_MESSAGES_CURRENT_PAGE: int = 1
+    DEFAULT_MESSAGES_PER_PAGE: int = 200
