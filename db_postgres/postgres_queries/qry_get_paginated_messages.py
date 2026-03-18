@@ -15,24 +15,36 @@ from utils_common.serialize_custom_json import get_jsonable_value
 
 async def get_paginated_messages_qry(
         ongoing_session: AsyncSession,
+        web_account_id: str,
+        web_account_username: str,
         current_page: int,
         messages_per_page: int,
 ) -> Dict[str, Dict[str, any]]:
-    # if not current_page or not messages_per_page:
-    #     return None
+    if not web_account_id or not web_account_username:
+        return None
+
+    filter_fields = {"web_account_id": web_account_id,
+                     "web_account_username": web_account_username}
 
     try:
-        result = await ongoing_session.execute(select(
-            func.count(GlobalWebhookModel.id)))
+        result = await ongoing_session.execute(
+            select(func.count(GlobalWebhookModel.id))
+            .filter_by(**filter_fields))  # if only equal use filter_by, for any condition use where
         all_msgs_count = result.scalar()
+        # result = await ongoing_session.execute(select(
+        #     func.count(GlobalWebhookModel.id)))
+        # all_msgs_count = result.scalar()
 
         paginated_msgs_data = []
-        records_offset = (current_page - 1) * messages_per_page
+        if current_page and messages_per_page:
+            records_offset = (current_page - 1) * messages_per_page
+        else:
+            records_offset = None
         messages_objs = await get_model_rows_flex_query(
             orm_model_class=GlobalWebhookModel,
             ongoing_session=ongoing_session,
             selected_fields=None,
-            fields_values_filter=None,
+            fields_values_filter=filter_fields,
             order_by_fields=GlobalWebhookModel.id.desc(),
             records_limit=messages_per_page,
             records_offset=records_offset,
