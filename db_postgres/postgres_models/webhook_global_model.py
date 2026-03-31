@@ -24,6 +24,7 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     old_chat_title_cst: Mapped[Optional[str]]
     ev_message_message: Mapped[Optional[str]] = mapped_column(Text)
     old_message_message_cst: Mapped[Optional[str]] = mapped_column(Text)
+    message_difference: Mapped[Optional[str]] = mapped_column(Text)
 
     username_cst: Mapped[Optional[str]]
     first_name_cst: Mapped[Optional[str]]

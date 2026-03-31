@@ -73,6 +73,7 @@ async def get_paginated_messages_qry(
                     "old_chat_title_cst": cur_msg_obj.old_chat_title_cst,
                     "ev_message_message": cur_msg_obj.ev_message_message,
                     "old_message_message_cst": cur_msg_obj.old_message_message_cst,
+                    "message_difference": cur_msg_obj.message_difference,
                     "ev_sender_id": cur_msg_obj.ev_sender_id,
                     "ev_from_id_user_id":  cur_msg_obj.ev_from_id_user_id,
                     "ev_peer_id_user_id": cur_msg_obj.ev_peer_id_user_id,

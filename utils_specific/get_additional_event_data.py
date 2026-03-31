@@ -3,6 +3,7 @@ from typing import Dict, Any
 from sqlalchemy import Row
 
 from configs.settings import GLOBAL_API_WEBHOOKS_OPTIONS
+from utils_common.get_text_difference import get_text_difference_str
 
 
 async def get_new_msg_addit_data(
@@ -30,7 +31,17 @@ async def get_msg_edited_addit_data(
             "old_message_raw_text_cst": pgs_object.ev_message_raw_text, })
 
     if event_data_dict:
+        msg_difference_data = await get_text_difference_str(
+            old_text=pgs_object.ev_message_message,
+            new_text=event_data_dict["ev_message_message"],
+            deleted_mark=GLOBAL_API_WEBHOOKS_OPTIONS.DELETED_DIFFERENCE_PART_STR,
+            added_mark=GLOBAL_API_WEBHOOKS_OPTIONS.ADDED_DIFFERENCE_PART_STR,
+            replaced_separator=GLOBAL_API_WEBHOOKS_OPTIONS.REPLACED_DIFFERENCE_SEPARATOR_STR,
+            each_diff_separator=GLOBAL_API_WEBHOOKS_OPTIONS.DIFFERENCE_EACH_LINE_SEPARATOR_STR)
+        msg_difference_str = msg_difference_data["all_changes_str"]
+
         addit_data.update({
+            "message_difference": msg_difference_str,
             "ev_chat_title": event_data_dict["ev_chat_title"],
             "username_cst": event_data_dict["tlt_sender_username"],
             "first_name_cst": event_data_dict["tlt_sender_first_name"],
