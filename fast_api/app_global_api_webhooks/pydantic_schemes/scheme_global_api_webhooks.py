@@ -16,7 +16,8 @@ from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_message_read impor
     MessageReadData)
 from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_new_message import (
     NewMessageData)
-from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_new_message_client_sent import ClientSentNewMessageData
+from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_new_message_client_sent import (
+    ClientSentNewMessageData)
 from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_raw_event import (
     RawData)
 from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_user_update import (
