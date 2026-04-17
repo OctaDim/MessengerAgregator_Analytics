@@ -98,8 +98,14 @@ async def receive_global_api_webhooks(
                                    log_good_ops=log_pgs_good_ops
                                    ) as pgs_session:
             event_data_dict = event_data.model_dump()
+            # TLT CLIENT SENT NEW MESSAGE:
+            if event_type == "ClientSentNewMessage":  # isinstance(event_data_dict, ClientSentNewMessageData):
+                addit_data = await get_new_msg_addit_data(
+                    event_data_dict=event_data_dict)
+                event_data_dict.update(addit_data)
+                new_events_data_list = [event_data_dict]
             # NEW MESSAGE:
-            if event_type == "NewMessage":  # isinstance(event_data_dict, NewMessageData):
+            elif event_type == "NewMessage":  # isinstance(event_data_dict, NewMessageData):
                 addit_data = await get_new_msg_addit_data(
                     event_data_dict=event_data_dict)
                 event_data_dict.update(addit_data)

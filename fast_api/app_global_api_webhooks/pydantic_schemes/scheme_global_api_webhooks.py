@@ -16,6 +16,7 @@ from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_message_read impor
     MessageReadData)
 from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_new_message import (
     NewMessageData)
+from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_new_message_client_sent import ClientSentNewMessageData
 from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_raw_event import (
     RawData)
 from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_user_update import (
@@ -24,8 +25,13 @@ from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_user_update import
 
 class GlobalApiWebhookData(BaseModel):
     event_data: Optional[
-        Union[NewMessageData, MessageEditedData, MessageReadData,
-        MessageDeletedData, ChatActionData, UserUpdateData,
+        Union[NewMessageData,
+        ClientSentNewMessageData,
+        MessageEditedData,
+        MessageReadData,
+        MessageDeletedData,
+        ChatActionData,
+        UserUpdateData,
         CallbackQueryData, InlineQueryData, RawData]] = Field(discriminator="event_type")
     source: Optional[Union[str, Literal["telegram_tlt"]]]
     operation: Optional[Union[str, Literal["test"]]]
@@ -36,13 +42,13 @@ class GlobalApiWebhookData(BaseModel):
     #                                      request_json=data)
     #     super().__init__(**data)
 
-    @model_validator(mode="after")
-    def validate_basemodel_obj(self) -> Self:
+    @model_validator(mode="before")
+    def validate_basemodel_obj(cls, data: dict) -> dict | None:
         # # Validation in router to fix recursion error
         # validate_log_pydantic_obj_errors(PydanticBaseModel=self.__class__,
         #                                  request_json=self.model_dump())
-        has_group_1_flag = all([self.event_data, self.source])
-        has_group_2_flag = all([self.source, self.operation])
+        has_group_1_flag = all([data["event_data"], data["source"]])
+        has_group_2_flag = all([data["source"], data["operation"]])
         if not (has_group_1_flag or has_group_2_flag):  # Both are False
             error_log = (
                 f"PYDANTIC COMBINATIONS [ERROR]: "
@@ -50,10 +56,10 @@ class GlobalApiWebhookData(BaseModel):
                 f"group 2 (source, operation) needed\n"
                 f"has_group_1_flag: {has_group_1_flag}\n"
                 f"has_group_2_flag: {has_group_1_flag}\n"
-                f"\tevent_data: {self.event_data}\n"
-                f"\tsource: {self.source}\n"
-                f"\toperation: {self.operation}\n")
+                f"\tevent_data: {data["event_data"]}\n"
+                f"\tsource: {data["source"]}\n"
+                f"\toperation: {data["operation"]}\n")
             print(error_log)
             raise ValueError(error_log)
         else:  # has_group_1_flag or has_group_2_flag
-            return self
+            return data
