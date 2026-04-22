@@ -99,6 +99,7 @@ async def get_paginated_messages_qry(
                     "tlt_phone": cur_msg_obj.tlt_phone,
                     "tlt_bot_token": cur_msg_obj.tlt_bot_token,
                     "ev_out": cur_msg_obj.ev_out,
+                    "ev_chat_id": cur_msg_obj.ev_chat_id
                 }
                 paginated_msgs_data.append(cur_msg_data)
         paginated_msgs_details = {
