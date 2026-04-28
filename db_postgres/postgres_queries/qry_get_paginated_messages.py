@@ -69,6 +69,7 @@ async def get_paginated_messages_qry(
                 cur_msg_data = {
                     "id": cur_msg_obj.id,
                     "action": cur_msg_obj.action,
+                    "ev_id": cur_msg_obj.ev_id,  # Used for getting file
                     "ev_chat_title": cur_msg_obj.ev_chat_title,
                     "old_chat_title_cst": cur_msg_obj.old_chat_title_cst,
                     "ev_message_message": cur_msg_obj.ev_message_message,
@@ -76,7 +77,9 @@ async def get_paginated_messages_qry(
                     "message_difference": cur_msg_obj.message_difference,
                     "ev_sender_id": cur_msg_obj.ev_sender_id,
                     "ev_from_id_user_id":  cur_msg_obj.ev_from_id_user_id,
-                    "ev_peer_id_user_id": cur_msg_obj.ev_peer_id_user_id,
+                    "ev_peer_id_channel_id": cur_msg_obj.ev_peer_id_channel_id,  # Used for getting file
+                    "ev_peer_id_chat_id": cur_msg_obj.ev_peer_id_chat_id,  # Used for getting file
+                    "ev_peer_id_user_id": cur_msg_obj.ev_peer_id_user_id,  # Used for getting file
                     "username_cst": cur_msg_obj.username_cst,
                     "first_name_cst": cur_msg_obj.first_name_cst,
                     "last_name_cst": cur_msg_obj.last_name_cst,
@@ -99,7 +102,7 @@ async def get_paginated_messages_qry(
                     "tlt_phone": cur_msg_obj.tlt_phone,
                     "tlt_bot_token": cur_msg_obj.tlt_bot_token,
                     "ev_out": cur_msg_obj.ev_out,
-                    "ev_chat_id": cur_msg_obj.ev_chat_id
+                    "ev_chat_id": cur_msg_obj.ev_chat_id,
                 }
                 paginated_msgs_data.append(cur_msg_data)
         paginated_msgs_details = {
