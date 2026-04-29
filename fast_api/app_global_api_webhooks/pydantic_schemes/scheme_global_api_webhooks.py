@@ -26,14 +26,17 @@ from fast_api.app_global_api_webhooks.pydantic_schemes.scheme_user_update import
 
 class GlobalApiWebhookData(BaseModel):
     event_data: Optional[
-        Union[NewMessageData,
-        ClientSentNewMessageData,
-        MessageEditedData,
-        MessageReadData,
-        MessageDeletedData,
-        ChatActionData,
-        UserUpdateData,
-        CallbackQueryData, InlineQueryData, RawData]] = Field(discriminator="event_type")
+        Union[
+            NewMessageData,
+            ClientSentNewMessageData,
+            MessageEditedData,
+            MessageReadData,
+            MessageDeletedData,
+            ChatActionData,
+            UserUpdateData,
+            CallbackQueryData,
+            InlineQueryData,
+            RawData]] = Field(discriminator="event_type")
     source: Optional[Union[str, Literal["telegram_tlt"]]]
     operation: Optional[Union[str, Literal["test"]]]
 

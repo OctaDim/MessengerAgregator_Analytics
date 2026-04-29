@@ -213,6 +213,7 @@ class NewMessageData(BaseEventData):
 
     doc_attr_file_name: Optional[str] = None
     file_name_cst: Optional[str] = None
+    extra_file_name_cst: Optional[str] = None
 
     doc_attr_duration: Optional[int] = None
     doc_attr_voice: Optional[bool] = None

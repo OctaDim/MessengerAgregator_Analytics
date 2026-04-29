@@ -33,6 +33,7 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     bot_cst: Mapped[Optional[bool]]
 
     file_name_cst: Mapped[Optional[str]]
+    extra_file_name_cst: Mapped[Optional[str]]
 
     tlt_sender_username: Mapped[Optional[str]]
     tlt_sender_first_name: Mapped[Optional[str]]
