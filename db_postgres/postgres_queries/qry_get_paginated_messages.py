@@ -87,6 +87,8 @@ async def get_paginated_messages_qry(
                     "bot_cst": cur_msg_obj.bot_cst,
                     "file_name_cst": cur_msg_obj.file_name_cst,
                     "extra_file_name_cst": cur_msg_obj.extra_file_name_cst,
+                    "tlt_config_name": cur_msg_obj.tlt_config_name,
+                    # "telethon_config_name": cur_msg_obj.telethon_config_name,
                     "tlt_sender_username": cur_msg_obj.tlt_sender_username,
                     "tlt_sender_first_name": cur_msg_obj.tlt_sender_first_name,
                     "tlt_sender_last_name": cur_msg_obj.tlt_sender_last_name,

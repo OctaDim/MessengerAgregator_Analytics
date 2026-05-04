@@ -34,6 +34,8 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
 
     file_name_cst: Mapped[Optional[str]]
     extra_file_name_cst: Mapped[Optional[str]]
+    tlt_config_name:  Mapped[Optional[str]]
+    # telethon_config_name: Mapped[Optional[str]]
 
     tlt_sender_username: Mapped[Optional[str]]
     tlt_sender_first_name: Mapped[Optional[str]]
