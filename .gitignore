@@ -264,3 +264,6 @@ audio_samples/
 __temp/
 *.session
 *.session-journal
+
+*/envs
+*/env
