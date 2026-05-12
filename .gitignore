@@ -267,3 +267,6 @@ __temp/
 
 */envs
 */env
+
+env_backup/
+env_backup/*
