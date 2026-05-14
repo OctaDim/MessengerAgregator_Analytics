@@ -1,4 +1,3 @@
-#version: '3.8'  # Commented to fix "version is obsolete" warning, only for legacy
 #version: '3.11'  # Commented to fix "version is obsolete" warning, only for legacy
 
 services:
@@ -11,7 +10,8 @@ services:
     container_name: minio-directory-init
     restart: "no"
     volumes:
-      - parent_proj_dir_shared:/parent
+      - ./../${MINIO_BASE_DIRECTORY:-TEMP_MINIO_FILES}:/data
+#      - parent_proj_dir_shared:/parent
 #      - ./../:/parent  # Mount/bind Parent directory
     environment:
       MINIO_BASE_DIR: ${MINIO_BASE_DIRECTORY:-TEMP_MINIO_FILES}
@@ -37,9 +37,10 @@ services:
       # MINIO_ADDRESS: "${MINIO_EXTERNAL_IP:-0.0.0.0}:${MINIO_API_PORT:-9000}"  # Optional, only inside Minio container
       # MINIO_DEFAULT_BUCKETS: ${MINIO_DEFAULT_BUCKETS:-}
     volumes:
+      - ./../${MINIO_BASE_DIRECTORY:-TEMP_MINIO_FILES}:/data
+#      - minio_mounted_shared:/data  # Auto directory inside docker volumes system or mounted directory in volumes
       #      - ./${MINIO_BASE_DIRECTORY:-TEMP_MINIO_FILES}:/data  # Relative path from docker-compose.yml
       #      - /absolute/path/to/minio/data:/data  # Absolute server path
-      - minio_mounted_shared:/data  # Auto directory inside docker volumes system or mounted directory in volumes
     command: server /data --console-address ":${MINIO_CONSOLE_PORT:-9001}" --address ":${MINIO_API_PORT:-9000}"
 #    command: server /data --console-address ":${MINIO_CONSOLE_PORT:-9001}" --address "${MINIO_EXTERNAL_IP:-0.0.0.0}:${MINIO_API_PORT:-9000}"
     #    command: server /data --console-address ":${MINIO_CONSOLE_PORT:-9001}"
@@ -208,3 +209,9 @@ volumes:
 
 # Stop with removing containers and images (Attention: removes all Minio data!!!)
 # docker compose down --rmi all -v
+
+# See all mounted volumes
+# docker volume ls | grep minio
+
+# Volume detailed info
+# docker volume inspect docker_compose_minio_mounted_shared

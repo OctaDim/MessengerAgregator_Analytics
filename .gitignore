@@ -270,3 +270,6 @@ __temp/
 
 env_backup/
 env_backup/*
+
+TEMP_MINIO_FILES/
+TEMP_MINIO_FILES/*
