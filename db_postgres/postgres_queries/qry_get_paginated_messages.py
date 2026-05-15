@@ -106,6 +106,11 @@ async def get_paginated_messages_qry(
                     "tlt_bot_token": cur_msg_obj.tlt_bot_token,
                     "ev_out": cur_msg_obj.ev_out,
                     "ev_chat_id": cur_msg_obj.ev_chat_id,
+                    # AWS/S3 special
+                    "s3_bucket": cur_msg_obj.s3_bucket,
+                    "s3_key": cur_msg_obj.s3_key,
+                    "s3_endpoint": cur_msg_obj.s3_endpoint,
+                    "s3_uri": cur_msg_obj.s3_uri,
                 }
                 paginated_msgs_data.append(cur_msg_data)
         paginated_msgs_details = {

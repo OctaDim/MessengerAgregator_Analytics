@@ -54,6 +54,14 @@ class GlobalWebhookModel(Base, ActiveMix, CreateUpdateMix):
     reactions_doc_id_count_cst: Mapped[Optional[int]]
     # ########## COMFORTABLE VIEW FIELDS ORDER (end) ###################
 
+    # ################## AWS S3 FIELDS (start) #########################
+    # ##################################################################
+    s3_bucket: Mapped[Optional[str]]
+    s3_key: Mapped[Optional[str]]
+    s3_endpoint: Mapped[Optional[str]]
+    s3_uri: Mapped[Optional[str]]
+    # ################### AWS S3 FIELDS (end) ##########################
+
     # ############### NEW MESSAGE FIELDS (start) #######################
     # ##################################################################
     # event_type: Mapped[Optional[str]] = mapped_column(String(15))  # Temp reordered
