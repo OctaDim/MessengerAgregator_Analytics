@@ -235,7 +235,7 @@ class PACT_EMERGENCY_CALL_OPTIONS:
 @dataclass(frozen=True)
 class GLOBAL_API_OPTIONS:
     WEBHOOKS_GLOBAL_API_URL_BASE_NAME: str = "global_msg_aggregator"
-    LOG_PYDANTIC_OK_VALIDATION: bool = True
+    LOG_PYDANTIC_OK_VALIDATION: bool = False
     LOG_EXEC_TIME_GET_EACH_ATTR: bool = False  # Not used in this project yet
     LOG_NON_EXISTING_ATTR_ERROR: bool = False  # Not used in this project yet
     LOG_NON_JSONABLE_VALUE_ERROR: bool = True
@@ -255,9 +255,9 @@ class GLOBAL_API_WEBHOOKS_OPTIONS:
         # "CallbackQuery",
         # "Raw",
     )
-    LOG_WEBHOOK_INCOMING_REQ_DATA: bool = True
-    LOG_WEBHOOK_INCOMING_OBJ_DATA: bool = True
-    LOG_WEBHOOK_POSTGRES_SAVE_DATA: bool = True
+    LOG_WEBHOOK_INCOMING_REQ_DATA: bool = False
+    LOG_WEBHOOK_INCOMING_OBJ_DATA: bool = False
+    LOG_WEBHOOK_POSTGRES_SAVE_DATA: bool = False
     NEW_MSG_ACTION_STR: str = "new"
     EDIT_MSG_ACTION_STR: str = "edited"
     DELETE_MSG_ACTION_STR: str = "deleted"
