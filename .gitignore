@@ -273,3 +273,7 @@ env_backup/*
 
 TEMP_MINIO_FILES/
 TEMP_MINIO_FILES/*
+
+.env.*
+!.env.example
+!.env.*.example
