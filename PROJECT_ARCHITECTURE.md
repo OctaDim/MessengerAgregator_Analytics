@@ -37,17 +37,19 @@ panel for operators.
 |-- PROJECT_ARCHITECTURE.md         # Current AI-agent architecture reference.
 |-- .gitignore                      # Ignore rules for virtualenvs, IDE files, caches, local data, and scratch files.
 |-- .configs_api.ini                # API host, port, credentials, and session-key settings.
-|-- .configs_pact_api.ini           # PACT API token settings.
+|-- .configs_pact_api.ini           # PACT API token and outbound local API base URL settings.
 |-- .configs_postgres.ini           # PostgreSQL connection settings.
+|-- .configs_s3_minio.ini           # Local MinIO/S3 endpoint and bucket settings.
 |-- .configs_sqladmin.ini           # SQLAdmin default credential settings.
 |-- .env                            # Test API credentials loaded by settings.
 |-- .agents/                        # Local agent metadata directory; currently no project files inside.
 |-- .codex/                         # Local Codex metadata directory; currently no project files inside.
 |-- .venv3145/                      # Local virtual environment, ignored and not part of application architecture.
+|-- _tests/                         # Centralized test tree mirroring tested Python packages and infrastructure areas.
 |-- admin_panel/                    # SQLAdmin views, auth backend, templates, filters, and custom actions.
 |-- configs/                        # Runtime settings, enums, labels, filters, and console-color constants.
-|-- db_postgres/                    # SQLAlchemy models, connections, sessions, queries, initialization, and tests.
-|-- docker_compose/                 # PostgreSQL and MinIO Compose stacks, runbooks, and compose contract tests.
+|-- db_postgres/                    # SQLAlchemy models, connections, sessions, queries, and initialization.
+|-- docker_compose/                 # PostgreSQL and MinIO Compose stacks, runbooks, and env files.
 |-- fast_api/                       # FastAPI routers and Pydantic request/response schemas.
 |-- meta_classes/                   # Shared metaclasses, currently SingletonMeta for DB connection classes.
 |-- utils_common/                   # General utility helpers for paths, validation, hashing, serialization, etc.
@@ -109,6 +111,12 @@ panel for operators.
 - Settings are read from `.env` and multiple INI files in the repository root.
 - API and PostgreSQL config sections are selected by detected external IP,
   platform, and predefined config names.
+- The root `.configs_*.ini` files are configured for local development through
+  `127.0.0.1`: the FastAPI service binds to localhost, PostgreSQL points to the
+  host-published Compose port from `docker_compose/.env.postgres`, MinIO points
+  to the host-published Compose API/console ports from
+  `docker_compose/.env.s3_minio`, and outbound PACT/emergency-call base URLs are
+  read from `.configs_pact_api.ini`.
 - The module probes internal and external IP addresses during import. Be careful
   when using broad import checks in offline or sandboxed environments because
   this side effect can make otherwise static checks environment-sensitive.
@@ -131,11 +139,23 @@ panel for operators.
   as sensitive local configuration.
 - `docker_compose/POSTGRES_RUNBOOK.md` and
   `docker_compose/S3_MINIO_RUNBOOK.md` document validation and startup commands.
-- `docker_compose/test_compose_configs.py` provides unittest-based contract
-  tests for the Compose files and runbooks.
 - `docker_compose/_backup/docker-compose.yaml` is retained as backup material,
   not the active Compose contract. Prefer the explicit PostgreSQL and MinIO
   Compose files above for current infrastructure work.
+
+### Test Tree
+
+- `_tests/` is the centralized test location. Runtime packages should not keep
+  `test_*.py` files beside application modules.
+- `_tests/configs/test_local_config_contract.py` validates root-localhost INI
+  settings against the Docker Compose env files without importing
+  network-sensitive runtime settings.
+- `_tests/docker_compose/test_compose_configs.py` provides unittest-based
+  contract tests for the Compose files and runbooks.
+- `_tests/fast_api/_pact_fastapi_aps/` mirrors PACT FastAPI packages and keeps
+  endpoint-oriented test scripts beside the tested package path under `_tests`.
+- `_tests/db_postgres/postgres_tests/` contains PostgreSQL query/model
+  integration test scripts.
 
 ## Main Data Flow
 
@@ -175,7 +195,9 @@ Use this section as the first routing map when changing the project.
   `.configs_*.ini` or `.env*` file together. Never print or document secret
   values.
 - **Docker infrastructure:** update the Compose file, matching runbook, and
-  `docker_compose/test_compose_configs.py` in the same change.
+  `_tests/docker_compose/test_compose_configs.py` in the same change.
+- **Tests:** put new tests under `_tests/<tested-package-path>/` rather than
+  inside runtime packages. Mirror the tested package path where practical.
 
 ### Safe Exploration Order
 
@@ -189,7 +211,7 @@ Use this section as the first routing map when changing the project.
 ### Verification Levels
 
 - **Static contract check:** use stdlib-only tests such as
-  `PYENV_VERSION=3.12.13 python -m unittest docker_compose.test_compose_configs`
+  `PYENV_VERSION=3.12.13 python -m unittest _tests.docker_compose.test_compose_configs`
   when Docker or database access is unavailable.
 - **Application import check:** import or instantiate only the target module if
   dependencies and config files are available. Be careful because
@@ -261,6 +283,9 @@ be exposed as public API endpoints.
   `SingletonMeta` to avoid repeatedly creating engine objects.
 - **Config-by-environment files:** Runtime values are loaded from INI files and
   `.env` rather than hard-coded directly in routers.
+- **Config-driven outbound API URLs:** PACT and emergency-call outbound URLs are
+  composed from settings so local mock services can replace external APIs during
+  development without editing routers.
 - **Admin UI over ORM models:** SQLAdmin model views expose operational data
   management without a separate frontend.
 - **Compose startup contract tests:** Infrastructure expectations are tested by
@@ -327,6 +352,14 @@ The Compose stacks are tested with lightweight unittest fragment checks. This is
 not a replacement for live Docker startup validation, but it prevents accidental
 removal of important startup, healthcheck, runbook, and environment contracts.
 
+### ADR-008: Localhost-First Development Configuration
+
+Root `.configs_*.ini` values are kept localhost-first for this workspace so the
+FastAPI app, PostgreSQL, MinIO, and local mocks for external APIs can run on one
+developer machine. PostgreSQL and MinIO values mirror the host-published ports
+from the Docker Compose env files, while outbound PACT URLs stay configurable so
+the same routers can target local mocks or real APIs by configuration only.
+
 ## Accepted Conventions
 
 - Keep comments, annotations, and commented notes in code in English only.
@@ -353,16 +386,20 @@ removal of important startup, healthcheck, runbook, and environment contracts.
 
 Existing test locations:
 
-- `docker_compose/test_compose_configs.py` validates Docker Compose and runbook
-  contracts.
-- `db_postgres/postgres_tests/` contains PostgreSQL query/model tests.
-- Several PACT FastAPI packages include endpoint-oriented test modules under
-  `fast_api/_pact_fastapi_aps/*/test_*.py`.
+- `_tests/configs/test_local_config_contract.py` validates that local root INI
+  files use localhost and match Compose-published PostgreSQL and MinIO settings.
+- `_tests/docker_compose/test_compose_configs.py` validates Docker Compose and
+  runbook contracts.
+- `_tests/db_postgres/postgres_tests/` contains PostgreSQL query/model tests.
+- `_tests/fast_api/_pact_fastapi_aps/` contains endpoint-oriented PACT FastAPI
+  test modules.
 
 Recommended checks:
 
 ```bash
-PYENV_VERSION=3.12.13 python -m unittest docker_compose.test_compose_configs
+PYENV_VERSION=3.12.13 python -m unittest _tests.configs.test_local_config_contract
+PYENV_VERSION=3.12.13 python -m unittest _tests.docker_compose.test_compose_configs
+PYENV_VERSION=3.12.13 python -m unittest discover -s _tests -t . -p "test_*.py"
 ```
 
 In this workspace, a plain `python` command may fail if pyenv has no global
