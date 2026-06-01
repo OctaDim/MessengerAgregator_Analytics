@@ -119,6 +119,37 @@ else:
 
 PACT_API_TOKEN_KEY = pact_api_conf_parser.get(
     section=pact_api_conf_name, option="PACT_API_TOKEN_KEY")
+PACT_API_V1_BASE_URL = pact_api_conf_parser.get(
+    section=pact_api_conf_name, option="PACT_API_V1_BASE_URL")
+PACT_API_V2_BASE_URL = pact_api_conf_parser.get(
+    section=pact_api_conf_name, option="PACT_API_V2_BASE_URL")
+PACT_EMERGENCY_CALL_URL = pact_api_conf_parser.get(
+    section=pact_api_conf_name, option="PACT_EMERGENCY_CALL_URL")
+
+
+# GETTING S3 MINIO INI CONFIGS ########################################
+@dataclass(frozen=True)
+class S3_MINIO_CONFIG_NAMES:
+    S3_MINIO_LOCALHOST = "S3_MINIO_localhost"
+
+
+s3_minio_ini_normal_path = get_full_file_normal_path(
+    all_dir_str_parts=[BASE_DIR],
+    file_name_with_ext=".configs_s3_minio.ini")
+s3_minio_conf_parser = ConfigParser()
+s3_minio_conf_parser.read(filenames=s3_minio_ini_normal_path)
+s3_minio_conf_name = S3_MINIO_CONFIG_NAMES.S3_MINIO_LOCALHOST
+
+S3_ENDPOINT_URL = s3_minio_conf_parser.get(
+    section=s3_minio_conf_name, option="S3_ENDPOINT_URL")
+S3_CONSOLE_URL = s3_minio_conf_parser.get(
+    section=s3_minio_conf_name, option="S3_CONSOLE_URL")
+S3_ACCESS_KEY = s3_minio_conf_parser.get(
+    section=s3_minio_conf_name, option="S3_ACCESS_KEY")
+S3_SECRET_KEY = s3_minio_conf_parser.get(
+    section=s3_minio_conf_name, option="S3_SECRET_KEY")
+S3_DEFAULT_BUCKET = s3_minio_conf_parser.get(
+    section=s3_minio_conf_name, option="S3_DEFAULT_BUCKET")
 
 
 # GETTING POSTGRES INI CONFIGS #########################################
@@ -227,7 +258,7 @@ class PACT_SQLADMIN_OPTIONS:
 
 @dataclass(frozen=True)
 class PACT_EMERGENCY_CALL_OPTIONS:
-    EMERGENCY_CALL_URL = "https://samara.softats.ru/account/pact/emergency_call"
+    EMERGENCY_CALL_URL = PACT_EMERGENCY_CALL_URL
     EMERGENCY_CALL_REQUEST_TIMEOUT: float = 120
     LOG_EMERGENCY_CALL_REQ_RESPONSE: bool = True
 
