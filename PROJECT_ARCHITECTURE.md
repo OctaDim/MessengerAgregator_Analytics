@@ -68,8 +68,13 @@ panel for operators.
   route.
 - `fast_api/app_global_api_webhooks/` accepts normalized global messenger
   webhook events, validates them with Pydantic, enriches event data, and stores
-  rows in PostgreSQL.
-- `fast_api/app_get_paginated_messages/` exposes paginated message retrieval.
+  rows in PostgreSQL. Its schemas include base event/user data, raw events,
+  message lifecycle events, callback/inline/chat-action events, and optional
+  S3 attachment metadata.
+- `fast_api/app_get_paginated_messages/` exposes paginated message retrieval for
+  a web account.
+- `fast_api/app_web_account/` contains the shared web-account request schema
+  used by paginated message retrieval. It is not a standalone router.
 - `fast_api/app_test_endpoint/` contains a development-only test endpoint.
 - `fast_api/_pact_fastapi_aps/` contains PACT-specific routers for webhooks,
   messages by conversation, message data by ID, conversation data by ID,
@@ -123,6 +128,10 @@ panel for operators.
 - Option dataclasses such as `FASTAPI_OPTIONS`, `ALCHEMY_OPTIONS`,
   `PACT_WEBHOOKS_OPTIONS`, `PACT_SQLADMIN_OPTIONS`, and
   `GLOBAL_API_WEBHOOKS_OPTIONS` group runtime flags.
+- `S3_ENDPOINT_URL`, `S3_CONSOLE_URL`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, and
+  `S3_DEFAULT_BUCKET` are loaded from `.configs_s3_minio.ini`; current runtime
+  code mainly persists incoming S3 metadata from webhook payloads, while MinIO
+  provisioning is handled by Docker Compose/runbooks.
 - Root-level `.configs_*.ini`, `.env`, and `docker_compose/.env.*` files are
   operational inputs and may contain secrets. Document paths and required keys,
   not concrete secret values.
@@ -233,6 +242,9 @@ Use this section as the first routing map when changing the project.
 - Root-level `.configs_*.ini`, `.env`, and Docker Compose env files are local
   operational inputs. Do not expose their secret values in final answers,
   documentation, tests, or logs.
+- Global API message payloads can carry S3 metadata (`s3_bucket`, `s3_key`,
+  `s3_endpoint`, `s3_uri`). The project stores those fields but does not yet
+  contain a dedicated S3 client abstraction.
 - Some PACT routers are implemented but not included in `main.py`. Treat router
   registration as the source of truth for the public FastAPI surface.
 - The project currently creates tables from SQLAlchemy metadata. There is no
@@ -266,6 +278,10 @@ Some PACT routers exist but are not currently registered in `main.py`, including
 all-companies, conversation-data-by-ID, and emergency-call routers. They are
 imported by other PACT workflows and can be registered explicitly if they should
 be exposed as public API endpoints.
+
+`fast_api/app_web_account/` is intentionally schema-only in this snapshot: it
+validates `web_account_id` and `web_account_username` for
+`POST /global_msg_aggregator/all_messages`.
 
 ## Architecture Patterns
 
@@ -302,8 +318,9 @@ be exposed as public API endpoints.
 - SQLAdmin `0.22.0` with Jinja2/WTForms for the admin panel.
 - MinIO via Docker Compose for S3-compatible object storage infrastructure.
 - HTTPX/AIOHTTP for outbound HTTP workflows.
-- Telethon is installed in `requirements.txt`; the current architecture file
-  does not identify an active runtime integration point for it.
+- Telethon, aio-pika, QR-code helpers, Pillow, and SQLite async support are
+  installed in `requirements.txt`; this snapshot does not show an active
+  registered runtime integration point for them.
 - bcrypt-based password hashing helpers.
 - unittest for existing infrastructure contract tests.
 
@@ -419,6 +436,11 @@ database are available before running the broader test set.
   document which files are local-only examples.
 - Add automated tests for `create_fastapi_application()` router registration and
   SQLAdmin setup.
+- Add a dedicated S3 client/service layer before introducing code that reads or
+  writes MinIO objects directly; this will keep webhook persistence separate
+  from object-storage access.
+- Remove unused dependencies or document their planned integration paths once
+  Telethon, aio-pika, QR-code, Pillow, or SQLite workflows become active.
 - Consider adding Alembic migrations before production schema changes become
   frequent. Current table creation is metadata-driven and does not provide
   versioned migrations.
