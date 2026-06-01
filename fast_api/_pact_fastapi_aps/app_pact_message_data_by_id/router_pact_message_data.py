@@ -2,7 +2,8 @@ import httpx
 from fastapi import APIRouter, HTTPException, status
 
 from configs.settings import (
-    PACT_WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY, PACT_API_OPTIONS)
+    PACT_WEBHOOKS_OPTIONS, PACT_API_TOKEN_KEY, PACT_API_OPTIONS,
+    PACT_API_V2_BASE_URL)
 from fast_api.app_auth.funcs_auth import verify_auth_username_password
 from fast_api.app_auth.scheme_auth import AuthData
 from fast_api._pact_fastapi_aps.app_pact_message_data_by_id.scheme_pact_message_data import (
@@ -36,7 +37,7 @@ async def get_pact_message_data(
     headers = {"Content-Type": "application/json",
                "X-Private-Api-Token": pact_api_token}
 
-    api_url = f"https://api.pact.im/api/p2/conversations/{conversation_id}/messages/{message_id}"
+    api_url = f"{PACT_API_V2_BASE_URL}/conversations/{conversation_id}/messages/{message_id}"
 
     params_data = {"private_api_token": pact_api_token,
                    "company_id": company_id,
