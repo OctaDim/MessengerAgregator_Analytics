@@ -27,7 +27,7 @@ if __name__ == "__main__":
             request_json=test_webhook_data)
 
         test_response = fastapi_client.post(
-            url="http://176.124.136.22:8010/agregator_api/webhooks_1/",
+            url="http://127.0.0.1:8040/aggregator_api/webhooks_1/",
             json=test_webhook_data)
 
         print("test_response: ", test_response)
