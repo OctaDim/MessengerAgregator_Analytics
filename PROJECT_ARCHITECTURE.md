@@ -1,5 +1,5 @@
 Created by: Codex
-Date: 2026-06-01
+Date: 2026-06-03
 
 # Project Architecture
 
@@ -55,6 +55,7 @@ panel for operators.
 |-- utils_common/                   # General utility helpers for paths, validation, hashing, serialization, etc.
 |-- utils_specific/                 # Domain-specific event-data enrichment helpers.
 |-- _docs/                          # Deployment notes and SIP call examples.
+|   |-- msgs_aggreg_sensitive_config_samples/ # Safe committed examples for secret-bearing local config files.
 ```
 
 ## Key Modules
@@ -161,6 +162,10 @@ panel for operators.
   network-sensitive runtime settings.
 - `_tests/docker_compose/test_compose_configs.py` provides unittest-based
   contract tests for the Compose files and runbooks.
+- `_tests/sensitive_config/test_sensitive_config_samples.py` verifies that the
+  committed sensitive-config samples preserve the same INI sections, parameter
+  names, and env variable names as local secret-bearing config files while
+  excluding known real secret values.
 - `_tests/fast_api/_pact_fastapi_aps/` mirrors PACT FastAPI packages and keeps
   endpoint-oriented test scripts beside the tested package path under `_tests`.
 - `_tests/db_postgres/postgres_tests/` contains PostgreSQL query/model
@@ -242,6 +247,10 @@ Use this section as the first routing map when changing the project.
 - Root-level `.configs_*.ini`, `.env`, and Docker Compose env files are local
   operational inputs. Do not expose their secret values in final answers,
   documentation, tests, or logs.
+- `_docs/msgs_aggreg_sensitive_config_samples/` contains committed `.example`
+  files for those sensitive inputs. Keep these samples structurally identical
+  to the real local files, but never copy real tokens, passwords, signing keys,
+  API credentials, or host-specific secrets into them.
 - Global API message payloads can carry S3 metadata (`s3_bucket`, `s3_key`,
   `s3_endpoint`, `s3_uri`). The project stores those fields but does not yet
   contain a dedicated S3 client abstraction.
@@ -377,6 +386,16 @@ developer machine. PostgreSQL and MinIO values mirror the host-published ports
 from the Docker Compose env files, while outbound PACT URLs stay configurable so
 the same routers can target local mocks or real APIs by configuration only.
 
+### ADR-009: Committed Secret-Config Samples Without Real Secrets
+
+The repository keeps real root `.configs_*.ini`, root `.env`, and
+`docker_compose/.env*` files ignored because they can contain deployment
+credentials, tokens, session keys, database passwords, object-storage keys, and
+local data paths. Committed examples live under
+`_docs/msgs_aggreg_sensitive_config_samples/` instead. They preserve structure
+and parameter names so agents and developers can bootstrap safely, while tests
+guard against accidental drift and known real-secret leakage.
+
 ## Accepted Conventions
 
 - Keep comments, annotations, and commented notes in code in English only.
@@ -394,6 +413,10 @@ the same routers can target local mocks or real APIs by configuration only.
 - Use query helper modules for reusable database operations instead of embedding
   complex SQLAlchemy logic directly in routers.
 - Treat root `.configs_*.ini` and `.env` files as sensitive operational config.
+- Treat `docker_compose/.env*` files as sensitive operational config.
+- Update `_docs/msgs_aggreg_sensitive_config_samples/` whenever any
+  secret-bearing local config file adds, removes, or renames sections, keys, or
+  env variables.
 - Do not commit local virtual environments, IDE state, caches, bytecode, or
   generated scratch files.
 - For Docker Compose changes, update the corresponding runbook and contract
@@ -407,6 +430,9 @@ Existing test locations:
   files use localhost and match Compose-published PostgreSQL and MinIO settings.
 - `_tests/docker_compose/test_compose_configs.py` validates Docker Compose and
   runbook contracts.
+- `_tests/sensitive_config/test_sensitive_config_samples.py` validates that
+  committed sensitive-config examples mirror local secret-bearing file shapes
+  without known real secret values.
 - `_tests/db_postgres/postgres_tests/` contains PostgreSQL query/model tests.
 - `_tests/fast_api/_pact_fastapi_aps/` contains endpoint-oriented PACT FastAPI
   test modules.
@@ -416,6 +442,7 @@ Recommended checks:
 ```bash
 PYENV_VERSION=3.12.13 python -m unittest _tests.configs.test_local_config_contract
 PYENV_VERSION=3.12.13 python -m unittest _tests.docker_compose.test_compose_configs
+PYENV_VERSION=3.12.13 python -m unittest _tests.sensitive_config.test_sensitive_config_samples
 PYENV_VERSION=3.12.13 python -m unittest discover -s _tests -t . -p "test_*.py"
 ```
 
@@ -451,5 +478,7 @@ database are available before running the broader test set.
 
 - PostgreSQL Compose runbook: `docker_compose/POSTGRES_RUNBOOK.md`
 - MinIO Compose runbook: `docker_compose/S3_MINIO_RUNBOOK.md`
+- Sensitive config samples:
+  `_docs/msgs_aggreg_sensitive_config_samples/README.md`
 - Linux service notes: `_docs/_docs_server_linux/`
 - SIP call example: `_docs/_doc_sip_call_example/sip_call.txt`
