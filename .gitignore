@@ -274,6 +274,10 @@ env_backup/*
 TEMP_MINIO_FILES/
 TEMP_MINIO_FILES/*
 
+# Local secret-bearing runtime configuration files.
+.configs_*.ini
+docker_compose/.env*
+
 .env.*
 !.env.example
 !.env.*.example

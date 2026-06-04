@@ -1,5 +1,6 @@
 Created by: Codex
-Date: 2026-06-01
+Date: 2026-06-04
+Time: 09:43:39 +03
 
 # Project Architecture
 
@@ -49,12 +50,13 @@ panel for operators.
 |-- admin_panel/                    # SQLAdmin views, auth backend, templates, filters, and custom actions.
 |-- configs/                        # Runtime settings, enums, labels, filters, and console-color constants.
 |-- db_postgres/                    # SQLAlchemy models, connections, sessions, queries, and initialization.
-|-- docker_compose/                 # PostgreSQL and MinIO Compose stacks, runbooks, and env files.
+|-- docker_compose/                 # Local/IP Docker Compose stacks, runbooks, env files, and backup compose files.
 |-- fast_api/                       # FastAPI routers and Pydantic request/response schemas.
 |-- meta_classes/                   # Shared metaclasses, currently SingletonMeta for DB connection classes.
 |-- utils_common/                   # General utility helpers for paths, validation, hashing, serialization, etc.
 |-- utils_specific/                 # Domain-specific event-data enrichment helpers.
 |-- _docs/                          # Deployment notes and SIP call examples.
+|   |-- msgs_aggreg_sensitive_config_samples/ # Safe committed examples for secret-bearing local config files.
 ```
 
 ## Key Modules
@@ -118,10 +120,10 @@ panel for operators.
   platform, and predefined config names.
 - The root `.configs_*.ini` files are configured for local development through
   `127.0.0.1`: the FastAPI service binds to localhost, PostgreSQL points to the
-  host-published Compose port from `docker_compose/.env.postgres`, MinIO points
-  to the host-published Compose API/console ports from
-  `docker_compose/.env.s3_minio`, and outbound PACT/emergency-call base URLs are
-  read from `.configs_pact_api.ini`.
+  host-published Compose port from `docker_compose/.env_local_postgres`, MinIO
+  points to the host-published Compose API/console ports from
+  `docker_compose/.env_local_s3_minio`, and outbound PACT/emergency-call base
+  URLs are read from `.configs_pact_api.ini`.
 - The module probes internal and external IP addresses during import. Be careful
   when using broad import checks in offline or sandboxed environments because
   this side effect can make otherwise static checks environment-sensitive.
@@ -138,19 +140,35 @@ panel for operators.
 
 ### Docker Infrastructure
 
-- `docker_compose/docker-compose_postgres.yaml` defines a PostgreSQL 16 stack
-  with a one-shot directory-init service, bind-mounted persistent storage,
-  `pg_isready` healthcheck, resource documentation, and log rotation.
-- `docker_compose/docker-compose_s3_minio.yaml` defines a MinIO stack with
+- `docker_compose/local_docker-compose_postgres.yaml` and
+  `docker_compose/ip_docker-compose_postgres.yaml` define PostgreSQL 16 stacks
+  with one-shot directory-init services, bind-mounted persistent storage,
+  `pg_isready` healthchecks, resource documentation, log rotation, and a
+  pre-start wrapper that verifies `psql` and `pg_isready` availability.
+- `docker_compose/local_docker-compose_s3_minio.yaml` and
+  `docker_compose/ip_docker-compose_s3_minio.yaml` define MinIO stacks with
   directory initialization, MinIO readiness checks, and a bucket-init job.
-- `docker_compose/.env.postgres` and `docker_compose/.env.s3_minio` provide the
-  Compose-specific local environment files expected by the runbooks. Treat them
-  as sensitive local configuration.
-- `docker_compose/POSTGRES_RUNBOOK.md` and
-  `docker_compose/S3_MINIO_RUNBOOK.md` document validation and startup commands.
-- `docker_compose/_backup/docker-compose.yaml` is retained as backup material,
-  not the active Compose contract. Prefer the explicit PostgreSQL and MinIO
-  Compose files above for current infrastructure work.
+- `docker_compose/local_docker-compose-rabbitmq_aiopika.yaml` and
+  `docker_compose/ip_docker-compose-rabbitmq_aiopika.yaml` define RabbitMQ
+  stacks intended for aio-pika workflows. They provide AMQP and management UI
+  ports, persistent bind-mounted broker data, and RabbitMQ diagnostics
+  healthchecks.
+- `docker_compose/local_docker-compose_sshpass.yaml` and
+  `docker_compose/ip_docker-compose_sshpass.yaml` provide development helper
+  containers with `openssh-client` and `sshpass`. They do not publish inbound
+  ports and should not store SSH passwords or targets in Compose files.
+- Local stacks use `.env_local_postgres`, `.env_local_s3_minio`, and
+  `.env_local_rabbitmq_aiopika`; IP-bound stacks use `.env.ip_postgres`,
+  `.env.ip_s3_minio`, and `.env.ip_rabbitmq_aiopika`. Treat all Compose env
+  files as sensitive local configuration.
+- `docker_compose/POSTGRES_RUNBOOK.md`,
+  `docker_compose/S3_MINIO_RUNBOOK.md`,
+  `docker_compose/RABBITMQ_AIOPIKA_RUNBOOK.md`, and
+  `docker_compose/SSHPASS_RUNBOOK.md` document validation, startup, access, and
+  shutdown commands for the active stacks.
+- `docker_compose/_backup/` and `docker_compose/_backup_ai/` are retained as
+  backup material, not the active Compose contract. Prefer the explicit
+  `local_` and `ip_` Compose files for current infrastructure work.
 
 ### Test Tree
 
@@ -161,6 +179,10 @@ panel for operators.
   network-sensitive runtime settings.
 - `_tests/docker_compose/test_compose_configs.py` provides unittest-based
   contract tests for the Compose files and runbooks.
+- `_tests/sensitive_config/test_sensitive_config_samples.py` verifies that the
+  committed sensitive-config samples preserve the same INI sections, parameter
+  names, and env variable names as local secret-bearing config files while
+  excluding known real secret values.
 - `_tests/fast_api/_pact_fastapi_aps/` mirrors PACT FastAPI packages and keeps
   endpoint-oriented test scripts beside the tested package path under `_tests`.
 - `_tests/db_postgres/postgres_tests/` contains PostgreSQL query/model
@@ -233,7 +255,9 @@ Use this section as the first routing map when changing the project.
   database.
 - **Runtime infrastructure check:** for PostgreSQL and MinIO startup claims, run
   the runbook `docker-compose ... config --quiet`, `up -d`, `ps`, logs, and
-  healthcheck commands from `docker_compose/` on a Docker-enabled machine.
+  healthcheck commands from `docker_compose/` on a Docker-enabled machine. Use
+  the `local_` pair for loopback-only development and the `ip_` pair only on a
+  host that owns the configured public/private bind address.
 
 ### Current Operational Caveats
 
@@ -242,9 +266,16 @@ Use this section as the first routing map when changing the project.
 - Root-level `.configs_*.ini`, `.env`, and Docker Compose env files are local
   operational inputs. Do not expose their secret values in final answers,
   documentation, tests, or logs.
+- `_docs/msgs_aggreg_sensitive_config_samples/` contains committed `.example`
+  files for those sensitive inputs. Keep these samples structurally identical
+  to the real local files, but never copy real tokens, passwords, signing keys,
+  API credentials, or host-specific secrets into them.
 - Global API message payloads can carry S3 metadata (`s3_bucket`, `s3_key`,
   `s3_endpoint`, `s3_uri`). The project stores those fields but does not yet
   contain a dedicated S3 client abstraction.
+- RabbitMQ/aio-pika infrastructure is available as Docker Compose/runbook
+  support, but the FastAPI app does not yet register a broker consumer or
+  producer in this snapshot.
 - Some PACT routers are implemented but not included in `main.py`. Treat router
   registration as the source of truth for the public FastAPI surface.
 - The project currently creates tables from SQLAlchemy metadata. There is no
@@ -304,6 +335,10 @@ validates `web_account_id` and `web_account_username` for
   development without editing routers.
 - **Admin UI over ORM models:** SQLAdmin model views expose operational data
   management without a separate frontend.
+- **Local/IP Compose split:** infrastructure stacks have separate loopback and
+  IP-bound Compose/env-file pairs so local development does not accidentally
+  publish services broadly, while explicit IP-bound stacks remain available for
+  hosts that own the configured address.
 - **Compose startup contract tests:** Infrastructure expectations are tested by
   checking stable fragments in Compose files and runbooks.
 
@@ -317,6 +352,7 @@ validates `web_account_id` and `web_account_username` for
 - PostgreSQL 16 via Docker Compose for the primary relational database.
 - SQLAdmin `0.22.0` with Jinja2/WTForms for the admin panel.
 - MinIO via Docker Compose for S3-compatible object storage infrastructure.
+- RabbitMQ via Docker Compose for planned aio-pika message-broker workflows.
 - HTTPX/AIOHTTP for outbound HTTP workflows.
 - Telethon, aio-pika, QR-code helpers, Pillow, and SQLite async support are
   installed in `requirements.txt`; this snapshot does not show an active
@@ -369,6 +405,14 @@ The Compose stacks are tested with lightweight unittest fragment checks. This is
 not a replacement for live Docker startup validation, but it prevents accidental
 removal of important startup, healthcheck, runbook, and environment contracts.
 
+### ADR-010: Split Local and IP-Bound Compose Stacks
+
+Docker Compose infrastructure is split into `local_` and `ip_` file/env pairs
+so loopback development stays isolated on `127.0.0.1`, while host-specific
+IP-bound exposure is an explicit operational choice. This avoids accidental
+service exposure and makes the bind-address assumption visible in file names,
+runbooks, and tests.
+
 ### ADR-008: Localhost-First Development Configuration
 
 Root `.configs_*.ini` values are kept localhost-first for this workspace so the
@@ -376,6 +420,16 @@ FastAPI app, PostgreSQL, MinIO, and local mocks for external APIs can run on one
 developer machine. PostgreSQL and MinIO values mirror the host-published ports
 from the Docker Compose env files, while outbound PACT URLs stay configurable so
 the same routers can target local mocks or real APIs by configuration only.
+
+### ADR-009: Committed Secret-Config Samples Without Real Secrets
+
+The repository keeps real root `.configs_*.ini`, root `.env`, and
+`docker_compose/.env*` files ignored because they can contain deployment
+credentials, tokens, session keys, database passwords, object-storage keys, and
+local data paths. Committed examples live under
+`_docs/msgs_aggreg_sensitive_config_samples/` instead. They preserve structure
+and parameter names so agents and developers can bootstrap safely, while tests
+guard against accidental drift and known real-secret leakage.
 
 ## Accepted Conventions
 
@@ -394,6 +448,10 @@ the same routers can target local mocks or real APIs by configuration only.
 - Use query helper modules for reusable database operations instead of embedding
   complex SQLAlchemy logic directly in routers.
 - Treat root `.configs_*.ini` and `.env` files as sensitive operational config.
+- Treat `docker_compose/.env*` files as sensitive operational config.
+- Update `_docs/msgs_aggreg_sensitive_config_samples/` whenever any
+  secret-bearing local config file adds, removes, or renames sections, keys, or
+  env variables.
 - Do not commit local virtual environments, IDE state, caches, bytecode, or
   generated scratch files.
 - For Docker Compose changes, update the corresponding runbook and contract
@@ -407,6 +465,9 @@ Existing test locations:
   files use localhost and match Compose-published PostgreSQL and MinIO settings.
 - `_tests/docker_compose/test_compose_configs.py` validates Docker Compose and
   runbook contracts.
+- `_tests/sensitive_config/test_sensitive_config_samples.py` validates that
+  committed sensitive-config examples mirror local secret-bearing file shapes
+  without known real secret values.
 - `_tests/db_postgres/postgres_tests/` contains PostgreSQL query/model tests.
 - `_tests/fast_api/_pact_fastapi_aps/` contains endpoint-oriented PACT FastAPI
   test modules.
@@ -416,6 +477,7 @@ Recommended checks:
 ```bash
 PYENV_VERSION=3.12.13 python -m unittest _tests.configs.test_local_config_contract
 PYENV_VERSION=3.12.13 python -m unittest _tests.docker_compose.test_compose_configs
+PYENV_VERSION=3.12.13 python -m unittest _tests.sensitive_config.test_sensitive_config_samples
 PYENV_VERSION=3.12.13 python -m unittest discover -s _tests -t . -p "test_*.py"
 ```
 
@@ -444,12 +506,18 @@ database are available before running the broader test set.
 - Consider adding Alembic migrations before production schema changes become
   frequent. Current table creation is metadata-driven and does not provide
   versioned migrations.
-- Document the expected PostgreSQL and MinIO env-file names directly beside the
-  Compose files and keep runbooks as the operational source of truth.
+- Document the expected PostgreSQL, MinIO, RabbitMQ, and sshpass helper file
+  pairs directly beside the Compose files and keep runbooks as the operational
+  source of truth.
 
 ## Detailed Documentation Links
 
 - PostgreSQL Compose runbook: `docker_compose/POSTGRES_RUNBOOK.md`
 - MinIO Compose runbook: `docker_compose/S3_MINIO_RUNBOOK.md`
+- RabbitMQ aio-pika Compose runbook:
+  `docker_compose/RABBITMQ_AIOPIKA_RUNBOOK.md`
+- sshpass helper Compose runbook: `docker_compose/SSHPASS_RUNBOOK.md`
+- Sensitive config samples:
+  `_docs/msgs_aggreg_sensitive_config_samples/README.md`
 - Linux service notes: `_docs/_docs_server_linux/`
 - SIP call example: `_docs/_doc_sip_call_example/sip_call.txt`
