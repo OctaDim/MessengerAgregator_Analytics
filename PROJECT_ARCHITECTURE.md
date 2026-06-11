@@ -1,6 +1,6 @@
 Created by: Codex
-Date: 2026-06-04
-Time: 09:43:39 +03
+Date: 2026-06-11
+Time: 14:05:06 +0300
 
 # Project Architecture
 
@@ -33,7 +33,7 @@ panel for operators.
 
 ```text
 .
-|-- main.py                         # FastAPI app factory, router registration, SQLAdmin setup, Uvicorn startup.
+|-- main.py                         # Primary FastAPI app factory, router registration, SQLAdmin setup, Uvicorn startup.
 |-- requirements.txt                # Pinned Python dependencies.
 |-- PROJECT_ARCHITECTURE.md         # Current AI-agent architecture reference.
 |-- .gitignore                      # Ignore rules for virtualenvs, IDE files, caches, local data, and scratch files.
@@ -75,6 +75,9 @@ panel for operators.
   S3 attachment metadata.
 - `fast_api/app_get_paginated_messages/` exposes paginated message retrieval for
   a web account.
+- `fast_api/app_get_paginated_messages_by_contacts/` exposes paginated message
+  retrieval for one or many Telegram contacts within one web account, with an
+  optional `tlt_config_name` restriction.
 - `fast_api/app_web_account/` contains the shared web-account request schema
   used by paginated message retrieval. It is not a standalone router.
 - `fast_api/app_test_endpoint/` contains a development-only test endpoint.
@@ -111,6 +114,10 @@ panel for operators.
   transcriptions, plus/minus keywords, and chat subjects.
 - `db_postgres/postgres_queries/` and `db_postgres/postgres_queries_utils/`
   contain domain and reusable query helpers.
+- `db_postgres/postgres_queries/qry_get_paginated_messages_by_contacts.py`
+  keeps the new contact-aware filtering query separate from the older
+  all-messages pagination helper so the original endpoint behavior stays
+  untouched.
 
 ### Configuration
 
@@ -303,6 +310,10 @@ Active routers registered by `main.py`:
 - `POST /global_msg_aggregator/global_api_health_check` checks global API
   health.
 - `POST /global_msg_aggregator/all_messages` returns paginated message data.
+- `POST /global_msg_aggregator/all_messages_by_contacts` returns paginated
+  message data for one or many Telegram contacts scoped to a specific
+  `web_account_id` and `web_account_username`, and optionally narrowed to one
+  `tlt_config_name`.
 - `POST /develop_test_endpoint/develop_test_endpoint/` is a development route.
 
 Some PACT routers exist but are not currently registered in `main.py`, including
@@ -312,7 +323,8 @@ be exposed as public API endpoints.
 
 `fast_api/app_web_account/` is intentionally schema-only in this snapshot: it
 validates `web_account_id` and `web_account_username` for
-`POST /global_msg_aggregator/all_messages`.
+`POST /global_msg_aggregator/all_messages` and
+`POST /global_msg_aggregator/all_messages_by_contacts`.
 
 ## Architecture Patterns
 
@@ -413,6 +425,28 @@ IP-bound exposure is an explicit operational choice. This avoids accidental
 service exposure and makes the bind-address assumption visible in file names,
 runbooks, and tests.
 
+### ADR-011: Separate Contact-Filtered Message Endpoint
+
+The repository already had `POST /global_msg_aggregator/all_messages` for
+web-account-wide pagination. The new requirement adds filtering by one or many
+Telegram contacts and optionally by one concrete `tlt_config_name`, while
+preserving the old endpoint contract.
+
+Why a separate endpoint was chosen:
+
+- It keeps backward compatibility for clients already using
+  `/global_msg_aggregator/all_messages`.
+- It avoids silently changing the semantics of the existing route.
+- It follows the repository's router-per-feature layout by placing the new
+  contract in its own `fast_api/app_get_paginated_messages_by_contacts/`
+  package and a dedicated PostgreSQL query helper.
+
+Trade-off:
+
+- Message serialization logic is currently duplicated between the old and new
+  pagination query helpers. This is acceptable for the additive change, but a
+  future approved refactor could extract a shared serializer.
+
 ### ADR-008: Localhost-First Development Configuration
 
 Root `.configs_*.ini` values are kept localhost-first for this workspace so the
@@ -471,6 +505,8 @@ Existing test locations:
 - `_tests/db_postgres/postgres_tests/` contains PostgreSQL query/model tests.
 - `_tests/fast_api/_pact_fastapi_aps/` contains endpoint-oriented PACT FastAPI
   test modules.
+- `_tests/fast_api/app_get_paginated_messages_by_contacts/` contains focused
+  router tests for the contact-filtered pagination endpoint.
 
 Recommended checks:
 
@@ -498,6 +534,9 @@ database are available before running the broader test set.
   document which files are local-only examples.
 - Add automated tests for `create_fastapi_application()` router registration and
   SQLAdmin setup.
+- When the restriction on editing existing code is lifted, consider registering
+  `router_get_messages_by_contacts_list` in `main.py` and retiring the
+  temporary parallel bootstrap in `main_contacts_messages.py`.
 - Add a dedicated S3 client/service layer before introducing code that reads or
   writes MinIO objects directly; this will keep webhook persistence separate
   from object-storage access.
