@@ -28,15 +28,11 @@ cur_external_ip = get_cur_external_ip_via_google_dns(log_ip=True)
 # GETTING API INI CONFIGS ##############################################
 @dataclass(frozen=True)
 class API_CONFIG_NAMES:
-    API_PRODUCT_SERVER_IP = "API_production"
-    API_HAKASIA_PROD_SERVER_IP = "API_Hakasia_product_server"
-    API_TEST_176_124_136_22_IP = "API_test_server_176_124_136_22_8000"
-    API_TEST_192_168_21_22_IP = "API_test_server_192_168_21_22_8000"
-    API_TEST_PORT_ANY_IP = "API_port_all_ips_0_0_0_0_8000"
-    API_TEST_WIN_LOCALHOST = "API_win_localhost_127_0_0_1_8000"
-    API_TEST_UNIX_LOCALHOST = "API_unix_localhost_127_0_1_1_8000"
-    API_TEST_DEXP_1_IP = "API_dexp_ip_192_168_0_117_8000"
-    API_TEST_DEXP_2_IP = "API_dexp_ip_192_168_0_106_8000"
+    API_PRODUCTION = "API_production_ip"
+    API_TEST = "API_test_ip"
+    API_TEST_ANY_IP = "API_all_ips"
+    API_TEST_WIN_LOCALHOST = "API_win_localhost"
+    API_TEST_UNIX_LOCALHOST = "API_unix_localhost"
 
 
 api_ini_normal_path = get_full_file_normal_path(
@@ -46,25 +42,17 @@ api_conf_parser = ConfigParser()
 api_conf_parser.read(filenames=api_ini_normal_path)
 
 if cur_external_ip == "___.___.___.___":  # Just example
-    api_conf_name = API_CONFIG_NAMES.API_TEST_PORT_ANY_IP
-elif cur_external_ip == "172.19.201.24":
-    api_conf_name = API_CONFIG_NAMES.API_PRODUCT_SERVER_IP
-elif cur_external_ip == "172.19.201.24":
-    api_conf_name = API_CONFIG_NAMES.API_HAKASIA_PROD_SERVER_IP
-elif cur_external_ip == "176.124.136.22":
-    api_conf_name = API_CONFIG_NAMES.API_TEST_176_124_136_22_IP
+    api_conf_name = API_CONFIG_NAMES.API_TEST
+elif cur_external_ip == "P.R.O.D":
+    api_conf_name = API_CONFIG_NAMES.API_PRODUCTION
 elif cur_external_ip == "192.168.21.22":
-    api_conf_name = API_CONFIG_NAMES.API_TEST_192_168_21_22_IP
-elif cur_external_ip == "192.168.0.117":
-    api_conf_name = API_CONFIG_NAMES.API_TEST_DEXP_1_IP
-elif cur_external_ip == "192.168.0.106":
-    api_conf_name = API_CONFIG_NAMES.API_TEST_DEXP_2_IP
+    api_conf_name = API_CONFIG_NAMES.API_TEST
 elif sys.platform == "linux":
     api_conf_name = API_CONFIG_NAMES.API_TEST_UNIX_LOCALHOST
 elif sys.platform == "win32":
     api_conf_name = API_CONFIG_NAMES.API_TEST_WIN_LOCALHOST
 else:
-    api_conf_name = API_CONFIG_NAMES.API_TEST_PORT_ANY_IP
+    api_conf_name = API_CONFIG_NAMES.API_TEST_ANY_IP
 
 API_HOST: str = api_conf_parser.get(section=api_conf_name, option="API_HOST")
 API_PORT: int = int(api_conf_parser.get(section=api_conf_name, option="API_PORT"))
@@ -76,7 +64,8 @@ FASTAPI_SESSION_KEY: str = api_conf_parser.get(section=api_conf_name, option="FA
 # GETTING SQLADMIN INI CONFIGS #########################################
 @dataclass(frozen=True)
 class SQLADMIN_CONFIG_NAMES:
-    SQLADMIN_PRODUCT_ANY_IP = "SQLADMIN_any_ip_prod"
+    SQLADMIN_PRODUCTION = "SQLADMIN_production"
+    SQLADMIN_TEST = "SQLADMIN_test"
 
 
 sqladmin_ini_normal_path = get_full_file_normal_path(
@@ -85,10 +74,14 @@ sqladmin_ini_normal_path = get_full_file_normal_path(
 sqladmin_conf_parser = ConfigParser()
 sqladmin_conf_parser.read(filenames=sqladmin_ini_normal_path)
 
-if cur_external_ip == "___.___.___.___":
-    sqladmin_conf_name = SQLADMIN_CONFIG_NAMES.SQLADMIN_PRODUCT_ANY_IP  # Certain configs can be defined
+if cur_external_ip == "___.___.___.___":  # Just example
+    sqladmin_conf_name = SQLADMIN_CONFIG_NAMES.SQLADMIN_TEST
+elif cur_external_ip == "P.R.O.D":
+    sqladmin_conf_name = SQLADMIN_CONFIG_NAMES.SQLADMIN_PRODUCTION
+elif cur_external_ip == "192.168.21.22":
+    sqladmin_conf_name = SQLADMIN_CONFIG_NAMES.SQLADMIN_TEST
 else:
-    sqladmin_conf_name = SQLADMIN_CONFIG_NAMES.SQLADMIN_PRODUCT_ANY_IP
+    sqladmin_conf_name = SQLADMIN_CONFIG_NAMES.SQLADMIN_TEST
 
 SQLADMIN_SUPERADMIN_USERNAME = sqladmin_conf_parser.get(
     section=sqladmin_conf_name, option="SQLADMIN_SUPERADMIN_USERNAME")
@@ -103,7 +96,8 @@ SQLADMIN_SUPERADMIN_PASSWORD = sqladmin_conf_parser.get(
 # GETTING PACT API INI CONFIGS #########################################
 @dataclass(frozen=True)
 class PACT_API_CONFIG_NAMES:
-    PACT_API_ANY_PRODUCT_IP = "PACT_API_any_ip_prod"
+    PACT_API_PRODUCTION = "PACT_API_production"
+    PACT_API_TEST = "PACT_API_test"
 
 
 pact_api_ini_normal_path = get_full_file_normal_path(
@@ -113,9 +107,13 @@ pact_api_conf_parser = ConfigParser()
 pact_api_conf_parser.read(filenames=pact_api_ini_normal_path)
 
 if cur_external_ip == "___.___.___.___":  # Just example
-    pact_api_conf_name = PACT_API_CONFIG_NAMES.PACT_API_ANY_PRODUCT_IP  # Certain configs can be defined
+    pact_api_conf_name = PACT_API_CONFIG_NAMES.PACT_API_TEST
+elif cur_external_ip == "P.R.O.D":
+    pact_api_conf_name = PACT_API_CONFIG_NAMES.PACT_API_PRODUCTION
+if cur_external_ip == "192.168.21.22":
+    pact_api_conf_name = PACT_API_CONFIG_NAMES.PACT_API_TEST
 else:
-    pact_api_conf_name = PACT_API_CONFIG_NAMES.PACT_API_ANY_PRODUCT_IP
+    pact_api_conf_name = PACT_API_CONFIG_NAMES.PACT_API_TEST
 
 PACT_API_TOKEN_KEY = pact_api_conf_parser.get(
     section=pact_api_conf_name, option="PACT_API_TOKEN_KEY")
@@ -130,7 +128,8 @@ PACT_EMERGENCY_CALL_URL = pact_api_conf_parser.get(
 # GETTING S3 MINIO INI CONFIGS ########################################
 @dataclass(frozen=True)
 class S3_MINIO_CONFIG_NAMES:
-    S3_MINIO_LOCALHOST = "S3_MINIO_localhost"
+    S3_MINIO_PRODUCTION = "S3_MINIO_production"
+    S3_MINIO_TEST = "S3_MINIO_test"
 
 
 s3_minio_ini_normal_path = get_full_file_normal_path(
@@ -138,7 +137,15 @@ s3_minio_ini_normal_path = get_full_file_normal_path(
     file_name_with_ext=".configs_s3_minio.ini")
 s3_minio_conf_parser = ConfigParser()
 s3_minio_conf_parser.read(filenames=s3_minio_ini_normal_path)
-s3_minio_conf_name = S3_MINIO_CONFIG_NAMES.S3_MINIO_LOCALHOST
+
+if cur_external_ip == "___.___.___.___":  # Just example
+    s3_minio_conf_name = S3_MINIO_CONFIG_NAMES.S3_MINIO_TEST
+elif cur_external_ip == "P.R.O.D":
+    s3_minio_conf_name = S3_MINIO_CONFIG_NAMES.S3_MINIO_PRODUCTION
+elif cur_external_ip == "192.168.21.22":
+    s3_minio_conf_name = S3_MINIO_CONFIG_NAMES.S3_MINIO_TEST
+else:
+    s3_minio_conf_name = S3_MINIO_CONFIG_NAMES.S3_MINIO_TEST
 
 S3_ENDPOINT_URL = s3_minio_conf_parser.get(
     section=s3_minio_conf_name, option="S3_ENDPOINT_URL")
@@ -155,13 +162,11 @@ S3_DEFAULT_BUCKET = s3_minio_conf_parser.get(
 # GETTING POSTGRES INI CONFIGS #########################################
 @dataclass(frozen=True)
 class POSTGRES_CONFIG_NAMES:
-    POSTGRES_PRODUCT_SERVER_IP = "Postgres_production"
-    POSTGRES_HAKASIA_PROD_SERVER_IP = "Postgres_Hakasia_product_server"
-    POSTGRES_TEST_176_124_136_22_IP = "Postgres_prod_server_176_124_136_22"
-    POSTGRES_TEST_PORT_ANY_IP = "Postgres_port_all_ips_0_0_0_0_8000"
-    POSTGRES_TEST_WIN_LOCALHOST = "Postgres_win_localhost_127_0_0_1_8000"
-    POSTGRES_TEST_UNIX_LOCALHOST = "Postgres_unix_localhost_127_0_1_1_8000"
-    POSTGRES_TEST_DEXP_IP = "Postgres_dexp_ip_192_168_0_117_8000"
+    POSTGRES_PRODUCTION = "POSTGRES_production"
+    POSTGRES_TEST = "POSTGRES_test"
+    POSTGRES_TEST_ANY_IP = "POSTGRES_all_ips"
+    POSTGRES_TEST_WIN_LOCALHOST = "POSTGRES_win_localhost"
+    POSTGRES_TEST_UNIX_LOCALHOST = "POSTGRES_unix_localhost"
 
 
 postgres_ini_normal_path = get_full_file_normal_path(
@@ -171,21 +176,15 @@ postgres_conf_parser = ConfigParser()
 postgres_conf_parser.read(filenames=postgres_ini_normal_path)
 
 if cur_external_ip == "___.___.___.___":  # Just example
-    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST_PORT_ANY_IP
-elif cur_external_ip == "172.19.201.24":
-    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_PRODUCT_SERVER_IP
-elif cur_external_ip == "172.19.201.24":
-    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_HAKASIA_PROD_SERVER_IP
-elif cur_external_ip == "176.124.136.22":
-    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST_176_124_136_22_IP
-elif cur_external_ip == "192.168.0.117":
-    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST_DEXP_IP
+    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST
+elif cur_external_ip == "192.168.21.22":
+    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST
 elif sys.platform == "linux":
     postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST_UNIX_LOCALHOST
 elif sys.platform == "win32":
     postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST_WIN_LOCALHOST
 else:
-    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST_PORT_ANY_IP
+    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST_ANY_IP
 
 POSTGRES_USER = postgres_conf_parser.get(section=postgres_conf_name, option="POSTGRES_USER")
 POSTGRES_PASSWORD = postgres_conf_parser.get(section=postgres_conf_name, option="POSTGRES_PASSWORD")
