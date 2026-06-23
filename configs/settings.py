@@ -164,7 +164,7 @@ S3_DEFAULT_BUCKET = s3_minio_conf_parser.get(
 class POSTGRES_CONFIG_NAMES:
     POSTGRES_PRODUCTION = "POSTGRES_production"
     POSTGRES_TEST = "POSTGRES_test"
-    POSTGRES_TEST_ANY_IP = "POSTGRES_all_ips"
+    POSTGRES_TEST_ANY_IP = "POSTGRES_any_ips"
     POSTGRES_TEST_WIN_LOCALHOST = "POSTGRES_win_localhost"
     POSTGRES_TEST_UNIX_LOCALHOST = "POSTGRES_unix_localhost"
 
@@ -177,6 +177,8 @@ postgres_conf_parser.read(filenames=postgres_ini_normal_path)
 
 if cur_external_ip == "___.___.___.___":  # Just example
     postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST
+elif cur_external_ip == "P.R.O.D":
+    postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_PRODUCTION
 elif cur_external_ip == "192.168.21.22":
     postgres_conf_name = POSTGRES_CONFIG_NAMES.POSTGRES_TEST
 elif sys.platform == "linux":
