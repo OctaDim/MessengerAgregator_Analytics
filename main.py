@@ -42,6 +42,8 @@ from fast_api._pact_fastapi_aps.app_pact_webhooks.router_pact_webhooks import (
     router_pact_receive_webhooks)
 from fast_api.app_get_paginated_messages.router_get_all_messages import (
     router_get_all_messages_list)
+from fast_api.app_get_dialog_messages_archive.router_get_dialog_messages_archive import (
+    router_get_dialog_messages_archive)
 from fast_api.app_global_api_health_check.router_global_api_health_check import (
     router_global_api_health_check_status)
 from fast_api.app_global_api_webhooks.router_global_api_webhooks import (
@@ -61,6 +63,7 @@ routers_list = [
     router_global_api_receive_webhooks,
     router_global_api_health_check_status,
     router_get_all_messages_list,
+    router_get_dialog_messages_archive,
 
     # Test end-point (debug time)
     router_develop_test_endpoint,
