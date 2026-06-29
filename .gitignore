@@ -283,5 +283,3 @@ docker_compose/.env*
 !.env.*.example
 
 _backup/*
-PROJECT_ARCHITECTURE.md
-**/PROJECT_ARCHITECTURE.md
