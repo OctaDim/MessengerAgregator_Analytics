@@ -1,6 +1,6 @@
 Created by: Codex
-Date: 2026-06-29
-Time: 14:22:40 +03
+Date: 2026-07-02
+Time: 13:56:24 +0300
 
 # Project Architecture
 
@@ -36,7 +36,7 @@ panel for operators.
 |-- main.py                         # FastAPI app factory, router registration, SQLAdmin setup, Uvicorn startup.
 |-- requirements.txt                # Pinned Python dependencies.
 |-- PROJECT_ARCHITECTURE.md         # Current AI-agent architecture reference.
-|-- .gitignore                      # Ignore rules for virtualenvs, IDE files, caches, local data, and scratch files.
+|-- .gitignore                      # Ignore rules for virtualenvs, IDE files, caches, local data, scratch files, and local VS Code workspace settings.
 |-- .configs_api.ini                # API host, port, credentials, and session-key settings.
 |-- .configs_pact_api.ini           # PACT API token and outbound local API base URL settings.
 |-- .configs_postgres.ini           # PostgreSQL connection settings.
