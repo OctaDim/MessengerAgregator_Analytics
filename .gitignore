@@ -283,3 +283,4 @@ docker_compose/.env*
 !.env.*.example
 
 _backup/*
+/.vscode/settings.json
